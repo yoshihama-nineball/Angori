@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゴリラアンガーケア - PC版改善案</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', Arial, sans-serif;
+            background: #fdf6e3;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+
+        .nav-item {
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: background 0.3s;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #34495e;
+        }
+
+        .nav-item.active {
+            background: #3498db;
+            border-left-color: #2980b9;
+        }
+
+        .nav-item i {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* 相談室CTAバナー */
+        .consultation-cta {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .consultation-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .consultation-cta::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .cta-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-left {
+            flex: 1;
+        }
+
+        .cta-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .cta-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .cta-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .cta-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .cta-illustration {
+            font-size: 80px;
+            opacity: 0.8;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* ダッシュボードレイアウト */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .widget {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 2px solid #f4a460;
+            transition: all 0.3s ease;
+        }
+
+        .widget:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+
+        .widget h3 {
+            color: #8b4513;
+            margin-bottom: 20px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+
+        .widget h3::before {
+            content: "🦍";
+            margin-right: 8px;
+        }
+
+        /* 怒り解消スコア */
+        .score-widget {
+            text-align: center;
+            background: linear-gradient(135deg, #ffd700, #ffb347);
+            border: 2px solid #daa520;
+        }
+
+        .score-character {
+            font-size: 60px;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: bold;
+            color: #8b4513;
+            margin-bottom: 10px;
+        }
+
+        .score-label {
+            font-size: 18px;
+            color: #8b4513;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .score-message {
+            color: #a0522d;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 感情カレンダー */
+        .calendar-widget {
+            background: linear-gradient(135deg, #e8f5e8, #f0fdf4);
+            border: 2px solid #22c55e;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-month {
+            font-size: 16px;
+            font-weight: bold;
+            color: #166534;
+        }
+
+        .calendar-nav {
+            background: #22c55e;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .calendar-nav:hover {
+            background: #16a34a;
+            transform: scale(1.1);
+        }
+
+        .calendar-week {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .calendar-day {
+            text-align: center;
+            padding: 8px 4px;
+            border-radius: 8px;
+            font-size: 12px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .calendar-day:hover {
+            background: rgba(34, 197, 94, 0.1);
+            transform: scale(1.05);
+        }
+
+        .calendar-day.today {
+            background: #22c55e;
+            color: white;
+            font-weight: bold;
+        }
+
+        .calendar-day.has-emotion {
+            background: #dcfce7;
+            border: 1px solid #22c55e;
+        }
+
+        .day-emotion {
+            font-size: 16px;
+            margin-top: 2px;
+        }
+
+        .calendar-action {
+            text-align: center;
+        }
+
+        .record-btn {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .record-btn:hover {
+            background: #16a34a;
+            transform: scale(1.05);
+        }
+
+        /* 最近のログ */
+        .recent-logs {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #fff7ed, #fef3c7);
+            border: 2px solid #f59e0b;
+        }
+
+        .logs-container {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .log-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            margin-bottom: 12px;
+            background: white;
+            border-radius: 12px;
+            border-left: 4px solid #e74c3c;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .log-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+        }
+
+        .log-time {
+            color: #7f8c8d;
+            font-size: 12px;
+            margin-right: 15px;
+            min-width: 80px;
+            font-weight: bold;
+        }
+
+        .log-content {
+            flex: 1;
+        }
+
+        .log-trigger {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .log-emotion {
+            color: #e74c3c;
+            font-size: 14px;
+            background: #fef2f2;
+            padding: 4px 8px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .view-all-btn {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+
+        .view-all-btn:hover {
+            background: #d97706;
+            transform: scale(1.05);
+        }
+
+        /* 傾向マップ（フローティング） */
+        .floating-trends {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border: 2px solid #8b5cf6;
+            max-width: 300px;
+            z-index: 10;
+        }
+
+        .trends-title {
+            color: #8b5cf6;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .trend-mini-map {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .trend-mini-item {
+            text-align: center;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .trend-mini-item:hover {
+            background: #f1f5f9;
+            transform: scale(1.05);
+        }
+
+        .mini-count {
+            font-size: 14px;
+            font-weight: bold;
+            color: #8b5cf6;
+        }
+
+        .mini-label {
+            font-size: 10px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        /* ワンポイントアドバイス */
+        .advice-widget {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
+            border: 2px solid #0ea5e9;
+        }
+
+        .advice-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .advice-icon {
+            font-size: 32px;
+            background: rgba(14, 165, 233, 0.1);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .advice-text {
+            flex: 1;
+            line-height: 1.6;
+            color: #0c4a6e;
+        }
+
+        .advice-text strong {
+            color: #0369a1;
+            font-size: 16px;
+        }
+
+        .advice-action {
+            display: flex;
+            gap: 10px;
+        }
+
+        .advice-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .advice-btn:not(.secondary) {
+            background: #0ea5e9;
+            color: white;
+        }
+
+        .advice-btn:not(.secondary):hover {
+            background: #0284c7;
+            transform: scale(1.05);
+        }
+
+        .advice-btn.secondary {
+            background: rgba(14, 165, 233, 0.1);
+            color: #0369a1;
+            border: 1px solid #0ea5e9;
+        }
+
+        .advice-btn.secondary:hover {
+            background: rgba(14, 165, 233, 0.2);
+        }
+
+        /* レスポンシブ対応 */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .floating-trends {
+                position: static;
+                margin-top: 20px;
+                margin-left: 0;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- サイドバー -->
+        <div class="sidebar">
+            <div class="logo">
+                🦍 ゴリラアンガーケア
+            </div>
+            <div class="nav-item active">
+                <i>🏠</i> ダッシュボード
+            </div>
+            <div class="nav-item">
+                <i>📝</i> 記録
+            </div>
+            <div class="nav-item">
+                <i>💬</i> 相談室
+            </div>
+            <div class="nav-item">
+                <i>📊</i> 分析・レポート
+            </div>
+            <div class="nav-item">
+                <i>⚙️</i> 設定
+            </div>
+        </div>
+
+        <!-- メインコンテンツ -->
+        <div class="main-content">
+            <!-- 相談室CTAバナー -->
+            <div class="consultation-cta">
+                <div class="cta-content">
+                    <div class="cta-left">
+                        <div class="cta-title">
+                            🦍 ゴリラに相談してみませんか？
+                        </div>
+                        <div class="cta-subtitle">
+                            今日の気持ちや困っていることを気軽にお話しください
+                        </div>
+                        <button class="cta-button">今すぐ相談する →</button>
+                    </div>
+                    <div class="cta-illustration">💬</div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- 怒り解消スコア -->
+                <div class="widget score-widget">
+                    <div class="score-character">🦍💪</div>
+                    <div class="score-number">287</div>
+                    <div class="score-label">怒り解消スコア</div>
+                    <div class="score-message">
+                        🔥 順調に改善中です！
+                    </div>
+                </div>
+
+                <!-- 感情記録カレンダー -->
+                <div class="widget calendar-widget">
+                    <h3>今週の感情記録</h3>
+                    <div class="calendar-header">
+                        <button class="calendar-nav">‹</button>
+                        <div class="calendar-month">2025年7月 第2週</div>
+                        <button class="calendar-nav">›</button>
+                    </div>
+                    <div class="calendar-week">
+                        <div class="calendar-day">
+                            <div>月</div>
+                            <div>7</div>
+                            <div class="day-emotion">😊</div>
+                        </div>
+                        <div class="calendar-day">
+                            <div>火</div>
+                            <div>8</div>
+                            <div class="day-emotion">😐</div>
+                        </div>
+                        <div class="calendar-day">
+                            <div>水</div>
+                            <div>9</div>
+                            <div class="day-emotion">😤</div>
+                        </div>
+                        <div class="calendar-day has-emotion">
+                            <div>木</div>
+                            <div>10</div>
+                            <div class="day-emotion">😅</div>
+                        </div>
+                        <div class="calendar-day today">
+                            <div>金</div>
+                            <div>11</div>
+                            <div>📝</div>
+                        </div>
+                        <div class="calendar-day">
+                            <div>土</div>
+                            <div>12</div>
+                        </div>
+                        <div class="calendar-day">
+                            <div>日</div>
+                            <div>13</div>
+                        </div>
+                    </div>
+                    <div class="calendar-action">
+                        <button class="record-btn">📅 今日の感情を記録</button>
+                    </div>
+                </div>
+
+                <!-- 最近のアンガーログ -->
+                <div class="widget recent-logs">
+                    <h3>最近のアンガーログ</h3>
+                    <div class="logs-container">
+                        <div class="log-item">
+                            <div class="log-time">今日<br>11:30</div>
+                            <div class="log-content">
+                                <div class="log-trigger">会議での意見の食い違い</div>
+                                <div class="log-emotion">😡 怒り: レベル 6/10</div>
+                            </div>
+                        </div>
+                        <div class="log-item">
+                            <div class="log-time">7/10<br>15:20</div>
+                            <div class="log-content">
+                                <div class="log-trigger">電車の遅延でイライラ</div>
+                                <div class="log-emotion">😤 イライラ: レベル 4/10</div>
+                            </div>
+                        </div>
+                        <div class="log-item">
+                            <div class="log-time">7/9<br>09:15</div>
+                            <div class="log-content">
+                                <div class="log-trigger">家事の分担について話し合い</div>
+                                <div class="log-emotion">😠 怒り: レベル 5/10</div>
+                            </div>
+                        </div>
+                        <div class="log-item">
+                            <div class="log-time">7/8<br>14:45</div>
+                            <div class="log-content">
+                                <div class="log-trigger">同僚からの無理な依頼</div>
+                                <div class="log-emotion">😤 イライラ: レベル 7/10</div>
+                            </div>
+                        </div>
+                        <div class="log-item">
+                            <div class="log-time">7/7<br>18:30</div>
+                            <div class="log-content">
+                                <div class="log-trigger">渋滞で約束に遅刻</div>
+                                <div class="log-emotion">😰 焦り: レベル 6/10</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="view-all-btn">📋 すべてのログを見る</button>
+                </div>
+
+                <!-- ゴリラのワンポイントアドバイス -->
+                <div class="widget advice-widget">
+                    <h3>今日のワンポイントアドバイス</h3>
+                    <div class="advice-content">
+                        <div class="advice-icon">💡</div>
+                        <div class="advice-text">
+                            <strong>6秒ルールを実践してみましょう！</strong><br>
+                            怒りを感じたときは6秒数えてみてください。怒りのピークは6秒間と言われています。深呼吸をしながら数えると、より効果的です。今日も一緒に頑張りましょう！🦍
+                        </div>
+                    </div>
+                    <div class="advice-action">
+                        <button class="advice-btn">🎯 今日の目標に設定</button>
+                        <button class="advice-btn secondary">📚 他のアドバイスを見る</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- フローティング傾向マップ -->
+    <div class="floating-trends">
+        <div class="trends-title">
+            📊 今月の傾向トップ6
+        </div>
+        <div class="trend-mini-map">
+            <div class="trend-mini-item">
+                <div class="mini-count">25</div>
+                <div class="mini-label">通勤</div>
+            </div>
+            <div class="trend-mini-item">
+                <div class="mini-count">18</div>
+                <div class="mini-label">会議</div>
+            </div>
+            <div class="trend-mini-item">
+                <div class="mini-count">15</div>
+                <div class="mini-label">約束</div>
+            </div>
+            <div class="trend-mini-item">
+                <div class="mini-count">12</div>
+                <div class="mini-label">ミス</div>
+            </div>
+            <div class="trend-mini-item">
+                <div class="mini-count">10</div>
+                <div class="mini-label">残業</div>
+            </div>
+            <div class="trend-mini-item">
+                <div class="mini-count">8</div>
+                <div class="mini-label">家庭</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 相談室CTAクリック処理
+        document.querySelector('.consultation-cta').addEventListener('click', function() {
+            // 相談室画面へ遷移する処理をここに書く
+            alert('相談室画面に遷移します！');
+        });
+
+        // CTAボタンクリック処理
+        document.querySelector('.cta-button').addEventListener('click', function(e) {
+            e.stopPropagation();
+            alert('相談室画面に遷移します！');
+        });
+
+        // ログアイテムクリック処理
+        document.querySelectorAll('.log-item').forEach(item => {
+            item.addEventListener('click', function() {
+                alert('ログの詳細画面に遷移します！');
+            });
+        });
+    </script>
+</body>
+</html>

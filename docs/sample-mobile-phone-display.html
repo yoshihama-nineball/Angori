@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゴリラアンガーケア - スマホ版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', Arial, sans-serif;
+            background: #fdf6e3;
+            color: #333;
+            padding-bottom: 80px;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: linear-gradient(135deg, #8b4513, #cd853f);
+            color: white;
+            padding: 20px 15px 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header h1::before {
+            content: "🦍";
+            margin-right: 8px;
+            font-size: 24px;
+        }
+
+        .header-date {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .profile-menu {
+            position: relative;
+        }
+
+        .profile-icon {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .profile-icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            min-width: 200px;
+            overflow: hidden;
+            display: none;
+            z-index: 200;
+        }
+
+        .profile-dropdown.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+        }
+
+        .dropdown-item.logout {
+            color: #e74c3c;
+        }
+
+        /* コンテンツエリア */
+        .content {
+            padding: 20px 15px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* 相談室CTAバナー（スマホ版） */
+        .consultation-cta-mobile {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .consultation-cta-mobile:active {
+            transform: scale(0.98);
+        }
+
+        .consultation-cta-mobile::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float-mobile 4s ease-in-out infinite;
+        }
+
+        @keyframes float-mobile {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(180deg); }
+        }
+
+        .cta-mobile-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-mobile-left {
+            flex: 1;
+        }
+
+        .cta-mobile-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .cta-mobile-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .cta-mobile-button {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .cta-mobile-icon {
+            font-size: 20px;
+        }
+
+        .cta-mobile-text {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .score-card {
+            background: linear-gradient(135deg, #ffd700, #ffb347);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .score-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .score-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #8b4513;
+            margin-bottom: 5px;
+        }
+
+        .score-label {
+            color: #a0522d;
+            font-size: 14px;
+        }
+
+        .recent-logs {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #8b4513;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .log-item {
+            background: #fff8e7;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .log-time {
+            font-size: 12px;
+            color: #8b4513;
+            margin-bottom: 8px;
+        }
+
+        .log-text {
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .log-level {
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            display: inline-block;
+        }
+
+        /* 記録画面 */
+        .search-container {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 25px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .filter-tab {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .filter-tab.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .new-record-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s;
+        }
+
+        .new-record-btn:active {
+            transform: scale(0.98);
+        }
+
+        .new-record-btn::before {
+            content: "🦍💬";
+            margin-right: 8px;
+        }
+
+        .logs-container {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .logs-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .detailed-log-item {
+            background: #fff8e7;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-left: 4px solid #ef4444;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .detailed-log-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .log-date {
+            font-size: 12px;
+            color: #92400e;
+            font-weight: bold;
+        }
+
+        .log-trigger {
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .log-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .log-tag {
+            background: #e5e7eb;
+            color: #374151;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+        }
+
+        /* カレンダー画面 */
+        .calendar-container {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 2px solid #22c55e;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-month {
+            font-size: 18px;
+            font-weight: bold;
+            color: #166534;
+        }
+
+        .calendar-nav {
+            background: #22c55e;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .calendar-nav:hover {
+            background: #16a34a;
+            transform: scale(1.1);
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #666;
+            padding: 8px 0;
+        }
+
+        .weekday.sunday {
+            color: #ef4444;
+        }
+
+        .weekday.saturday {
+            color: #3b82f6;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #e5e7eb;
+        }
+
+        .calendar-day:hover {
+            background: rgba(34, 197, 94, 0.1);
+            transform: scale(1.05);
+        }
+
+        .calendar-day.today {
+            background: #22c55e;
+            color: white;
+            font-weight: bold;
+            border-color: #16a34a;
+        }
+
+        .calendar-day.has-emotion {
+            background: #dcfce7;
+            border-color: #22c55e;
+        }
+
+        .calendar-day.other-month {
+            color: #9ca3af;
+            background: #f9fafb;
+        }
+
+        .day-number {
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+
+        .day-emotion {
+            font-size: 14px;
+        }
+
+        /* 分析画面 */
+        .trend-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .trend-circles {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .trend-circle {
+            text-align: center;
+            padding: 15px;
+            background: #fff8e7;
+            border-radius: 50%;
+            border: 3px solid #daa520;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .trend-count {
+            font-size: 20px;
+            font-weight: bold;
+            color: #8b4513;
+        }
+
+        .trend-label {
+            font-size: 10px;
+            color: #a0522d;
+            margin-top: 5px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #8b4513;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* ワンポイントアドバイス */
+        .advice-card {
+            background: linear-gradient(135deg, #e6f3ff, #f0f8ff);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4a90e2;
+        }
+
+        .advice-title {
+            color: #4a90e2;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .advice-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        /* フッターナビゲーション */
+        .footer-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #ddd;
+            display: flex;
+            padding: 10px 0;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-item.active {
+            color: #8b4513;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <div class="header">
+        <div class="header-content">
+            <div>
+                <h1>ゴリラアンガーケア</h1>
+                <div class="header-date">2025年7月11日（金）</div>
+            </div>
+            <div class="profile-menu">
+                <div class="profile-icon" onclick="toggleProfileMenu()">👤</div>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="dropdown-item">
+                        <span>👤</span>
+                        <span>プロフィール</span>
+                    </div>
+                    <div class="dropdown-item">
+                        <span>⚙️</span>
+                        <span>設定とプライバシー</span>
+                    </div>
+                    <div class="dropdown-item">
+                        <span>❓</span>
+                        <span>ヘルプ・サポート</span>
+                    </div>
+                    <div class="dropdown-item logout">
+                        <span>🚪</span>
+                        <span>ログアウト</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- コンテンツ -->
+    <div class="content">
+        <!-- ホーム画面 -->
+        <div class="page active" id="home">
+            <!-- 相談室CTAバナー -->
+            <div class="consultation-cta-mobile">
+                <div class="cta-mobile-content">
+                    <div class="cta-mobile-left">
+                        <div class="cta-mobile-title">🦍 ゴリラに相談</div>
+                        <div class="cta-mobile-subtitle">気持ちを話してスッキリしよう</div>
+                    </div>
+                    <div class="cta-mobile-button">
+                        <div class="cta-mobile-icon">💬</div>
+                        <div class="cta-mobile-text">相談する</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="score-card">
+                <div class="score-icon">🦍💪</div>
+                <div class="score-number">287</div>
+                <div class="score-label">怒り解消スコア</div>
+            </div>
+
+            <div class="recent-logs">
+                <div class="section-title">📝 最近のアンガーログ</div>
+                <div class="log-item">
+                    <div class="log-time">今日 11:30</div>
+                    <div class="log-text">会議での意見の食い違い</div>
+                    <span class="log-level">怒り: 6</span>
+                </div>
+                <div class="log-item">
+                    <div class="log-time">7/10 15:20</div>
+                    <div class="log-text">電車の遅延でイライラ</div>
+                    <span class="log-level">怒り: 4</span>
+                </div>
+                <div class="log-item">
+                    <div class="log-time">7/9 09:15</div>
+                    <div class="log-text">家事の分担について</div>
+                    <span class="log-level">怒り: 5</span>
+                </div>
+            </div>
+
+            <div class="advice-card">
+                <div class="advice-title">🦍 今日のワンポイントアドバイス</div>
+                <div class="advice-text">
+                    怒りを感じたときは6秒数えてみましょう。怒りのピークは6秒間と言われています。深呼吸をしながら数えると効果的です。
+                </div>
+            </div>
+        </div>
+
+        <!-- 記録画面 -->
+        <div class="page" id="record">
+            <div class="search-container">
+                <div class="section-title">🔍 ログを検索</div>
+                <input type="text" class="search-input" placeholder="キーワードで検索...">
+                <div class="filter-tabs">
+                    <div class="filter-tab active">すべて</div>
+                    <div class="filter-tab">今週</div>
+                    <div class="filter-tab">今月</div>
+                    <div class="filter-tab">高レベル</div>
+                    <div class="filter-tab">仕事</div>
+                    <div class="filter-tab">家庭</div>
+                </div>
+            </div>
+
+            <button class="new-record-btn">新しくアンガーログを記録する</button>
+
+            <div class="logs-container">
+                <div class="section-title">📋 過去のアンガーログ</div>
+                <div class="logs-list">
+                    <div class="detailed-log-item">
+                        <div class="log-header">
+                            <div class="log-date">今日 11:30</div>
+                            <div class="log-level">怒り: 6</div>
+                        </div>
+                        <div class="log-trigger">会議での意見の食い違いで感情的になってしまった</div>
+                        <div class="log-tags">
+                            <div class="log-tag">仕事</div>
+                            <div class="log-tag">会議</div>
+                            <div class="log-tag">意見対立</div>
+                        </div>
+                    </div>
+
+                    <div class="detailed-log-item">
+                        <div class="log-header">
+                            <div class="log-date">7/10 15:20</div>
+                            <div class="log-level">怒り: 4</div>
+                        </div>
+                        <div class="log-trigger">電車の遅延で約束の時間に遅れそうになった</div>
+                        <div class="log-tags">
+                            <div class="log-tag">交通</div>
+                            <div class="log-tag">遅延</div>
+                            <div class="log-tag">時間</div>
+                        </div>
+                    </div>
+
+                    <div class="detailed-log-item">
+                        <div class="log-header">
+                            <div class="log-date">7/9 09:15</div>
+                            <div class="log-level">怒り: 5</div>
+                        </div>
+                        <div class="log-trigger">家事の分担について話し合いが平行線になった</div>
+                        <div class="log-tags">
+                            <div class="log-tag">家庭</div>
+                            <div class="log-tag">家事</div>
+                            <div class="log-tag">話し合い</div>
+                        </div>
+                    </div>
+
+                    <div class="detailed-log-item">
+                        <div class="log-header">
+                            <div class="log-date">7/8 14:45</div>
+                            <div class="log-level">怒り: 7</div>
+                        </div>
+                        <div class="log-trigger">同僚から理不尽な依頼をされて困惑した</div>
+                        <div class="log-tags">
+                            <div class="log-tag">仕事</div>
+                            <div class="log-tag">同僚</div>
+                            <div class="log-tag">理不尽</div>
+                        </div>
+                    </div>
+
+                    <div class="detailed-log-item">
+                        <div class="log-header">
+                            <div class="log-date">7/7 18:30</div>
+                            <div class="log-level">怒り: 6</div>
+                        </div>
+                        <div class="log-trigger">渋滞で子供のお迎えに遅れてしまった</div>
+                        <div class="log-tags">
+                            <div class="log-tag">交通</div>
+                            <div class="log-tag">育児</div>
+                            <div class="log-tag">時間</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- カレンダー画面 -->
+        <div class="page" id="calendar">
+            <div class="calendar-container">
+                <div class="section-title">📅 感情記録カレンダー</div>
+                <div class="calendar-header">
+                    <button class="calendar-nav">‹</button>
+                    <div class="calendar-day">
+                        <div class="day-number">17</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">18</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">19</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">20</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">21</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">22</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">23</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">24</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">25</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">26</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">27</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">28</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">29</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">30</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">31</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advice-card">
+                <div class="advice-title">💡 カレンダーの使い方</div>
+                <div class="advice-text">
+                    日付をタップして今日の感情を記録しましょう。継続的な記録があなたの感情パターンを見える化します。
+                </div>
+            </div>
+        </div>
+
+        <!-- 相談画面 -->
+        <div class="page" id="consultation">
+            <div class="recent-logs">
+                <div class="section-title">💬 ゴリラの相談室</div>
+                <div style="background: #f8f9fa; border-radius: 12px; padding: 20px; margin: 15px 0; text-align: center;">
+                    <div style="font-size: 40px; margin-bottom: 10px;">🦍</div>
+                    <div style="font-size: 16px; color: #333; margin-bottom: 15px;">
+                        <strong>こんにちは！今日はどんな気持ちですか？</strong>
+                    </div>
+                    <div style="font-size: 14px; color: #666; line-height: 1.5;">
+                        何か困ったことや、イライラしたことがあれば、気軽にお話しください。一緒に解決策を考えましょう。
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <input type="text" style="flex: 1; border: 2px solid #ddd; border-radius: 25px; padding: 12px 16px; font-size: 14px;" placeholder="メッセージを入力...">
+                    <button style="background: #4a90e2; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; cursor: pointer;">📤</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分析画面 -->
+        <div class="page" id="analysis">
+            <div class="trend-card">
+                <div class="section-title">📊 怒りの傾向マップ</div>
+                <div class="trend-circles">
+                    <div class="trend-circle">
+                        <div class="trend-count">25</div>
+                        <div class="trend-label">通勤</div>
+                    </div>
+                    <div class="trend-circle">
+                        <div class="trend-count">18</div>
+                        <div class="trend-label">会議</div>
+                    </div>
+                    <div class="trend-circle">
+                        <div class="trend-count">15</div>
+                        <div class="trend-label">約束</div>
+                    </div>
+                    <div class="trend-circle">
+                        <div class="trend-count">12</div>
+                        <div class="trend-label">ミス</div>
+                    </div>
+                    <div class="trend-circle">
+                        <div class="trend-count">10</div>
+                        <div class="trend-label">残業</div>
+                    </div>
+                    <div class="trend-circle">
+                        <div class="trend-count">8</div>
+                        <div class="trend-label">家庭</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="trend-card">
+                <div class="section-title">📈 今月の統計</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">19</div>
+                        <div class="stat-label">記録日数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">5.2</div>
+                        <div class="stat-label">平均怒りレベル</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">68%</div>
+                        <div class="stat-label">改善率</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">+12</div>
+                        <div class="stat-label">前月比スコア</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advice-card">
+                <div class="advice-title">🎯 改善のヒント</div>
+                <div class="advice-text">
+                    通勤時間の怒りが最も多いようですね。電車の中では音楽を聞いたり、読書をするなど、リラックスできる活動を取り入れてみましょう。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- フッターナビゲーション -->
+    <div class="footer-nav">
+        <div class="nav-item active" data-page="home">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">ホーム</div>
+        </div>
+        <div class="nav-item" data-page="record">
+            <div class="nav-icon">📝</div>
+            <div class="nav-label">記録</div>
+        </div>
+        <div class="nav-item" data-page="calendar">
+            <div class="nav-icon">📅</div>
+            <div class="nav-label">カレンダー</div>
+        </div>
+        <div class="nav-item" data-page="analysis">
+            <div class="nav-icon">📊</div>
+            <div class="nav-label">分析</div>
+        </div>
+    </div>
+
+    <script>
+        // プロフィールメニューの表示/非表示
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // 画面外クリックでメニューを閉じる
+        document.addEventListener('click', function(e) {
+            const profileMenu = document.querySelector('.profile-menu');
+            const dropdown = document.getElementById('profileDropdown');
+            
+            if (!profileMenu.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // 相談室CTAクリック処理（スマホ版）
+        document.querySelector('.consultation-cta-mobile').addEventListener('click', function() {
+            // 相談画面に切り替え
+            const navItems = document.querySelectorAll('.nav-item');
+            const pages = document.querySelectorAll('.page');
+            
+            // ナビゲーションのアクティブ状態を更新
+            navItems.forEach(nav => nav.classList.remove('active'));
+            document.querySelector('[data-page="consultation"]').classList.add('active');
+            
+            // ページの表示を更新
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById('consultation').classList.add('active');
+        });
+
+        // ナビゲーション機能
+        const navItems = document.querySelectorAll('.nav-item');
+        const pages = document.querySelectorAll('.page');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetPage = item.getAttribute('data-page');
+                
+                // ナビゲーションのアクティブ状態を更新
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                // ページの表示を更新
+                pages.forEach(page => page.classList.remove('active'));
+                document.getElementById(targetPage).classList.add('active');
+            });
+        });
+
+        // 新規記録ボタンクリック処理
+        document.querySelector('.new-record-btn').addEventListener('click', function() {
+            // 相談画面に切り替え
+            const navItems = document.querySelectorAll('.nav-item');
+            const pages = document.querySelectorAll('.page');
+            
+            navItems.forEach(nav => nav.classList.remove('active'));
+            document.querySelector('[data-page="consultation"]').classList.add('active');
+            
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById('consultation').classList.add('active');
+        });
+
+        // フィルタータブ処理
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                // フィルタリング処理をここに実装
+            });
+        });
+
+        // カレンダーの日付クリック処理
+        document.querySelectorAll('.calendar-day').forEach(day => {
+            day.addEventListener('click', function() {
+                if (!this.classList.contains('other-month')) {
+                    alert('その日の詳細記録画面に遷移します');
+                }
+            });
+        });
+
+        // ログアイテムクリック処理
+        document.querySelectorAll('.detailed-log-item').forEach(item => {
+            item.addEventListener('click', function() {
+                alert('ログの詳細表示画面に遷移します');
+            });
+        });
+    </script>
+</body>
+</html>month">2025年7月</div>
+                    <button class="calendar-nav">›</button>
+                </div>
+                
+                <div class="calendar-weekdays">
+                    <div class="weekday sunday">日</div>
+                    <div class="weekday">月</div>
+                    <div class="weekday">火</div>
+                    <div class="weekday">水</div>
+                    <div class="weekday">木</div>
+                    <div class="weekday">金</div>
+                    <div class="weekday saturday">土</div>
+                </div>
+
+                <div class="calendar-grid">
+                    <div class="calendar-day other-month">
+                        <div class="day-number">29</div>
+                    </div>
+                    <div class="calendar-day other-month">
+                        <div class="day-number">30</div>
+                    </div>
+                    <div class="calendar-day has-emotion">
+                        <div class="day-number">1</div>
+                        <div class="day-emotion">😊</div>
+                    </div>
+                    <div class="calendar-day has-emotion">
+                        <div class="day-number">2</div>
+                        <div class="day-emotion">😔</div>
+                    </div>
+                    <div class="calendar-day has-emotion">
+                        <div class="day-number">3</div>
+                        <div class="day-emotion">😆</div>
+                    </div>
+                    <div class="calendar-day has-emotion">
+                        <div class="day-number">4</div>
+                        <div class="day-emotion">😠</div>
+                    </div>
+                    <div class="calendar-day has-emotion">
+                        <div class="day-number">5</div>
+                        <div class="day-emotion">😌</div>
+                    </div>
+                    <div class="calendar-day has-emotion">
+                        <div class="day-number">6</div>
+                        <div class="day-emotion">😡</div>
+                    </div>
+                    <div class="calendar-day has-emotion">
+                        <div class="day-number">7</div>
+                        <div class="day-emotion">😊</div>
+                    </div>
+                    <div class="calendar-day has-emotion">
+                        <div class="day-number">8</div>
+                        <div class="day-emotion">😐</div>
+                    </div>
+                    <div class="calendar-day has-emotion">
+                        <div class="day-number">9</div>
+                        <div class="day-emotion">😤</div>
+                    </div>
+                    <div class="calendar-day has-emotion">
+                        <div class="day-number">10</div>
+                        <div class="day-emotion">😅</div>
+                    </div>
+                    <div class="calendar-day today">
+                        <div class="day-number">11</div>
+                        <div>📝</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">12</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">13</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">14</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">15</div>
+                    </div>
+                    <div class="calendar-day">
+                        <div class="day-number">16</div>
+                    </div>
+                    <div class="calendar-
