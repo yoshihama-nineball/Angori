@@ -67,6 +67,7 @@ assignees: yoshihama-nineball
   - [ ] `yarn type-check` エラーなし
   - [ ] `yarn test` 全テスト通過
   - [ ] `yarn build` 成功 (Vercelデプロイ確認)
+  - [ ] `yarn pre-commit `
 
 ### 統合テスト・動作確認
 - [ ] **機能動作確認**

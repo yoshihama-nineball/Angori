@@ -2,7 +2,7 @@
 name: bug 1 不具合修正
 about: 不具合修正のIssueです
 title: ''
-labels: bug
+labels: bug, enhancement
 assignees: yoshihama-nineball
 
 ---
