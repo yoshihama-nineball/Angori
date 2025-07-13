@@ -6,7 +6,17 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "fix": "yarn lint:fix && yarn format",
+    "check": "yarn lint && yarn format:check && yarn type-check",
+    "pre-commit": "yarn fix && yarn type-check"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -48,5 +58,14 @@
     "tailwindcss": "^4",
     "ts-jest": "^29.4.0",
     "typescript": "^5.0.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "yarn fix",
+      "yarn type-check"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   }
 }
