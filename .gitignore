@@ -137,3 +137,77 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# ========================
+# Angori プロジェクト追加設定
+# ========================
+
+# Rails specific (backend用)
+backend/log/*
+backend/tmp/*
+!backend/log/.keep
+!backend/tmp/.keep
+backend/storage/*
+!backend/storage/.keep
+backend/public/uploads
+backend/config/master.key
+backend/config/credentials.yml.enc
+
+# Ruby/Rails
+*.gem
+*.rbc
+/.config
+/InstalledFiles
+/pkg/
+/spec/reports/
+/spec/examples.txt
+/test/tmp/
+/test/version_tmp/
+/tmp/
+
+# Bundle
+backend/vendor/bundle
+
+# Jekyll
+backend/_site/
+backend/.sass-cache/
+backend/.jekyll-cache/
+backend/.jekyll-metadata
+
+# Testing
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor directories and files
+.idea/
+*.swp
+*.swo
+*~
+
+# VSCode settings (プロジェクト設定は保持)
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Deployment
+deploy.log
+
+# Angori specific
+uploads/
+cache/
