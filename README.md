@@ -25,6 +25,12 @@ Angoriは、アンガーマネジメントをサポートするWebアプリケ�
 - **OpenAI API** (GPT-4o-mini) ✅
 - **RSpec + RuboCop** (テスト・コード品質) ✅
 
+### 開発環境
+- **Docker** + **Docker Compose** 🐳 ✅
+- **ホットリロード** (フロント・バック両対応) ✅
+- **統合開発環境** (ワンコマンドセットアップ) ✅
+- **便利スクリプト** (自動セットアップ・クリーンアップ) ✅
+
 ### 開発効率化
 - **ESLint + Prettier** (コード品質・整形)
 - **Husky + lint-staged** (Git hooks)
@@ -39,27 +45,87 @@ Angoriは、アンガーマネジメントをサポートするWebアプリケ�
 
 ## 📚 ドキュメント
 
+- [Docker開発環境構築ガイド](./docs/docker-setup-guide.md) 🐳
 - [技術調査報告書](./docs/technical-research-report.md)
 - [フロントエンド環境構築ガイド](./docs/frontend-setup-guide.md)
 - [バックエンド環境構築ガイド](./docs/backend-setup-guide.md)
 - [プロジェクト管理](./docs/ProjectManagement/)
-- [UI設計サンプル](./docs/)
 
-## 🚀 セットアップ
+## 🚀 クイックスタート（Docker推奨）
 
 ### 前提条件
-- **Node.js 18.17+** (Next.js 15対応)
+- **Docker Desktop 4.0+** ✅
+- **Docker Compose V2** ✅
+- **Git** ✅
+
+### 🐳 Docker環境（推奨）
+
+```bash
+# 1. リポジトリクローン
+git clone https://github.com/yoshihama-nineball/Angori.git
+cd Angori
+
+# 2. 自動セットアップ（初回のみ）
+./docker/scripts/setup.sh
+
+# 3. 開発環境起動
+docker compose up -d
+
+# 4. ブラウザで確認
+open http://localhost:3000  # フロントエンド
+open http://localhost:3001  # バックエンドAPI
+```
+
+**これだけで完全な開発環境が起動します！🎉**
+
+#### Docker環境での開発コマンド
+
+```bash
+# フロントエンド開発
+docker compose exec frontend yarn add package-name      # パッケージ追加
+docker compose exec frontend yarn lint:fix              # ESLint修正
+docker compose exec frontend yarn test                  # テスト実行
+
+# バックエンド開発  
+docker compose exec backend rails console               # Railsコンソール
+docker compose exec backend rails generate model User   # モデル生成
+docker compose exec backend bundle exec rspec           # テスト実行
+docker compose exec backend bundle exec rubocop -a      # RuboCop修正
+
+# データベース操作
+docker compose exec backend rails db:migrate            # マイグレーション
+docker compose exec backend rails db:seed               # シードデータ
+docker compose exec postgres psql -U postgres -d angori_development  # 直接接続
+
+# 環境管理
+docker compose logs -f                                  # ログ確認
+docker compose down                                     # 停止
+./docker/scripts/cleanup.sh                            # クリーンアップ
+```
+
+### 📱 アクセス先
+
+| サービス | URL | 説明 |
+|---------|-----|------|
+| **フロントエンド** | http://localhost:3000 | Next.js アプリ |
+| **バックエンドAPI** | http://localhost:3001 | Rails API |
+| **API ヘルスチェック** | http://localhost:3001/up | サーバー状態確認 |
+| **PostgreSQL** | localhost:5432 | データベース |
+| **Redis** | localhost:6379 | キャッシュ |
+
+## 🔧 従来環境（ローカル開発）
+
+### 前提条件
+- **Node.js 20.17+** (Next.js 15対応)
 - **Yarn** (パッケージマネージャー)
 - **Ruby 3.2.3+** (バックエンド用)
 - **PostgreSQL 14+** (データベース)
-- **Docker & Docker Compose** (任意)
 
 ### フロントエンド開発環境
 
 ```bash
-# リポジトリクローン
-git clone https://github.com/yoshihama-nineball/Angori.git
-cd Angori/frontend
+# フロントエンドディレクトリに移動
+cd frontend
 
 # 依存関係インストール
 yarn install
@@ -71,13 +137,11 @@ cp .env.example .env.local
 yarn dev
 ```
 
-**開発サーバー**: http://localhost:3000
-
 ### バックエンド開発環境
 
 ```bash
 # バックエンドディレクトリに移動
-cd Angori/backend
+cd backend
 
 # 依存関係インストール
 bundle install
@@ -94,12 +158,43 @@ rails db:migrate
 rails server -p 5000
 ```
 
-**APIサーバー**: http://localhost:5000  
-**API Base URL**: http://localhost:5000/api/v1
+## 🎯 Docker環境の特徴
 
-### 主要コマンド
+### ✅ 実装済み機能
+- **ワンコマンドセットアップ**: `./docker/scripts/setup.sh`
+- **ホットリロード**: フロント・バック1秒以内で変更反映
+- **統合環境**: 4サービス（Frontend, Backend, PostgreSQL, Redis）
+- **開発効率化**: 全ての開発コマンドがDocker内で実行可能
+- **環境一貫性**: チーム全員が同じ環境で開発
+- **依存関係隔離**: ローカル環境を汚さない
 
-#### フロントエンド
+### 🔧 便利機能
+- **自動セットアップ**: 初回環境構築の自動化
+- **自動クリーンアップ**: 不要なリソース削除
+- **ボリューム最適化**: node_modules/vendor除外でパフォーマンス向上
+- **ネットワーク統合**: サービス間通信の自動設定
+
+## 📋 主要コマンド
+
+### Docker環境
+```bash
+# 環境管理
+docker compose up -d          # バックグラウンド起動
+docker compose down           # 停止
+docker compose logs -f        # ログ確認
+docker compose ps             # サービス状態確認
+
+# 開発作業
+docker compose exec frontend yarn add lodash
+docker compose exec backend rails generate model AngerLog
+docker compose exec backend rails db:migrate
+
+# トラブルシューティング
+docker compose build --no-cache    # キャッシュクリア再ビルド
+./docker/scripts/cleanup.sh        # 環境クリーンアップ
+```
+
+### フロントエンド（従来環境）
 ```bash
 # 開発
 yarn dev              # 開発サーバー起動（Turbopack）
@@ -123,7 +218,7 @@ yarn check            # lint + format + type-check
 yarn pre-commit       # コミット前チェック
 ```
 
-#### バックエンド
+### バックエンド（従来環境）
 ```bash
 # 開発
 rails server -p 5000  # APIサーバー起動
@@ -142,12 +237,22 @@ rails db:migrate      # マイグレーション実行
 rails db:seed         # シードデータ投入
 ```
 
-### 環境変数設定
+## 🔧 環境変数設定
+
+### Docker環境
+Docker環境では`.env.docker`で統合管理されているため、個別設定は不要です。
+
+### 従来環境
 
 #### フロントエンド (.env.local)
 ```bash
-# フロントエンド設定
+# API接続（Docker環境の場合）
+NEXT_PUBLIC_API_URL=http://localhost:3001/api/v1
+
+# API接続（従来環境の場合）
 NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
+
+# アプリ設定
 NEXT_PUBLIC_APP_NAME=Angori
 NEXT_PUBLIC_APP_VERSION=1.0.0
 ```
@@ -160,20 +265,12 @@ DB_PASSWORD=your_password
 DB_HOST=localhost
 DB_PORT=5432
 
-# フロントエンド連携
+# フロントエンド連携（Docker環境）
 FRONTEND_URL=http://localhost:3000
 
 # サーバー設定
 PORT=5000
 ```
-
-### VS Code 設定
-
-- Prettier - Code formatter
-- TypeScript and JavaScript Language Features
-- Tailwind CSS IntelliSense
-- Jest
-- Ruby LSP (バックエンド用)
 
 ## 🎨 ゴリラテーマシステム
 
@@ -187,6 +284,12 @@ Angori専用のMaterial-UIカスタムテーマを実装：
 ## 🧪 実装済み機能
 
 ### ✅ 完了済み
+
+#### 開発環境基盤
+- **Docker統合環境**: フロント・バック・DB・Redis統合 🐳
+- **ホットリロード**: 1秒以内で変更反映
+- **自動セットアップ**: ワンコマンド環境構築
+- **開発効率化**: 全コマンドDocker対応
 
 #### フロントエンド基盤
 - **基盤環境構築**: Next.js 15 + TypeScript + Material-UI v6
@@ -221,98 +324,16 @@ Angori専用のMaterial-UIカスタムテーマを実装：
 - **AI相談機能**: OpenAI GPT-4o-mini統合
 - **感情カレンダー**: MUI Date Pickers活用
 
-## 🔧 開発ガイド
-
-### API設計パターン
-
-#### フロントエンド API呼び出し
-```typescript
-// lib/api/angerLogs.ts
-import api from '@/lib/api'
-import { AngerLog, ApiResponse } from '@/types/api'
-
-export const angerLogApi = {
-  async getAll(): Promise<AngerLog[]> {
-    const response = await api.get<ApiResponse<AngerLog[]>>('/anger_logs')
-    return response.data.data
-  },
-
-  async create(data: Partial<AngerLog>): Promise<AngerLog> {
-    const response = await api.post<ApiResponse<AngerLog>>('/anger_logs', data)
-    return response.data.data
-  },
-}
-```
-
-#### バックエンド API実装
-```ruby
-# app/controllers/api/v1/anger_logs_controller.rb
-class Api::V1::AngerLogsController < ApplicationController
-  before_action :authenticate_user!
-
-  def index
-    @anger_logs = current_user.anger_logs.recent
-    render json: { data: @anger_logs }
-  end
-
-  def create
-    @anger_log = current_user.anger_logs.build(anger_log_params)
-    
-    if @anger_log.save
-      render json: { data: @anger_log }, status: :created
-    else
-      render json: { errors: @anger_log.errors }, status: :unprocessable_entity
-    end
-  end
-
-  private
-
-  def anger_log_params
-    params.require(:anger_log).permit(:intensity, :situation, :emotion_description)
-  end
-end
-```
-
-### 状態管理パターン
-
-```typescript
-// store/angerLogStore.ts
-import { create } from 'zustand'
-import { AngerLog } from '@/types/api'
-import { angerLogApi } from '@/lib/api/angerLogs'
-
-interface AngerLogState {
-  logs: AngerLog[]
-  loading: boolean
-  fetchLogs: () => Promise<void>
-  addLog: (log: AngerLog) => Promise<void>
-}
-
-export const useAngerLogStore = create<AngerLogState>((set, get) => ({
-  logs: [],
-  loading: false,
-  
-  fetchLogs: async () => {
-    set({ loading: true })
-    try {
-      const logs = await angerLogApi.getAll()
-      set({ logs })
-    } finally {
-      set({ loading: false })
-    }
-  },
-
-  addLog: async (logData) => {
-    const newLog = await angerLogApi.create(logData)
-    set((state) => ({ logs: [...state.logs, newLog] }))
-  },
-}))
-```
-
 ## 🏛 プロジェクト構成
 
 ```
 Angori/ (ルートディレクトリ)
+├── 🐳 docker compose.yml       # Docker統合環境設定 ✅
+├── 🐳 .env.docker             # Docker環境変数 ✅
+├── 🐳 docker/                 # Docker管理スクリプト ✅
+│   └── scripts/
+│       ├── setup.sh           # 自動セットアップ ✅
+│       └── cleanup.sh         # 環境クリーンアップ ✅
 ├── .github/                 # GitHub設定・ワークフロー
 │   ├── ISSUE_TEMPLATE/      # Issueテンプレート
 │   └── workflows/           # CI/CDワークフロー
@@ -325,6 +346,8 @@ Angori/ (ルートディレクトリ)
 │   └── backend-setup-guide.md
 │
 ├── frontend/                # ✅ Next.js フロントエンド
+│   ├── 🐳 Dockerfile         # フロントエンド用コンテナ ✅
+│   ├── 🐳 .dockerignore      # Docker除外設定 ✅
 │   ├── src/
 │   │   ├── app/             # App Router
 │   │   │   ├── (auth)/      # 認証関連ルート
@@ -510,6 +533,8 @@ Angori/ (ルートディレクトリ)
 │   └── package.json
 │
 ├── backend/                 # ✅ Rails API
+│   ├── 🐳 Dockerfile        # バックエンド用コンテナ ✅
+│   ├── 🐳 .dockerignore     # Docker除外設定 ✅
 │   ├── app/
 │   │   ├── controllers/     # APIコントローラー
 │   │   │   └── api/v1/      # API v1
@@ -542,36 +567,11 @@ Angori/ (ルートディレクトリ)
 └── README.md
 ```
 
-### API エンドポイント設計
-
-#### 認証系 (実装予定)
-```
-POST /api/v1/auth/register   # ユーザー登録
-POST /api/v1/auth/login      # ログイン
-DELETE /api/v1/auth/logout   # ログアウト
-GET  /api/v1/auth/user       # ユーザー情報取得
-```
-
-#### アンガーログ系 (実装予定)
-```
-GET    /api/v1/anger_logs         # ログ一覧取得
-POST   /api/v1/anger_logs         # ログ作成
-GET    /api/v1/anger_logs/:id     # ログ詳細取得
-PUT    /api/v1/anger_logs/:id     # ログ更新
-DELETE /api/v1/anger_logs/:id     # ログ削除
-```
-
-#### AI・分析系 (実装予定)
-```
-POST /api/v1/anger_logs/:id/ai_advice  # AIアドバイス生成
-GET  /api/v1/analytics/trends          # 傾向分析
-GET  /api/v1/analytics/triggers        # トリガー分析
-```
-
 ## 📈 開発状況
 
 ### フェーズ1: 基盤構築 ✅ 完了
 - [x] 技術調査・選定完了
+- [x] **Docker統合環境構築完了** 🐳
 - [x] フロントエンド環境構築完了
 - [x] バックエンド環境構築完了
 - [x] ゴリラテーマシステム完了
@@ -593,43 +593,48 @@ GET  /api/v1/analytics/triggers        # トリガー分析
 
 ## 🧪 テスト
 
-### フロントエンド
+### Docker環境
 ```bash
+# フロントエンドテスト
+docker compose exec frontend yarn test
+docker compose exec frontend yarn test:coverage
+
+# バックエンドテスト
+docker compose exec backend bundle exec rspec
+docker compose exec backend bundle exec rubocop
+
+# 統合テスト
+docker compose exec frontend yarn test
+docker compose exec backend bundle exec rspec
+```
+
+### 従来環境
+```bash
+# フロントエンド
 cd frontend
-
-# 全テスト実行
 yarn test
-
-# カバレッジ確認
 yarn test:coverage
 
-# ウォッチモード
-yarn test:watch
-```
-
-### バックエンド
-```bash
+# バックエンド
 cd backend
-
-# 全テスト実行
 bundle exec rspec
-
-# 特定ファイルのテスト
-bundle exec rspec spec/models/user_spec.rb
-
-# コード品質チェック
 bundle exec rubocop
 ```
-
-### テスト方針
-- **フロントエンド**: 単体・統合・E2Eテスト
-- **バックエンド**: モデル・リクエスト・サービステスト
-- **API連携**: フロント・バック統合テスト
-- **コード品質**: ESLint + RuboCop
 
 ## 🚀 デプロイ
 
 ### 開発環境起動
+
+#### Docker環境（推奨）
+```bash
+# ワンコマンド起動
+docker compose up -d
+
+# ログ確認
+docker compose logs -f
+```
+
+#### 従来環境
 ```bash
 # バックエンド（ターミナル1）
 cd backend
@@ -640,15 +645,12 @@ cd frontend
 yarn dev
 ```
 
-### ステージング
+### ステージング・プロダクション
 ```bash
-# Vercel Preview
+# Vercel Preview + Render
 git push origin feature-branch
 # → 自動でプレビューデプロイ
-```
 
-### プロダクション
-```bash
 # Vercel Production + Render
 git push origin main
 # → 自動でプロダクションデプロイ
@@ -657,6 +659,18 @@ git push origin main
 ## 🔧 開発効率化
 
 ### プリコミットフック
+
+#### Docker環境
+```bash
+# フロントエンド品質チェック
+docker compose exec frontend yarn pre-commit
+
+# バックエンド品質チェック  
+docker compose exec backend bundle exec rubocop -a
+docker compose exec backend bundle exec rspec
+```
+
+#### 従来環境
 ```bash
 # フロントエンド
 yarn pre-commit  # ESLint + Prettier + TypeScript
@@ -667,25 +681,32 @@ bundle exec rspec       # テスト実行
 ```
 
 ### 開発サーバー確認
-- **フロントエンド**: http://localhost:3000
-- **バックエンドAPI**: http://localhost:5000
-- **API ヘルスチェック**: http://localhost:5000/up
-- **CORS動作確認**: ✅ 設定済み
+
+| 環境 | フロントエンド | バックエンド | 特徴 |
+|------|-------------|-------------|------|
+| **Docker** | http://localhost:3000 | http://localhost:3001 | 🐳 統合環境・ホットリロード |
+| **従来** | http://localhost:3000 | http://localhost:5000 | 💻 ローカル環境 |
 
 ## 🤝 コントリビューション
 
 ### 開発フロー
 1. Issue作成・アサイン
 2. Feature branchでコーディング
-3. フロント: `yarn pre-commit` / バック: `bundle exec rubocop` でコード品質チェック
-4. Pull Request作成
-5. レビュー・マージ
+3. Docker環境で開発・テスト
+4. コード品質チェック実行
+5. Pull Request作成
+6. レビュー・マージ
+
+### 推奨開発環境
+- **Docker環境**: チーム開発・CI/CD連携
+- **従来環境**: 個人開発・デバッグ特化
 
 ### コード規約
 - **フロントエンド**: TypeScript + React + Material-UI
 - **バックエンド**: Ruby + Rails API + RSpec
 - **API設計**: RESTful + JSON API
 - **テスト**: 重要機能は必須
+- **Docker**: 開発コマンドは全てコンテナ内実行
 
 ## 📞 サポート
 
@@ -693,7 +714,18 @@ bundle exec rspec       # テスト実行
 - **本番環境**: TBD
 - **ステージング**: TBD  
 - **API文書**: TBD
+- **Docker環境ガイド**: [詳細](./docs/docker-setup-guide.md) 🐳
 - **技術調査報告書**: [詳細](./docs/technical-research-report.md)
+
+### トラブルシューティング
+```bash
+# Docker環境リセット
+./docker/scripts/cleanup.sh
+
+# 完全環境再構築
+docker compose down -v
+./docker/scripts/setup.sh
+```
 
 ### 問題報告
 - [Issues](https://github.com/yoshihama-nineball/Angori/issues)
@@ -713,4 +745,4 @@ MIT License - 詳細は [LICENSE](./LICENSE) を参照
 
 このプロジェクトは、健康的な感情管理をサポートすることを目的として開発されています。ゴリラのように力強く、バナナのように優しい気持ちで、アンガーマネジメントの学習をサポートします。
 
-**Let's manage anger like a wise gorilla! 🦍🍌**
+**Docker環境で効率的に開発し、Let's manage anger like a wise gorilla! 🦍🍌🐳**
