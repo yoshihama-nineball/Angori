@@ -1,41 +1,41 @@
 # backend/Gemfile
-source "https://rubygems.org"
+source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.2.3"
+ruby '3.2.3'
 
-gem "rails", "~> 7.1.0"
-gem "pg", "~> 1.1"
-gem "puma", "~> 6.0"
-gem "bootsnap", require: false
-gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
+gem 'bootsnap', require: false
+gem 'pg', '~> 1.1'
+gem 'puma', '~> 6.0'
+gem 'rails', '~> 7.1.0'
+gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 # 認証・API基盤
 gem 'devise'
 gem 'devise-jwt'
-gem 'rack-cors'
 gem 'jsonapi-serializer'
+gem 'rack-cors'
 
 # アンガーマネジメント特化
-gem 'groupdate'
 gem 'descriptive_statistics'
+gem 'groupdate'
 gem 'kaminari'
 gem 'pg_search'
 
 # AI統合
-gem 'ruby-openai'
 gem 'httparty'
+gem 'ruby-openai'
 
 # パフォーマンス
 # gem 'redis'
 # gem 'sidekiq'
 
 group :development, :test do
-  gem 'rspec-rails'
+  gem 'dotenv-rails'
   gem 'factory_bot_rails'
   gem 'faker'
   gem 'pry-rails'
-  gem 'dotenv-rails'
+  gem 'rspec-rails'
 end
 
 group :development do

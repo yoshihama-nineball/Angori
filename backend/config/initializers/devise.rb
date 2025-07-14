@@ -311,7 +311,6 @@ Devise.setup do |config|
   # changed. Defaults to true, so a user is signed in automatically after changing a password.
   # config.sign_in_after_change_password = true
 
-
   config.jwt do |jwt|
     jwt.secret = Rails.application.credentials.jwt[:secret_key]
     jwt.dispatch_requests = [
@@ -329,19 +328,19 @@ Devise.setup do |config|
   config.skip_session_storage = [:http_auth]
 end
 
-  # ==> JWT Configuration
-  # config.jwt do |jwt|
-  #   jwt.secret = Rails.application.credentials.jwt[:secret_key]
-  #   jwt.dispatch_requests = [
-  #     ['POST', %r{^/api/v1/auth/login$}],
-  #     ['POST', %r{^/api/v1/auth/register$}]
-  #   ]
-  #   jwt.revocation_requests = [
-  #     ['DELETE', %r{^/api/v1/auth/logout$}]
-  #   ]
-  #   jwt.expiration_time = 1.day.to_i
-  # end
+# ==> JWT Configuration
+# config.jwt do |jwt|
+#   jwt.secret = Rails.application.credentials.jwt[:secret_key]
+#   jwt.dispatch_requests = [
+#     ['POST', %r{^/api/v1/auth/login$}],
+#     ['POST', %r{^/api/v1/auth/register$}]
+#   ]
+#   jwt.revocation_requests = [
+#     ['DELETE', %r{^/api/v1/auth/logout$}]
+#   ]
+#   jwt.expiration_time = 1.day.to_i
+# end
 
-  # # API-only configuration
-  # config.navigational_formats = []
-  # config.skip_session_storage = [:http_auth]
+# # API-only configuration
+# config.navigational_formats = []
+# config.skip_session_storage = [:http_auth]
