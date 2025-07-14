@@ -1,0 +1,72 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules  # node_modules除外
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
+      - CHOKIDAR_USEPOLLING=true  # ホットリロード用
+      - WATCHPACK_POLLING=true    # ホットリロード用
+    depends_on:
+      - backend
+    networks:
+      - angori-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+      - bundle_cache:/app/vendor/bundle  # Bundle cache
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/angori_development
+      - FRONTEND_URL=http://localhost:3000
+      - REDIS_URL=redis://redis:6379/0
+      - RAILS_ENV=development
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - angori-network
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=angori_development
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - angori-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - angori-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  bundle_cache:
+
+networks:
+  angori-network:
+    driver: bridge

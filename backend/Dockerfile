@@ -1,66 +1,49 @@
-# syntax = docker/dockerfile:1
+# backend/Dockerfile - 開発環境用
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t my-app .
-# docker run -d -p 80:80 -p 443:443 --name my-app -e RAILS_MASTER_KEY=<value from config/master.key> my-app
+# Ruby 3.2.3使用（.ruby-versionに合わせる）
+FROM ruby:3.2.3-slim
 
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-ARG RUBY_VERSION=3.2.3
-FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
-
-# Rails app lives here
+# 作業ディレクトリ設定
 WORKDIR /rails
 
-# Install base packages
+# システムパッケージ更新・インストール
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+    apt-get install --no-install-recommends -y \
+    # 必須パッケージ
+    curl \
+    build-essential \
+    git \
+    # PostgreSQL関連
+    libpq-dev \
+    postgresql-client \
+    # Node.js（Rails assets用）
+    nodejs \
+    npm \
+    # その他
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
-# Set production environment
-ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
+# 開発環境設定
+ENV RAILS_ENV="development" \
+    BUNDLE_PATH="/usr/local/bundle"
 
-# Throw-away build stage to reduce size of final image
-FROM base AS build
-
-# Install packages needed to build gems
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev pkg-config && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
-
-# Install application gems
+# Gemfile関連ファイルコピー（キャッシュ効率化）
 COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    bundle exec bootsnap precompile --gemfile
 
-# Copy application code
+# Bundler設定・Gem インストール
+RUN gem install bundler -v 2.4.19 && \
+    bundle config set --local deployment 'false' && \
+    bundle config set --local path 'vendor/bundle' && \
+    bundle install
+
+# アプリケーションコードコピー
 COPY . .
 
-# Precompile bootsnap code for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
+# 権限設定（開発環境なのでシンプル）
+RUN chown -R $(whoami):$(whoami) /rails
 
+# ポート開放（バックエンドは5000番）
+EXPOSE 5000
 
-
-
-# Final stage for app image
-FROM base
-
-# Copy built artifacts: gems, application
-COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
-COPY --from=build /rails /rails
-
-# Run and own only the runtime files as a non-root user for security
-RUN groupadd --system --gid 1000 rails && \
-    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
-USER 1000:1000
-
-# Entrypoint prepares the database.
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
-
-# Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
-CMD ["./bin/rails", "server"]
+# 開発サーバー起動
+CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "5000"]
