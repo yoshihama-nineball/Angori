@@ -1,6 +1,4 @@
-# backend/Dockerfile - 開発環境用
-
-# Ruby 3.2.3使用（.ruby-versionに合わせる）
+# backend/Dockerfile
 FROM ruby:3.2.3-slim
 
 # 作業ディレクトリ設定
@@ -25,7 +23,8 @@ RUN apt-get update -qq && \
 
 # 開発環境設定
 ENV RAILS_ENV="development" \
-    BUNDLE_PATH="/usr/local/bundle"
+    BUNDLE_PATH="/usr/local/bundle" \
+    PATH="/rails/bin:${PATH}"
 
 # Gemfile関連ファイルコピー（キャッシュ効率化）
 COPY Gemfile Gemfile.lock ./
@@ -33,14 +32,14 @@ COPY Gemfile Gemfile.lock ./
 # Bundler設定・Gem インストール
 RUN gem install bundler -v 2.4.19 && \
     bundle config set --local deployment 'false' && \
-    bundle config set --local path 'vendor/bundle' && \
+    bundle config set --local without 'production' && \
     bundle install
 
 # アプリケーションコードコピー
 COPY . .
 
 # 権限設定（開発環境なのでシンプル）
-RUN chown -R $(whoami):$(whoami) /rails
+RUN chown -R 1000:1000 /rails
 
 # ポート開放（バックエンドは5000番）
 EXPOSE 5000
