@@ -169,7 +169,6 @@ PORT=5000
 
 ### VS Code 設定
 
-推奨拡張機能が自動で提案されます：
 - Prettier - Code formatter
 - TypeScript and JavaScript Language Features
 - Tailwind CSS IntelliSense
