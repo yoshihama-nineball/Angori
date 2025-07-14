@@ -18,16 +18,18 @@ Angoriは、アンガーマネジメントをサポートするWebアプリケ�
 - **Axios** (API通信)
 - **Jest + React Testing Library** (テスト)
 
-### バックエンド（予定）
-- **Ruby on Rails 7.1** (API mode)
-- **PostgreSQL 16+**
-- **JWT認証** (Devise + Devise-JWT)
-- **OpenAI API** (GPT-4.1 mini)
+### バックエンド
+- **Ruby on Rails 7.1.5** (API mode) ✅
+- **PostgreSQL 16+** ✅
+- **JWT認証** (Devise + Devise-JWT) ✅
+- **OpenAI API** (GPT-4o-mini) ✅
+- **RSpec + RuboCop** (テスト・コード品質) ✅
 
 ### 開発効率化
 - **ESLint + Prettier** (コード品質・整形)
 - **Husky + lint-staged** (Git hooks)
 - **TypeScript** 型安全性
+- **RuboCop** (Rubyコード品質)
 
 ### インフラ
 - **フロントエンド**: Vercel ($0/月)
@@ -39,6 +41,7 @@ Angoriは、アンガーマネジメントをサポートするWebアプリケ�
 
 - [技術調査報告書](./docs/technical-research-report.md)
 - [フロントエンド環境構築ガイド](./docs/frontend-setup-guide.md)
+- [バックエンド環境構築ガイド](./docs/backend-setup-guide.md)
 - [プロジェクト管理](./docs/ProjectManagement/)
 - [UI設計サンプル](./docs/)
 
@@ -47,7 +50,8 @@ Angoriは、アンガーマネジメントをサポートするWebアプリケ�
 ### 前提条件
 - **Node.js 18.17+** (Next.js 15対応)
 - **Yarn** (パッケージマネージャー)
-- **Ruby 3.2+** (バックエンド用・将来)
+- **Ruby 3.2.3+** (バックエンド用)
+- **PostgreSQL 14+** (データベース)
 - **Docker & Docker Compose** (任意)
 
 ### フロントエンド開発環境
@@ -60,14 +64,42 @@ cd Angori/frontend
 # 依存関係インストール
 yarn install
 
+# 環境変数設定
+cp .env.example .env.local
+
 # 開発サーバー起動
 yarn dev
 ```
 
 **開発サーバー**: http://localhost:3000
 
+### バックエンド開発環境
+
+```bash
+# バックエンドディレクトリに移動
+cd Angori/backend
+
+# 依存関係インストール
+bundle install
+
+# 環境変数設定
+cp .env.example .env.local
+# DB_PASSWORD等を設定
+
+# データベース作成・マイグレーション
+rails db:create
+rails db:migrate
+
+# サーバー起動
+rails server -p 5000
+```
+
+**APIサーバー**: http://localhost:5000  
+**API Base URL**: http://localhost:5000/api/v1
+
 ### 主要コマンド
 
+#### フロントエンド
 ```bash
 # 開発
 yarn dev              # 開発サーバー起動（Turbopack）
@@ -91,25 +123,57 @@ yarn check            # lint + format + type-check
 yarn pre-commit       # コミット前チェック
 ```
 
+#### バックエンド
+```bash
+# 開発
+rails server -p 5000  # APIサーバー起動
+rails console         # Railsコンソール
+
+# コード品質
+bundle exec rubocop   # コード品質チェック
+bundle exec rubocop -a # 自動修正
+
+# テスト
+bundle exec rspec     # RSpecテスト実行
+
+# データベース
+rails db:create       # データベース作成
+rails db:migrate      # マイグレーション実行
+rails db:seed         # シードデータ投入
+```
+
 ### 環境変数設定
 
+#### フロントエンド (.env.local)
 ```bash
-# frontend/.env.local を作成
-cp frontend/.env.example frontend/.env.local
-
-# 必要に応じて設定値を変更
-NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+# フロントエンド設定
+NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
 NEXT_PUBLIC_APP_NAME=Angori
 NEXT_PUBLIC_APP_VERSION=1.0.0
 ```
 
+#### バックエンド (.env.local)
+```bash
+# データベース設定
+DB_USERNAME=postgres
+DB_PASSWORD=your_password
+DB_HOST=localhost
+DB_PORT=5432
+
+# フロントエンド連携
+FRONTEND_URL=http://localhost:3000
+
+# サーバー設定
+PORT=5000
+```
+
 ### VS Code 設定
 
-推奨拡張機能が自動で提案されます：
 - Prettier - Code formatter
 - TypeScript and JavaScript Language Features
 - Tailwind CSS IntelliSense
 - Jest
+- Ruby LSP (バックエンド用)
 
 ## 🎨 ゴリラテーマシステム
 
@@ -123,6 +187,8 @@ Angori専用のMaterial-UIカスタムテーマを実装：
 ## 🧪 実装済み機能
 
 ### ✅ 完了済み
+
+#### フロントエンド基盤
 - **基盤環境構築**: Next.js 15 + TypeScript + Material-UI v6
 - **ゴリラテーマシステム**: アンガーマネジメント特化デザイン
 - **状態管理**: Zustand設定完了
@@ -132,66 +198,34 @@ Angori専用のMaterial-UIカスタムテーマを実装：
 - **開発効率化**: ESLint + Prettier + Husky
 - **型定義システム**: 全機能対応の TypeScript 型
 
+#### バックエンド基盤
+- **Rails API環境**: Rails 7.1.5 API mode
+- **認証基盤**: Devise + JWT設定完了
+- **データベース**: PostgreSQL接続・Userモデル
+- **OpenAI統合**: GPT-4o-mini API設定
+- **CORS設定**: フロントエンド連携対応
+- **テスト環境**: RSpec + FactoryBot
+- **コード品質**: RuboCop設定完了
+- **API基盤**: Rails credentials + 環境変数管理
+
 ### 🚧 開発中
 - **基本レイアウト**: ヘッダー・フッターナビ・サイドバー
 - **認証システム**: JWT認証 + ログイン・登録フォーム
 - **アンガーログ機能**: 感情記録・一覧表示
 
 ### 📋 予定
+- **認証API実装**: ユーザー登録・ログイン・ログアウト
+- **データモデル設計**: AngerLog, TriggerWord, AIAdvice等
+- **アンガーログAPI**: CRUD + 分析機能
 - **D3.js バブルマップ**: 怒りの傾向可視化
-- **AI相談機能**: OpenAI GPT-4.1 mini統合
+- **AI相談機能**: OpenAI GPT-4o-mini統合
 - **感情カレンダー**: MUI Date Pickers活用
-- **Rails API**: バックエンド開発
-- **データベース設計**: PostgreSQL + アンガーログ管理
 
 ## 🔧 開発ガイド
 
-### コンポーネント作成ルール
+### API設計パターン
 
-```typescript
-// components/ui/Button/Button.tsx
-import { Button as MuiButton, ButtonProps } from '@mui/material'
-import { useTheme } from '@mui/material/styles'
-
-interface GorillaButtonProps extends ButtonProps {
-  variant?: 'gorilla' | 'banana' | 'jungle'
-}
-
-export const GorillaButton = ({ variant = 'gorilla', ...props }: GorillaButtonProps) => {
-  const theme = useTheme()
-  return (
-    <MuiButton 
-      className={`${variant}-button`}
-      {...props}
-    />
-  )
-}
-```
-
-### 状態管理パターン
-
-```typescript
-// store/angerLogStore.ts
-import { create } from 'zustand'
-import { AngerLog } from '@/types/api'
-
-interface AngerLogState {
-  logs: AngerLog[]
-  addLog: (log: AngerLog) => void
-  updateLog: (id: number, log: Partial<AngerLog>) => void
-}
-
-export const useAngerLogStore = create<AngerLogState>((set) => ({
-  logs: [],
-  addLog: (log) => set((state) => ({ logs: [...state.logs, log] })),
-  updateLog: (id, updatedLog) => set((state) => ({
-    logs: state.logs.map(log => log.id === id ? { ...log, ...updatedLog } : log)
-  })),
-}))
-```
-
-### API呼び出しパターン
-
+#### フロントエンド API呼び出し
 ```typescript
 // lib/api/angerLogs.ts
 import api from '@/lib/api'
@@ -210,6 +244,71 @@ export const angerLogApi = {
 }
 ```
 
+#### バックエンド API実装
+```ruby
+# app/controllers/api/v1/anger_logs_controller.rb
+class Api::V1::AngerLogsController < ApplicationController
+  before_action :authenticate_user!
+
+  def index
+    @anger_logs = current_user.anger_logs.recent
+    render json: { data: @anger_logs }
+  end
+
+  def create
+    @anger_log = current_user.anger_logs.build(anger_log_params)
+    
+    if @anger_log.save
+      render json: { data: @anger_log }, status: :created
+    else
+      render json: { errors: @anger_log.errors }, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def anger_log_params
+    params.require(:anger_log).permit(:intensity, :situation, :emotion_description)
+  end
+end
+```
+
+### 状態管理パターン
+
+```typescript
+// store/angerLogStore.ts
+import { create } from 'zustand'
+import { AngerLog } from '@/types/api'
+import { angerLogApi } from '@/lib/api/angerLogs'
+
+interface AngerLogState {
+  logs: AngerLog[]
+  loading: boolean
+  fetchLogs: () => Promise<void>
+  addLog: (log: AngerLog) => Promise<void>
+}
+
+export const useAngerLogStore = create<AngerLogState>((set, get) => ({
+  logs: [],
+  loading: false,
+  
+  fetchLogs: async () => {
+    set({ loading: true })
+    try {
+      const logs = await angerLogApi.getAll()
+      set({ logs })
+    } finally {
+      set({ loading: false })
+    }
+  },
+
+  addLog: async (logData) => {
+    const newLog = await angerLogApi.create(logData)
+    set((state) => ({ logs: [...state.logs, newLog] }))
+  },
+}))
+```
+
 ## 🏛 プロジェクト構成
 
 ```
@@ -220,16 +319,10 @@ Angori/ (ルートディレクトリ)
 │
 ├── docs/                    # プロジェクト設計・仕様書
 │   ├── ProjectManagement/   # プロジェクト管理
-│   │   └── project-schedule.md
 │   ├── DesignDocuments/     # 設計書
-│   │   ├── API/             # API設計書
-│   │   ├── Architecture/    # アーキテクチャ設計
-│   │   ├── ERD/             # データベース設計
-│   │   ├── Wireframes/      # UI設計・ワイヤーフレーム
-│   │   └── Assets/          # ロゴ・OGP画像等
 │   ├── technical-research-report.md
 │   ├── frontend-setup-guide.md
-│   └── sample-*.html        # UIデザインサンプル
+│   └── backend-setup-guide.md
 │
 ├── frontend/                # ✅ Next.js フロントエンド
 │   ├── src/
@@ -416,80 +509,83 @@ Angori/ (ルートディレクトリ)
 │   ├── Dockerfile           # フロントエンド用Dockerfile
 │   └── package.json
 │
-├── backend/                 # 📋 Rails API (予定)
+├── backend/                 # ✅ Rails API
 │   ├── app/
-│   │   ├── controllers/
-│   │   │   └── api/
-│   │   │       └── v1/      # APIコントローラー
+│   │   ├── controllers/     # APIコントローラー
+│   │   │   └── api/v1/      # API v1
 │   │   ├── models/          # ActiveRecordモデル
-│   │   ├── services/        # ビジネスロジック
-│   │   │   └── openai_advice_service.rb
-│   │   └── serializers/     # JSON API シリアライザー
+│   │   │   └── user.rb      # ✅ Userモデル（認証付き）
+│   │   └── services/        # ビジネスロジック
 │   │
 │   ├── config/              # Rails設定
-│   │   ├── routes.rb
-│   │   └── database.yml
+│   │   ├── initializers/    # 初期化設定
+│   │   │   ├── cors.rb      # ✅ CORS設定
+│   │   │   └── devise.rb    # ✅ 認証設定
+│   │   ├── routes.rb        # ルーティング
+│   │   ├── database.yml     # ✅ DB設定
+│   │   └── credentials.yml.enc # ✅ 秘匿情報
 │   │
 │   ├── db/                  # データベース
 │   │   ├── migrate/         # マイグレーション
 │   │   └── seeds.rb
 │   │
-│   ├── spec/                # RSpecテスト
-│   │   ├── models/
-│   │   ├── requests/
-│   │   └── services/
+│   ├── spec/                # ✅ RSpecテスト
+│   │   ├── models/          # モデルテスト
+│   │   ├── requests/        # APIテスト
+│   │   └── factories/       # テストデータ
 │   │
-│   ├── Dockerfile           # バックエンド用Dockerfile
-│   └── Gemfile
-│
-├── docker/                  # 🆕 Docker設定ディレクトリ
-│   ├── docker-compose.yml   # 開発環境用
-│   ├── docker-compose.prod.yml # 本番環境用
-│   └── nginx/               # Nginx設定（本番用）
-│       └── nginx.conf
+│   ├── .env.local           # ✅ 環境変数
+│   ├── .rubocop.yml         # ✅ RuboCop設定
+│   └── Gemfile              # ✅ 依存関係
 │
 ├── .gitignore               # ✅ 統合版gitignore
 └── README.md
 ```
 
-### 主要機能設計
+### API エンドポイント設計
 
-#### 🦍 アンガーログ機能
-- **記録**: 感情・状況・トリガー・強度(1-10)
-- **一覧**: カード形式・検索・フィルタ
-- **分析**: 傾向グラフ・統計
+#### 認証系 (実装予定)
+```
+POST /api/v1/auth/register   # ユーザー登録
+POST /api/v1/auth/login      # ログイン
+DELETE /api/v1/auth/logout   # ログアウト
+GET  /api/v1/auth/user       # ユーザー情報取得
+```
 
-#### 🎯 傾向分析（D3.js）
-- **バブルマップ**: トリガーワード × 発生頻度
-- **時系列分析**: 感情の変化トレンド
-- **統計ダッシュボード**: 改善率・ストリーク
+#### アンガーログ系 (実装予定)
+```
+GET    /api/v1/anger_logs         # ログ一覧取得
+POST   /api/v1/anger_logs         # ログ作成
+GET    /api/v1/anger_logs/:id     # ログ詳細取得
+PUT    /api/v1/anger_logs/:id     # ログ更新
+DELETE /api/v1/anger_logs/:id     # ログ削除
+```
 
-#### 🤖 AI相談機能
-- **チャット形式**: リアルタイム相談
-- **個別アドバイス**: ログ分析ベース
-- **学習機能**: 過去の相談履歴活用
-
-#### 📅 感情カレンダー
-- **日別記録**: 感情状態のビジュアライズ
-- **月間ビュー**: パターン発見
-- **統計表示**: 月間・週間サマリー
+#### AI・分析系 (実装予定)
+```
+POST /api/v1/anger_logs/:id/ai_advice  # AIアドバイス生成
+GET  /api/v1/analytics/trends          # 傾向分析
+GET  /api/v1/analytics/triggers        # トリガー分析
+```
 
 ## 📈 開発状況
 
-### フェーズ1: 基盤構築 ✅
+### フェーズ1: 基盤構築 ✅ 完了
 - [x] 技術調査・選定完了
 - [x] フロントエンド環境構築完了
+- [x] バックエンド環境構築完了
 - [x] ゴリラテーマシステム完了
 - [x] 開発効率化ツール設定完了
-- [x] テスト環境構築完了
+- [x] テスト環境構築完了（フロント・バック両方）
+- [x] CORS設定・API連携基盤完了
 
-### フェーズ2: 基本機能 🚧
+### フェーズ2: 認証・基本機能 🚧 開発中
+- [ ] 認証API実装（ユーザー登録・ログイン）
 - [ ] 基本レイアウト実装
-- [ ] 認証システム実装
+- [ ] データモデル設計・実装
 - [ ] アンガーログCRUD機能
-- [ ] Rails API基盤構築
 
-### フェーズ3: 高度機能 📋
+### フェーズ3: 高度機能 📋 予定
 - [ ] D3.js バブルマップ実装
 - [ ] AI相談機能実装
 - [ ] 感情カレンダー実装
@@ -497,27 +593,52 @@ Angori/ (ルートディレクトリ)
 
 ## 🧪 テスト
 
+### フロントエンド
 ```bash
+cd frontend
+
 # 全テスト実行
 yarn test
 
 # カバレッジ確認
 yarn test:coverage
 
-# 特定ファイルのテスト
-yarn test Button.test.tsx
-
 # ウォッチモード
 yarn test:watch
 ```
 
+### バックエンド
+```bash
+cd backend
+
+# 全テスト実行
+bundle exec rspec
+
+# 特定ファイルのテスト
+bundle exec rspec spec/models/user_spec.rb
+
+# コード品質チェック
+bundle exec rubocop
+```
+
 ### テスト方針
-- **単体テスト**: 全コンポーネント・関数
-- **統合テスト**: ページレベル
-- **E2Eテスト**: 主要ユーザーフロー
-- **視覚回帰テスト**: Storybook + Chromatic
+- **フロントエンド**: 単体・統合・E2Eテスト
+- **バックエンド**: モデル・リクエスト・サービステスト
+- **API連携**: フロント・バック統合テスト
+- **コード品質**: ESLint + RuboCop
 
 ## 🚀 デプロイ
+
+### 開発環境起動
+```bash
+# バックエンド（ターミナル1）
+cd backend
+rails server -p 5000
+
+# フロントエンド（ターミナル2）
+cd frontend
+yarn dev
+```
 
 ### ステージング
 ```bash
@@ -528,24 +649,42 @@ git push origin feature-branch
 
 ### プロダクション
 ```bash
-# Vercel Production
+# Vercel Production + Render
 git push origin main
 # → 自動でプロダクションデプロイ
 ```
+
+## 🔧 開発効率化
+
+### プリコミットフック
+```bash
+# フロントエンド
+yarn pre-commit  # ESLint + Prettier + TypeScript
+
+# バックエンド  
+bundle exec rubocop -a  # RuboCop自動修正
+bundle exec rspec       # テスト実行
+```
+
+### 開発サーバー確認
+- **フロントエンド**: http://localhost:3000
+- **バックエンドAPI**: http://localhost:5000
+- **API ヘルスチェック**: http://localhost:5000/up
+- **CORS動作確認**: ✅ 設定済み
 
 ## 🤝 コントリビューション
 
 ### 開発フロー
 1. Issue作成・アサイン
 2. Feature branchでコーディング
-3. `yarn pre-commit`でコード品質チェック
+3. フロント: `yarn pre-commit` / バック: `bundle exec rubocop` でコード品質チェック
 4. Pull Request作成
 5. レビュー・マージ
 
 ### コード規約
-- **TypeScript**: 型安全性を最優先
-- **React**: 関数コンポーネント + Hooks
-- **Material-UI**: ゴリラテーマ活用
+- **フロントエンド**: TypeScript + React + Material-UI
+- **バックエンド**: Ruby + Rails API + RSpec
+- **API設計**: RESTful + JSON API
 - **テスト**: 重要機能は必須
 
 ## 📞 サポート
@@ -553,7 +692,7 @@ git push origin main
 ### 関連リンク
 - **本番環境**: TBD
 - **ステージング**: TBD  
-- **Storybook**: TBD
+- **API文書**: TBD
 - **技術調査報告書**: [詳細](./docs/technical-research-report.md)
 
 ### 問題報告

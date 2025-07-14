@@ -1,0 +1,39 @@
+plugins:
+  - rubocop-rails
+  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.2
+  SuggestExtensions: false
+  Exclude:
+    - 'db/schema.rb'
+    - 'db/migrate/*'
+    - 'config/environments/*'
+    - 'bin/*'
+    - 'vendor/**/*'
+    - 'node_modules/**/*'
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - 'config/initializers/devise.rb'
+
+Metrics/MethodLength:
+  Max: 15
+
+Metrics/BlockLength:
+  Exclude:
+    - 'config/routes.rb'
+    - 'spec/**/*'
+    - 'config/initializers/*'
+
+Lint/EmptyBlock:
+  Exclude:
+    - 'spec/factories/*'
