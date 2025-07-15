@@ -1,5 +1,5 @@
-"use client";
-import React, { useState } from "react";
+'use client'
+import React, { useState } from 'react'
 import {
   Box,
   Button,
@@ -12,28 +12,28 @@ import {
   AppBar,
   Toolbar,
   Grid,
-} from "@mui/material";
+} from '@mui/material'
 import {
-  Favorite,
-  Face,
+  // Favorite,
+  // Face,
   SentimentVeryDissatisfied,
   SentimentSatisfied,
   SentimentVerySatisfied,
   Pets,
-} from "@mui/icons-material";
-import { useTheme } from "@mui/material/styles";
-import axios from "axios";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { create } from "zustand";
+} from '@mui/icons-material'
+import { useTheme } from '@mui/material/styles'
+import axios from 'axios'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { create } from 'zustand'
 
 // Zustand Store テスト
 interface TestStore {
-  count: number;
-  angerLevel: number;
-  incrementCount: () => void;
-  setAngerLevel: (level: number) => void;
+  count: number
+  angerLevel: number
+  incrementCount: () => void
+  setAngerLevel: (level: number) => void
 }
 
 const useTestStore = create<TestStore>((set) => ({
@@ -41,20 +41,20 @@ const useTestStore = create<TestStore>((set) => ({
   angerLevel: 5,
   incrementCount: () => set((state) => ({ count: state.count + 1 })),
   setAngerLevel: (level) => set({ angerLevel: level }),
-}));
+}))
 
 // Zod バリデーションスキーマ
 const testSchema = z.object({
-  feeling: z.string().min(1, "感情を入力してください"),
+  feeling: z.string().min(1, '感情を入力してください'),
   intensity: z.number().min(1).max(10),
-});
+})
 
-type TestFormData = z.infer<typeof testSchema>;
+type TestFormData = z.infer<typeof testSchema>
 
 const TestPage = () => {
-  const theme = useTheme();
-  const { count, angerLevel, incrementCount, setAngerLevel } = useTestStore();
-  const [apiTest, setApiTest] = useState<string>("");
+  const theme = useTheme()
+  const { count, angerLevel, incrementCount, setAngerLevel } = useTestStore()
+  const [apiTest, setApiTest] = useState<string>('')
 
   // React Hook Form with Zod
   const {
@@ -64,38 +64,39 @@ const TestPage = () => {
   } = useForm<TestFormData>({
     resolver: zodResolver(testSchema),
     defaultValues: {
-      feeling: "",
+      feeling: '',
       intensity: 5,
     },
-  });
+  })
 
   // Axios テスト
   const testAxios = async () => {
     try {
       const response = await axios.get(
-        "https://jsonplaceholder.typicode.com/posts/1",
-      );
-      setApiTest(`✅ Axios成功: ${response.data.title}`);
-    } catch (error) {
-      setApiTest("❌ Axios エラー");
+        'https://jsonplaceholder.typicode.com/posts/1'
+      )
+      setApiTest(`✅ Axios成功: ${response.data.title}`)
+    } catch {
+      setApiTest('❌ Axios エラー')
+      // console.error(error)
     }
-  };
+  }
 
   const onSubmit = (data: TestFormData) => {
-    alert(`フォーム送信成功！\n感情: ${data.feeling}\n強度: ${data.intensity}`);
-  };
+    alert(`フォーム送信成功！\n感情: ${data.feeling}\n強度: ${data.intensity}`)
+  }
 
   const getEmotionIcon = (level: number) => {
-    if (level <= 3) return <SentimentVerySatisfied color="success" />;
-    if (level <= 6) return <SentimentSatisfied color="warning" />;
-    return <SentimentVeryDissatisfied color="error" />;
-  };
+    if (level <= 3) return <SentimentVerySatisfied color="success" />
+    if (level <= 6) return <SentimentSatisfied color="warning" />
+    return <SentimentVeryDissatisfied color="error" />
+  }
 
   const getEmotionColor = (level: number) => {
-    if (level <= 3) return theme.palette.success.main;
-    if (level <= 6) return theme.palette.warning.main;
-    return theme.palette.error.main;
-  };
+    if (level <= 3) return theme.palette.success.main
+    if (level <= 6) return theme.palette.warning.main
+    return theme.palette.error.main
+  }
 
   return (
     <>
@@ -127,7 +128,7 @@ const TestPage = () => {
                   <Button
                     variant="contained"
                     className="gorilla-button"
-                    onClick={() => alert("ゴリラボタン動作中！🦍")}
+                    onClick={() => alert('ゴリラボタン動作中！🦍')}
                     sx={{ mr: 2 }}
                   >
                     ゴリラボタン
@@ -142,12 +143,12 @@ const TestPage = () => {
                     <Chip
                       key={level}
                       label={`怒り${level}`}
-                      className={`emotion-chip-${level <= 3 ? "calm" : level <= 6 ? "happiness" : "anger"}`}
+                      className={`emotion-chip-${level <= 3 ? 'calm' : level <= 6 ? 'happiness' : 'anger'}`}
                       sx={{
                         mr: 1,
                         mb: 1,
                         backgroundColor: getEmotionColor(level),
-                        color: "white",
+                        color: 'white',
                       }}
                       icon={getEmotionIcon(level)}
                     />
@@ -191,7 +192,7 @@ const TestPage = () => {
                     <Button
                       key={level}
                       size="small"
-                      variant={angerLevel === level ? "contained" : "outlined"}
+                      variant={angerLevel === level ? 'contained' : 'outlined'}
                       onClick={() => setAngerLevel(level)}
                       sx={{ mr: 1 }}
                     >
@@ -218,7 +219,7 @@ const TestPage = () => {
 
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <TextField
-                    {...register("feeling")}
+                    {...register('feeling')}
                     label="今の感情"
                     fullWidth
                     margin="normal"
@@ -228,7 +229,7 @@ const TestPage = () => {
                   />
 
                   <TextField
-                    {...register("intensity", { valueAsNumber: true })}
+                    {...register('intensity', { valueAsNumber: true })}
                     label="強度 (1-10)"
                     type="number"
                     fullWidth
@@ -279,9 +280,9 @@ const TestPage = () => {
                   API テスト実行
                 </Button>
 
-                <Paper sx={{ p: 2, backgroundColor: "#f5f5f5" }}>
+                <Paper sx={{ p: 2, backgroundColor: '#f5f5f5' }}>
                   <Typography variant="body2">
-                    {apiTest || "API テストボタンを押してください"}
+                    {apiTest || 'API テストボタンを押してください'}
                   </Typography>
                 </Paper>
 
@@ -310,10 +311,10 @@ const TestPage = () => {
                     <Box
                       sx={{
                         backgroundColor: theme.palette.primary.main,
-                        color: "white",
+                        color: 'white',
                         p: 2,
                         borderRadius: 2,
-                        textAlign: "center",
+                        textAlign: 'center',
                       }}
                     >
                       Primary
@@ -328,7 +329,7 @@ const TestPage = () => {
                         color: theme.palette.secondary.contrastText,
                         p: 2,
                         borderRadius: 2,
-                        textAlign: "center",
+                        textAlign: 'center',
                       }}
                     >
                       Secondary
@@ -339,31 +340,31 @@ const TestPage = () => {
                   <Grid item xs={6} md={3}>
                     <Box
                       sx={{
-                        backgroundColor: (theme.palette as any).gorilla.banana,
-                        color: "#3E2723",
+                        backgroundColor: theme.palette.gorilla.banana,
+                        color: '#3E2723',
                         p: 2,
                         borderRadius: 2,
-                        textAlign: "center",
+                        textAlign: 'center',
                       }}
                     >
                       ゴリラバナナ
                       <br />
-                      {(theme.palette as any).gorilla.banana}
+                      {theme.palette.gorilla.banana}
                     </Box>
                   </Grid>
                   <Grid item xs={6} md={3}>
                     <Box
                       sx={{
-                        backgroundColor: (theme.palette as any).gorilla.fur,
-                        color: "white",
+                        backgroundColor: theme.palette.gorilla.fur,
+                        color: 'white',
                         p: 2,
                         borderRadius: 2,
-                        textAlign: "center",
+                        textAlign: 'center',
                       }}
                     >
                       ゴリラ毛色
                       <br />
-                      {(theme.palette as any).gorilla.fur}
+                      {theme.palette.gorilla.fur}
                     </Box>
                   </Grid>
                 </Grid>
@@ -384,7 +385,7 @@ const TestPage = () => {
         </Grid>
 
         {/* 総合テスト結果 */}
-        <Box sx={{ mt: 4, textAlign: "center" }}>
+        <Box sx={{ mt: 4, textAlign: 'center' }}>
           <Typography variant="h4" gutterBottom>
             🎉 ライブラリ統合テスト完了！
           </Typography>
@@ -397,7 +398,7 @@ const TestPage = () => {
         </Box>
       </Box>
     </>
-  );
-};
+  )
+}
 
-export default TestPage;
+export default TestPage
