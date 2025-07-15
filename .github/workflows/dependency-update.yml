@@ -1,0 +1,101 @@
+name: Update Dependencies
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # 毎週月曜日
+  workflow_dispatch:
+
+jobs:
+  # フロントエンド依存関係更新
+  frontend:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'yarn'
+        cache-dependency-path: frontend/yarn.lock
+
+    - name: Update dependencies
+      working-directory: frontend
+      run: |
+        yarn install --frozen-lockfile
+        yarn upgrade --pattern "*" --scope patch
+        yarn audit fix || true
+
+    - name: Test updates
+      working-directory: frontend
+      run: |
+        yarn type-check
+        yarn lint
+        yarn test --watchAll=false
+
+    - uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore(frontend): update npm dependencies'
+        title: '📦 Update Frontend Dependencies'
+        body: 'Automated dependency updates for frontend packages'
+        branch: chore/update-frontend-deps
+        labels: dependencies,frontend,automated
+
+  # バックエンド依存関係更新
+  backend:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: angori_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2.3'
+        bundler-cache: true
+        working-directory: backend
+
+    - name: Update gems
+      working-directory: backend
+      run: |
+        bundle update --patch
+        bundle audit update
+        bundle audit check
+
+    - name: Test updates
+      working-directory: backend
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/angori_test
+        RAILS_ENV: test
+      run: |
+        bundle exec rails db:create
+        bundle exec rails db:migrate
+        bundle exec rubocop
+        bundle exec rspec
+
+    - uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore(backend): update ruby gems'
+        title: '💎 Update Backend Dependencies'
+        body: 'Automated dependency updates for backend gems'
+        branch: chore/update-backend-deps
+        labels: dependencies,backend,automated
