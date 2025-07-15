@@ -35,7 +35,7 @@ jobs:
         yarn lint
         yarn test --watchAll=false
 
-    - uses: peter-evans/create-pull-request@v5
+    - uses: peter-evans/create-pull-request@v7
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: 'chore(frontend): update npm dependencies'
@@ -91,7 +91,7 @@ jobs:
         bundle exec rubocop
         bundle exec rspec
 
-    - uses: peter-evans/create-pull-request@v5
+    - uses: peter-evans/create-pull-request@v7
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: 'chore(backend): update ruby gems'
