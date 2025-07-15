@@ -1,0 +1,73 @@
+# .github/workflows/test.yml
+name: Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # フロントエンドテスト
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'yarn'
+        cache-dependency-path: frontend/yarn.lock
+
+    - run: yarn install --frozen-lockfile
+    - run: yarn test --coverage --watchAll=false
+
+  # バックエンドテスト
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: angori_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2.3'
+        bundler-cache: true
+        working-directory: backend
+
+    - name: Setup database
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/angori_test
+        RAILS_ENV: test
+        JWT_SECRET_KEY: test_jwt_secret_for_ci_environment
+      run: |
+        bundle exec rails db:create
+        bundle exec rails db:migrate
+
+    - name: Run tests
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/angori_test
+        RAILS_ENV: test
+      run: bundle exec rspec

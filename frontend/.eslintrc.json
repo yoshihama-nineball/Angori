@@ -1,10 +1,5 @@
 {
-  "extends": [
-    "next/core-web-vitals",
-    "next/typescript",
-    "@next/eslint-plugin-next",
-    "prettier"
-  ],
+  "extends": ["next/core-web-vitals", "next/typescript", "prettier"],
   "plugins": ["@typescript-eslint"],
   "rules": {
     // TypeScript関連
@@ -40,8 +35,8 @@
       {
         "patterns": [
           {
-            "group": ["@mui/material/*"],
-            "message": "Please use @mui/material直接のインポートを使用してください"
+            "group": ["@mui/material/*/*"],
+            "message": "Please use @mui/material/ComponentName形式でインポートしてください"
           }
         ]
       }
