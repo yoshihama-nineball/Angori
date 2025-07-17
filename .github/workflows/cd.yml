@@ -52,7 +52,12 @@ jobs:
     - name: Deploy to Vercel
       run: |
         cd frontend
-        npx vercel --token ${{ secrets.VERCEL_TOKEN }} ${{ needs.setup.outputs.is-production == 'true' && '--prod' || '' }} --yes
+        # Vercel CLIを使用して直接デプロイ
+        if [[ "${{ needs.setup.outputs.is-production }}" == "true" ]]; then
+          npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
+        else
+          npx vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
+        fi
 
   # バックエンドデプロイ (Render)
   deploy-backend:
