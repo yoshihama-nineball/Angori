@@ -1,16 +1,13 @@
 name: Deploy
 
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
+  push:
     branches: [main, develop]
 
 jobs:
   # デプロイ準備
   setup:
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'success'
     outputs:
       environment: ${{ steps.env.outputs.environment }}
       target-branch: ${{ steps.env.outputs.target-branch }}
@@ -18,7 +15,7 @@ jobs:
     steps:
     - id: env
       run: |
-        TARGET_BRANCH="${{ github.event.workflow_run.head_branch }}"
+        TARGET_BRANCH="${{ github.ref_name }}"
         echo "target-branch=$TARGET_BRANCH" >> $GITHUB_OUTPUT
         echo "Target branch: $TARGET_BRANCH"
         
@@ -55,7 +52,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        vercel-args: ${{ needs.setup.outputs.environment == 'production' && '--prod' || '' }}
+        vercel-args: ${{ needs.setup.outputs.environment == 'Production' && '--prod' || '' }}
 
   # バックエンドデプロイ (Render)
   deploy-backend:
@@ -66,7 +63,7 @@ jobs:
     steps:
     - name: Deploy to Render
       run: |
-        if [[ "${{ needs.setup.outputs.environment }}" == "production" ]]; then
+        if [[ "${{ needs.setup.outputs.environment }}" == "Production" ]]; then
           SERVICE_ID="${{ secrets.RENDER_SERVICE_ID_PROD }}"
         else
           SERVICE_ID="${{ secrets.RENDER_SERVICE_ID_DEVELOPMENT }}"
@@ -84,7 +81,7 @@ jobs:
     steps:
     - name: Health check
       run: |
-        if [[ "${{ needs.setup.outputs.environment }}" == "production" ]]; then
+        if [[ "${{ needs.setup.outputs.environment }}" == "Production" ]]; then
           BACKEND_URL="https://angori.onrender.com"
         else
           BACKEND_URL="https://angori-development.onrender.com"
