@@ -1,0 +1,81 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main, develop]
+
+jobs:
+  # デプロイ準備
+  setup:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+    outputs:
+      environment: ${{ steps.env.outputs.environment }}
+    
+    steps:
+    - id: env
+      run: |
+        if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          echo "environment=production" >> $GITHUB_OUTPUT
+        else
+          echo "environment=staging" >> $GITHUB_OUTPUT
+        fi
+
+  # フロントエンドデプロイ (Vercel)
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    needs: setup
+    environment: ${{ needs.setup.outputs.environment }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        working-directory: frontend
+        vercel-args: ${{ needs.setup.outputs.environment == 'production' && '--prod' || '' }}
+
+  # バックエンドデプロイ (Render)
+  deploy-backend:
+    runs-on: ubuntu-latest
+    needs: setup
+    environment: ${{ needs.setup.outputs.environment }}
+    
+    steps:
+    - name: Deploy to Render
+      run: |
+        if [[ "${{ needs.setup.outputs.environment }}" == "production" ]]; then
+          SERVICE_ID="${{ secrets.RENDER_SERVICE_ID_PROD }}"
+          API_KEY="${{ secrets.RENDER_API_KEY_PROD }}"
+        else
+          SERVICE_ID="${{ secrets.RENDER_SERVICE_ID_STAGING }}"
+          API_KEY="${{ secrets.RENDER_API_KEY_STAGING }}"
+        fi
+        
+        curl -X POST \
+          -H "Authorization: Bearer $API_KEY" \
+          "https://api.render.com/v1/services/$SERVICE_ID/deploys"
+
+  # ヘルスチェック
+  verify:
+    runs-on: ubuntu-latest
+    needs: [setup, deploy-frontend, deploy-backend]
+    
+    steps:
+    - name: Health check
+      run: |
+        if [[ "${{ needs.setup.outputs.environment }}" == "production" ]]; then
+          BACKEND_URL="https://angori-api.render.com"
+        else
+          BACKEND_URL="https://angori-api-staging.render.com"
+        fi
+        
+        # Wait and check backend health
+        sleep 60
+        curl -f "$BACKEND_URL/up"

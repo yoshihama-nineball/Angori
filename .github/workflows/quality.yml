@@ -1,0 +1,47 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # フロントエンド品質チェック
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'yarn'
+        cache-dependency-path: frontend/yarn.lock
+
+    - run: yarn install --frozen-lockfile
+    - run: yarn type-check
+    - run: yarn lint
+    - run: yarn format:check
+
+  # バックエンド品質チェック
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2.3'
+        bundler-cache: true
+        working-directory: backend
+
+    - run: bundle exec rubocop
