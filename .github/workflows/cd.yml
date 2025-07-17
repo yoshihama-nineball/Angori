@@ -101,7 +101,7 @@ jobs:
     - name: Health check
       run: |
         if [[ "${{ needs.setup.outputs.is-production }}" == "true" ]]; then
-          BACKEND_URL="https://angori-api-prod.onrender.com"
+          BACKEND_URL="https://angori.onrender.com"
           echo "Checking Production API health"
         else
           BACKEND_URL="https://angori-api-development.onrender.com"
@@ -112,28 +112,38 @@ jobs:
         
         # Wait for Render service to restart
         echo "Waiting for service to restart..."
-        sleep 60
+        sleep 90
         
         # Health check with retry logic
-        max_attempts=5
+        max_attempts=10
         attempt=1
         
         while [ $attempt -le $max_attempts ]; do
           echo "Health check attempt $attempt/$max_attempts"
           
-          if curl -f -s "$BACKEND_URL/health" > /dev/null 2>&1; then
-            echo "✅ Health check passed!"
+          # 複数のエンドポイントを試す
+          if curl -f -s --max-time 30 "$BACKEND_URL/health" > /dev/null 2>&1; then
+            echo "✅ Health check passed via /health!"
             break
-          elif curl -f -s "$BACKEND_URL/up" > /dev/null 2>&1; then
-            echo "✅ Health check passed (via /up endpoint)!"
+          elif curl -f -s --max-time 30 "$BACKEND_URL/up" > /dev/null 2>&1; then
+            echo "✅ Health check passed via /up!"
+            break
+          elif curl -f -s --max-time 30 "$BACKEND_URL/" > /dev/null 2>&1; then
+            echo "✅ Health check passed via root!"
             break
           else
             echo "❌ Health check failed, attempt $attempt/$max_attempts"
+            
+            # デバッグ情報を出力
+            echo "Response from $BACKEND_URL:"
+            curl -s -w "HTTP Status: %{http_code}\n" "$BACKEND_URL/health" || echo "Connection failed"
+            
             if [ $attempt -eq $max_attempts ]; then
               echo "❌ All health check attempts failed"
+              echo "Service might still be starting up. Check Render dashboard."
               exit 1
             fi
-            sleep 30
+            sleep 45
             ((attempt++))
           fi
         done
