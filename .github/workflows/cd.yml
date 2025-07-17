@@ -1,26 +1,33 @@
 name: Deploy
 
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
+  push:
     branches: [main, develop]
 
 jobs:
   # デプロイ準備
   setup:
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'success'
     outputs:
       environment: ${{ steps.env.outputs.environment }}
+      target-branch: ${{ steps.env.outputs.target-branch }}
+      is-production: ${{ steps.env.outputs.is-production }}
 
     steps:
     - id: env
       run: |
-        if [[ "${{ github.event.workflow_run.head_branch }}" == "main" ]]; then
-          echo "environment=Production" >> $GITHUB_OUTPUT
+        TARGET_BRANCH="${{ github.ref_name }}"
+        echo "target-branch=$TARGET_BRANCH" >> $GITHUB_OUTPUT
+        echo "Target branch: $TARGET_BRANCH"
+        
+        if [[ "$TARGET_BRANCH" == "main" ]]; then
+          echo "environment=production" >> $GITHUB_OUTPUT
+          echo "is-production=true" >> $GITHUB_OUTPUT
+          echo "Using production environment for main branch"
         else
-          echo "environment=Preview" >> $GITHUB_OUTPUT
+          echo "environment=development" >> $GITHUB_OUTPUT
+          echo "is-production=false" >> $GITHUB_OUTPUT
+          echo "Using development environment for $TARGET_BRANCH branch"
         fi
 
   # フロントエンドデプロイ (Vercel)
@@ -42,13 +49,15 @@ jobs:
       working-directory: frontend
       run: yarn install --frozen-lockfile
 
-    - uses: amondnet/vercel-action@v20
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        vercel-args: ${{ needs.setup.outputs.environment == 'production' && '--prod' || '' }}
+    - name: Deploy to Vercel
+      run: |
+        cd frontend
+        # Vercel CLIを使用して直接デプロイ
+        if [[ "${{ needs.setup.outputs.is-production }}" == "true" ]]; then
+          npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
+        else
+          npx vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
+        fi
 
   # バックエンドデプロイ (Render)
   deploy-backend:
@@ -59,15 +68,29 @@ jobs:
     steps:
     - name: Deploy to Render
       run: |
-        if [[ "${{ needs.setup.outputs.environment }}" == "production" ]]; then
+        if [[ "${{ needs.setup.outputs.is-production }}" == "true" ]]; then
           SERVICE_ID="${{ secrets.RENDER_SERVICE_ID_PROD }}"
+          echo "Deploying to Production Render service"
         else
           SERVICE_ID="${{ secrets.RENDER_SERVICE_ID_DEVELOPMENT }}"
+          echo "Deploying to Development Render service"
         fi
 
-        curl -X POST \
+        echo "Service ID: $SERVICE_ID"
+        
+        response=$(curl -s -w "%{http_code}" -X POST \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          "https://api.render.com/v1/services/$SERVICE_ID/deploys"
+          -H "Content-Type: application/json" \
+          "https://api.render.com/v1/services/$SERVICE_ID/deploys")
+        
+        http_code="${response: -3}"
+        if [[ "$http_code" -ge 200 && "$http_code" -lt 300 ]]; then
+          echo "✅ Render deployment triggered successfully"
+        else
+          echo "❌ Render deployment failed with HTTP code: $http_code"
+          echo "Response: ${response%???}"
+          exit 1
+        fi
 
   # ヘルスチェック
   verify:
@@ -77,16 +100,50 @@ jobs:
     steps:
     - name: Health check
       run: |
-        if [[ "${{ needs.setup.outputs.environment }}" == "production" ]]; then
+        if [[ "${{ needs.setup.outputs.is-production }}" == "true" ]]; then
           BACKEND_URL="https://angori.onrender.com"
+          echo "Checking Production API health"
         else
-          BACKEND_URL="https://angori-development.onrender.com"
+          BACKEND_URL="https://angori-api-development.onrender.com"
+          echo "Checking Development API health"
         fi
 
-        # Wait longer for Render service to restart
-        echo "Waiting for service to restart..."
-        sleep 120
+        echo "Backend URL: $BACKEND_URL"
         
-        # Try multiple endpoints
-        echo "Testing health endpoints..."
-        curl -f "$BACKEND_URL/up" || curl -f "$BACKEND_URL/health" || curl -f "$BACKEND_URL/"
+        # Wait for Render service to restart
+        echo "Waiting for service to restart..."
+        sleep 90
+        
+        # Health check with retry logic
+        max_attempts=10
+        attempt=1
+        
+        while [ $attempt -le $max_attempts ]; do
+          echo "Health check attempt $attempt/$max_attempts"
+          
+          # 複数のエンドポイントを試す
+          if curl -f -s --max-time 30 "$BACKEND_URL/health" > /dev/null 2>&1; then
+            echo "✅ Health check passed via /health!"
+            break
+          elif curl -f -s --max-time 30 "$BACKEND_URL/up" > /dev/null 2>&1; then
+            echo "✅ Health check passed via /up!"
+            break
+          elif curl -f -s --max-time 30 "$BACKEND_URL/" > /dev/null 2>&1; then
+            echo "✅ Health check passed via root!"
+            break
+          else
+            echo "❌ Health check failed, attempt $attempt/$max_attempts"
+            
+            # デバッグ情報を出力
+            echo "Response from $BACKEND_URL:"
+            curl -s -w "HTTP Status: %{http_code}\n" "$BACKEND_URL/health" || echo "Connection failed"
+            
+            if [ $attempt -eq $max_attempts ]; then
+              echo "❌ All health check attempts failed"
+              echo "Service might still be starting up. Check Render dashboard."
+              exit 1
+            fi
+            sleep 45
+            ((attempt++))
+          fi
+        done

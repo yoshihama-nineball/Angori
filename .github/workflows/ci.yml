@@ -1,8 +1,12 @@
 name: CI
 
 on:
-  push:
+  # デプロイワークフローと競合を避けるため、PRのみで実行
+  pull_request:
     branches: [main, develop]
+  
+  # 手動実行も可能
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io

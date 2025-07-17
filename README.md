@@ -103,6 +103,34 @@ docker compose down                                     # 停止
 ./docker/scripts/cleanup.sh                            # クリーンアップ
 ```
 
+## 🌐 デプロイメント環境
+
+### 本番環境 (Production)
+- **フロントエンド**: [https://angori.vercel.app](https://angori.vercel.app)
+- **バックエンドAPI**: [https://angori.onrender.com](https://angori.onrender.com)
+- **データベース**: Neon PostgreSQL (本番用)
+- **トリガー**: `main` ブランチへのプッシュ
+
+### プレビュー環境 (Preview) 
+- **フロントエンド**: `https://angori-[hash]-yoshihamas-projects.vercel.app`
+- **バックエンドAPI**: [https://angori-development.onrender.com](https://angori-development.onrender.com)
+- **データベース**: Neon PostgreSQL (開発用)
+- **トリガー**: `develop` ブランチへのプッシュ
+
+### ローカル開発環境
+- **フロントエンド**: http://localhost:3000
+- **バックエンドAPI**: http://localhost:3001 (Docker) / http://localhost:5000 (従来)
+- **データベース**: PostgreSQL (Docker内 / ローカル)
+- **Redis**: localhost:6379
+
+### CI/CDパイプライン
+- **GitHub Actions**: 自動ビルド・テスト・デプロイ
+- **環境分離**: Production/Preview環境
+- **自動デプロイ**: main/developブランチ連動
+
+### 運用コスト
+- 合計: $7/月（Render Starter Plan）
+
 ### 📱 アクセス先
 
 | サービス | URL | 説明 |
