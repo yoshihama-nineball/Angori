@@ -13,20 +13,21 @@ jobs:
     if: github.event.workflow_run.conclusion == 'success'
     outputs:
       environment: ${{ steps.env.outputs.environment }}
+      target-branch: ${{ steps.env.outputs.target-branch }}
 
     steps:
     - id: env
       run: |
-        echo "Triggering branch: ${{ github.event.workflow_run.head_branch }}"
-        echo "Event ref: ${{ github.ref }}"
-        echo "Repository default branch: ${{ github.event.repository.default_branch }}"
+        TARGET_BRANCH="${{ github.event.workflow_run.head_branch }}"
+        echo "target-branch=$TARGET_BRANCH" >> $GITHUB_OUTPUT
+        echo "Target branch: $TARGET_BRANCH"
         
-        if [[ "${{ github.event.workflow_run.head_branch }}" == "main" ]]; then
+        if [[ "$TARGET_BRANCH" == "main" ]]; then
           echo "environment=Production" >> $GITHUB_OUTPUT
-        elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-          echo "environment=Production" >> $GITHUB_OUTPUT  
+          echo "Using Production environment for main branch"
         else
           echo "environment=Preview" >> $GITHUB_OUTPUT
+          echo "Using Preview environment for $TARGET_BRANCH branch"
         fi
 
   # フロントエンドデプロイ (Vercel)
