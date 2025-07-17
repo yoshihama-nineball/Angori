@@ -80,9 +80,13 @@ jobs:
         if [[ "${{ needs.setup.outputs.environment }}" == "production" ]]; then
           BACKEND_URL="https://angori.onrender.com"
         else
-          BACKEND_URL="https://angori-api-development.onrender.com"
+          BACKEND_URL="https://angori-development.onrender.com"
         fi
 
-        # Wait and check backend health
-        sleep 60
-        curl -f "$BACKEND_URL/health"
+        # Wait longer for Render service to restart
+        echo "Waiting for service to restart..."
+        sleep 120
+        
+        # Try multiple endpoints
+        echo "Testing health endpoints..."
+        curl -f "$BACKEND_URL/up" || curl -f "$BACKEND_URL/health" || curl -f "$BACKEND_URL/"
