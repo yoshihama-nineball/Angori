@@ -70,5 +70,38 @@ Angoriはゴリラをモチーフにしたエンタメ性を掛け合わせた�
 - [ ] シェア機能
 
 ■ 機能の実装方針予定
-- AIによるアドバイス機能はOpenAI GPT-4o-miniを使う予定
-- 怒りの傾向マップを実装する方法としては、Next側でD3.jsを用いることで、どんなことで怒りを感じやすいのかを可視化する予定
+以下の技術スタックを使用する予定
+### フロントエンド
+- **Next.js 15** (App Router + Turbopack)
+- **React 19** + **TypeScript 5.0+**
+- **Material-UI v6** (ゴリラテーマカスタマイズ)
+- **D3.js v7** (怒りの傾向バブルマップ)
+- **Zustand** (状態管理)
+- **React Hook Form + Zod** (フォーム管理・バリデーション)
+- **Axios** (API通信)
+- **Jest + React Testing Library** (テスト)
+
+### バックエンド
+- **Ruby on Rails 7.1.5** (API mode) ✅
+- **PostgreSQL 16+** ✅
+- **JWT認証** (Devise + Devise-JWT) ✅
+- **OpenAI API** (GPT-4o-mini) ✅
+- **RSpec + RuboCop** (テスト・コード品質) ✅
+
+### 開発環境
+- **Docker** + **Docker Compose** 🐳 ✅
+- **ホットリロード** (フロント・バック両対応) ✅
+- **統合開発環境** (ワンコマンドセットアップ) ✅
+- **便利スクリプト** (自動セットアップ・クリーンアップ) ✅
+
+### 開発効率化
+- **ESLint + Prettier** (コード品質・整形)
+- **Husky + lint-staged** (Git hooks)
+- **TypeScript** 型安全性
+- **RuboCop** (Rubyコード品質)
+
+### インフラ
+- **フロントエンド**: Vercel ($0/月)
+- **バックエンド**: Render ($7/月)
+- **データベース**: Neon PostgreSQL ($0/月)
+- **合計運用コスト**: $11-17/月（AI API + ドメイン込み）
