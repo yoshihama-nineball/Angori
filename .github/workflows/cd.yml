@@ -113,11 +113,12 @@ jobs:
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/angori_test
 
-    - name: Build check (Assets precompile)
-      run: bundle exec rails assets:precompile
-      env:
-        RAILS_ENV: production
-        SECRET_KEY_BASE: dummy_secret_for_ci_build_check
+    # Rails API modeなのでアセットプリコンパイルはスキップ
+    # - name: Build check (Assets precompile)
+    #   run: bundle exec rails assets:precompile
+    #   env:
+    #     RAILS_ENV: production
+    #     SECRET_KEY_BASE: dummy_secret_for_ci_build_check
 
   # フロントエンドデプロイ (Vercel)
   deploy-frontend:
