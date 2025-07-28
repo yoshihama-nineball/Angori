@@ -52,7 +52,7 @@ jobs:
           
           const body = `## 🚀 Preview Deployed!
           
-**URL**: ${{ steps.vercel-deploy.outputs.preview-url }}
+URL: ${{ steps.vercel-deploy.outputs.preview-url }}
 
 The preview will update with new commits.`;
           
