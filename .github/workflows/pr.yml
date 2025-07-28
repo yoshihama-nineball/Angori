@@ -50,11 +50,11 @@ jobs:
             comment.body.includes('🚀 Preview Deployed')
           );
           
-          const body = `## 🚀 Preview Deployed!
+          const body = \`## 🚀 Preview Deployed!
           
 URL: ${{ steps.vercel-deploy.outputs.preview-url }}
 
-The preview will update with new commits.`;
+The preview will update with new commits.\`;
           
           if (botComment) {
             await github.rest.issues.updateComment({
