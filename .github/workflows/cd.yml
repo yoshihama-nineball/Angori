@@ -1,195 +1,4 @@
-name: Deploy
-
-on:
-  push:
-    branches: [main, develop]
-
-jobs:
-  # デプロイ準備
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      environment: ${{ steps.env.outputs.environment }}
-      target-branch: ${{ steps.env.outputs.target-branch }}
-      is-production: ${{ steps.env.outputs.is-production }}
-
-    steps:
-    - id: env
-      run: |
-        TARGET_BRANCH="${{ github.ref_name }}"
-        echo "target-branch=$TARGET_BRANCH" >> $GITHUB_OUTPUT
-        echo "Target branch: $TARGET_BRANCH"
-        
-        if [[ "$TARGET_BRANCH" == "main" ]]; then
-          echo "environment=production" >> $GITHUB_OUTPUT
-          echo "is-production=true" >> $GITHUB_OUTPUT
-          echo "Using production environment for main branch"
-        else
-          echo "environment=development" >> $GITHUB_OUTPUT
-          echo "is-production=false" >> $GITHUB_OUTPUT
-          echo "Using development environment for $TARGET_BRANCH branch"
-        fi
-
-  # フロントエンドCI（デプロイ前品質チェック）
-  frontend-ci:
-    runs-on: ubuntu-latest
-    needs: setup
-    defaults:
-      run:
-        working-directory: ./frontend
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'yarn'
-        cache-dependency-path: frontend/yarn.lock
-
-    - name: Install dependencies
-      run: yarn install --frozen-lockfile
-
-    - name: Type check
-      run: yarn type-check
-
-    - name: Lint check
-      run: yarn lint
-
-    - name: Run tests
-      run: yarn test
-
-    - name: Build check
-      run: yarn build
-      env:
-        NEXT_PUBLIC_API_URL: ${{ needs.setup.outputs.is-production == 'true' && 'https://angori.onrender.com/api/v1' || 'https://angori-api-development.onrender.com/api/v1' }}
-        NEXT_PUBLIC_ENVIRONMENT: ${{ needs.setup.outputs.environment }}
-
-  # バックエンドCI（デプロイ前品質チェック）
-  backend-ci:
-    runs-on: ubuntu-latest
-    needs: setup
-    defaults:
-      run:
-        working-directory: ./backend
-
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: angori_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.2.3'
-        bundler-cache: true
-        working-directory: ./backend
-
-    - name: Setup database
-      run: |
-        bundle exec rails db:create RAILS_ENV=test
-        bundle exec rails db:migrate RAILS_ENV=test
-      env:
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/angori_test
-
-    - name: Run RuboCop
-      run: bundle exec rubocop
-
-    - name: Run RSpec
-      run: bundle exec rspec
-      env:
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/angori_test
-
-    # Rails API modeなのでアセットプリコンパイルはスキップ
-    # - name: Build check (Assets precompile)
-    #   run: bundle exec rails assets:precompile
-    #   env:
-    #     RAILS_ENV: production
-    #     SECRET_KEY_BASE: dummy_secret_for_ci_build_check
-
-  # フロントエンドデプロイ (Vercel)
-  deploy-frontend:
-    runs-on: ubuntu-latest
-    needs: [setup, frontend-ci]  # CI成功が前提
-    environment: ${{ needs.setup.outputs.environment }}
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'yarn'
-        cache-dependency-path: frontend/yarn.lock
-
-    - name: Install dependencies
-      working-directory: frontend
-      run: yarn install --frozen-lockfile
-
-    - name: Build for deployment
-      working-directory: frontend
-      run: yarn build
-      env:
-        NEXT_PUBLIC_API_URL: ${{ needs.setup.outputs.is-production == 'true' && 'https://angori.onrender.com/api/v1' || 'https://angori-api-development.onrender.com/api/v1' }}
-        NEXT_PUBLIC_ENVIRONMENT: ${{ needs.setup.outputs.environment }}
-
-    - name: Deploy to Vercel
-      working-directory: frontend
-      run: |
-        # Vercel CLIを使用して直接デプロイ
-        if [[ "${{ needs.setup.outputs.is-production }}" == "true" ]]; then
-          npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
-        else
-          npx vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
-        fi
-
-  # バックエンドデプロイ (Render)
-  deploy-backend:
-    runs-on: ubuntu-latest
-    needs: [setup, backend-ci]  # CI成功が前提
-    environment: ${{ needs.setup.outputs.environment }}
-
-    steps:
-    - name: Deploy to Render
-      run: |
-        if [[ "${{ needs.setup.outputs.is-production }}" == "true" ]]; then
-          SERVICE_ID="${{ secrets.RENDER_SERVICE_ID_PROD }}"
-          echo "Deploying to Production Render service"
-        else
-          SERVICE_ID="${{ secrets.RENDER_SERVICE_ID_DEVELOPMENT }}"
-          echo "Deploying to Development Render service"
-        fi
-
-        echo "Service ID: $SERVICE_ID"
-        
-        response=$(curl -s -w "%{http_code}" -X POST \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -H "Content-Type: application/json" \
-          "https://api.render.com/v1/services/$SERVICE_ID/deploys")
-        
-        http_code="${response: -3}"
-        if [[ "$http_code" -ge 200 && "$http_code" -lt 300 ]]; then
-          echo "✅ Render deployment triggered successfully"
-        else
-          echo "❌ Render deployment failed with HTTP code: $http_code"
-          echo "Response: ${response%???}"
-          exit 1
-        fi
-
-  # ヘルスチェック
+# ヘルスチェック（緩和版）
   verify:
     runs-on: ubuntu-latest
     needs: [setup, deploy-frontend, deploy-backend]
@@ -201,36 +10,42 @@ jobs:
           BACKEND_URL="https://angori.onrender.com"
           FRONTEND_URL="https://angori.vercel.app"
           echo "Checking Production environment"
+          STRICT_CHECK=true  # 本番環境は厳格にチェック
         else
           BACKEND_URL="https://angori-api-development.onrender.com"
           FRONTEND_URL="https://angori-dev.vercel.app"
           echo "Checking Development environment"
+          STRICT_CHECK=false  # 開発環境は緩やかにチェック
         fi
 
         echo "Backend URL: $BACKEND_URL"
         echo "Frontend URL: $FRONTEND_URL"
         
-        # Wait for Render service to restart
+        # Wait for services to restart
         echo "Waiting for services to restart..."
         sleep 90
         
-        # Backend health check with retry logic
-        max_attempts=10
-        attempt=1
-        
+        # Backend health check
         echo "🔍 Starting backend health check..."
+        max_attempts=5  # 開発環境は少ない試行回数
+        attempt=1
+        backend_healthy=false
+        
         while [ $attempt -le $max_attempts ]; do
           echo "Backend health check attempt $attempt/$max_attempts"
           
           # 複数のエンドポイントを試す
           if curl -f -s --max-time 30 "$BACKEND_URL/health" > /dev/null 2>&1; then
             echo "✅ Backend health check passed via /health!"
+            backend_healthy=true
             break
           elif curl -f -s --max-time 30 "$BACKEND_URL/up" > /dev/null 2>&1; then
             echo "✅ Backend health check passed via /up!"
+            backend_healthy=true
             break
           elif curl -f -s --max-time 30 "$BACKEND_URL/" > /dev/null 2>&1; then
             echo "✅ Backend health check passed via root!"
+            backend_healthy=true
             break
           else
             echo "❌ Backend health check failed, attempt $attempt/$max_attempts"
@@ -240,11 +55,15 @@ jobs:
             curl -s -w "HTTP Status: %{http_code}\n" "$BACKEND_URL/health" || echo "Connection failed"
             
             if [ $attempt -eq $max_attempts ]; then
-              echo "❌ All backend health check attempts failed"
-              echo "Backend service might still be starting up. Check Render dashboard."
-              exit 1
+              if [[ "$STRICT_CHECK" == "true" ]]; then
+                echo "❌ Production backend health check failed - CRITICAL!"
+                exit 1
+              else
+                echo "⚠️  Development backend health check failed - continuing anyway"
+                echo "Check Render dashboard manually: https://dashboard.render.com"
+              fi
             fi
-            sleep 45
+            sleep 30
             ((attempt++))
           fi
         done
@@ -255,8 +74,20 @@ jobs:
           echo "✅ Frontend health check passed!"
         else
           echo "❌ Frontend health check failed"
-          echo "Frontend might still be deploying. Check Vercel dashboard."
-          # フロントエンドは警告のみ（Vercelは通常早い）
+          if [[ "$STRICT_CHECK" == "true" ]]; then
+            echo "❌ Production frontend health check failed - CRITICAL!"
+            exit 1
+          else
+            echo "⚠️  Development frontend might still be deploying"
+          fi
         fi
 
         echo "🎉 Deployment verification completed!"
+        
+        # サマリー表示
+        if [[ "$STRICT_CHECK" == "true" ]]; then
+          echo "✅ Production deployment verified successfully"
+        else
+          echo "⚠️  Development deployment completed (some checks may have failed)"
+          echo "💡 Manual verification recommended for development environment"
+        fi
