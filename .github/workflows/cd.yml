@@ -30,10 +30,99 @@ jobs:
           echo "Using development environment for $TARGET_BRANCH branch"
         fi
 
+  # フロントエンドCI（デプロイ前品質チェック）
+  frontend-ci:
+    runs-on: ubuntu-latest
+    needs: setup
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'yarn'
+        cache-dependency-path: frontend/yarn.lock
+
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile
+
+    - name: Type check
+      run: yarn type-check
+
+    - name: Lint check
+      run: yarn lint
+
+    - name: Run tests
+      run: yarn test
+
+    - name: Build check
+      run: yarn build
+      env:
+        NEXT_PUBLIC_API_URL: ${{ needs.setup.outputs.is-production == 'true' && 'https://angori.onrender.com/api/v1' || 'https://angori-api-development.onrender.com/api/v1' }}
+        NEXT_PUBLIC_ENVIRONMENT: ${{ needs.setup.outputs.environment }}
+
+  # バックエンドCI（デプロイ前品質チェック）
+  backend-ci:
+    runs-on: ubuntu-latest
+    needs: setup
+    defaults:
+      run:
+        working-directory: ./backend
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: angori_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2.3'
+        bundler-cache: true
+        working-directory: ./backend
+
+    - name: Setup database
+      run: |
+        bundle exec rails db:create RAILS_ENV=test
+        bundle exec rails db:migrate RAILS_ENV=test
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/angori_test
+
+    - name: Run RuboCop
+      run: bundle exec rubocop
+
+    - name: Run RSpec
+      run: bundle exec rspec
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/angori_test
+
+    - name: Build check (Assets precompile)
+      run: bundle exec rails assets:precompile
+      env:
+        RAILS_ENV: production
+        SECRET_KEY_BASE: dummy_secret_for_ci_build_check
+
   # フロントエンドデプロイ (Vercel)
   deploy-frontend:
     runs-on: ubuntu-latest
-    needs: setup
+    needs: [setup, frontend-ci]  # CI成功が前提
     environment: ${{ needs.setup.outputs.environment }}
 
     steps:
@@ -49,9 +138,16 @@ jobs:
       working-directory: frontend
       run: yarn install --frozen-lockfile
 
+    - name: Build for deployment
+      working-directory: frontend
+      run: yarn build
+      env:
+        NEXT_PUBLIC_API_URL: ${{ needs.setup.outputs.is-production == 'true' && 'https://angori.onrender.com/api/v1' || 'https://angori-api-development.onrender.com/api/v1' }}
+        NEXT_PUBLIC_ENVIRONMENT: ${{ needs.setup.outputs.environment }}
+
     - name: Deploy to Vercel
+      working-directory: frontend
       run: |
-        cd frontend
         # Vercel CLIを使用して直接デプロイ
         if [[ "${{ needs.setup.outputs.is-production }}" == "true" ]]; then
           npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
@@ -62,7 +158,7 @@ jobs:
   # バックエンドデプロイ (Render)
   deploy-backend:
     runs-on: ubuntu-latest
-    needs: setup
+    needs: [setup, backend-ci]  # CI成功が前提
     environment: ${{ needs.setup.outputs.environment }}
 
     steps:
@@ -102,48 +198,64 @@ jobs:
       run: |
         if [[ "${{ needs.setup.outputs.is-production }}" == "true" ]]; then
           BACKEND_URL="https://angori.onrender.com"
-          echo "Checking Production API health"
+          FRONTEND_URL="https://angori.vercel.app"
+          echo "Checking Production environment"
         else
           BACKEND_URL="https://angori-api-development.onrender.com"
-          echo "Checking Development API health"
+          FRONTEND_URL="https://angori-dev.vercel.app"
+          echo "Checking Development environment"
         fi
 
         echo "Backend URL: $BACKEND_URL"
+        echo "Frontend URL: $FRONTEND_URL"
         
         # Wait for Render service to restart
-        echo "Waiting for service to restart..."
+        echo "Waiting for services to restart..."
         sleep 90
         
-        # Health check with retry logic
+        # Backend health check with retry logic
         max_attempts=10
         attempt=1
         
+        echo "🔍 Starting backend health check..."
         while [ $attempt -le $max_attempts ]; do
-          echo "Health check attempt $attempt/$max_attempts"
+          echo "Backend health check attempt $attempt/$max_attempts"
           
           # 複数のエンドポイントを試す
           if curl -f -s --max-time 30 "$BACKEND_URL/health" > /dev/null 2>&1; then
-            echo "✅ Health check passed via /health!"
+            echo "✅ Backend health check passed via /health!"
             break
           elif curl -f -s --max-time 30 "$BACKEND_URL/up" > /dev/null 2>&1; then
-            echo "✅ Health check passed via /up!"
+            echo "✅ Backend health check passed via /up!"
             break
           elif curl -f -s --max-time 30 "$BACKEND_URL/" > /dev/null 2>&1; then
-            echo "✅ Health check passed via root!"
+            echo "✅ Backend health check passed via root!"
             break
           else
-            echo "❌ Health check failed, attempt $attempt/$max_attempts"
+            echo "❌ Backend health check failed, attempt $attempt/$max_attempts"
             
             # デバッグ情報を出力
             echo "Response from $BACKEND_URL:"
             curl -s -w "HTTP Status: %{http_code}\n" "$BACKEND_URL/health" || echo "Connection failed"
             
             if [ $attempt -eq $max_attempts ]; then
-              echo "❌ All health check attempts failed"
-              echo "Service might still be starting up. Check Render dashboard."
+              echo "❌ All backend health check attempts failed"
+              echo "Backend service might still be starting up. Check Render dashboard."
               exit 1
             fi
             sleep 45
             ((attempt++))
           fi
         done
+
+        # Frontend health check
+        echo "🔍 Starting frontend health check..."
+        if curl -f -s --max-time 30 "$FRONTEND_URL" > /dev/null 2>&1; then
+          echo "✅ Frontend health check passed!"
+        else
+          echo "❌ Frontend health check failed"
+          echo "Frontend might still be deploying. Check Vercel dashboard."
+          # フロントエンドは警告のみ（Vercelは通常早い）
+        fi
+
+        echo "🎉 Deployment verification completed!"
