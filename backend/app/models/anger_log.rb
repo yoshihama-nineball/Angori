@@ -1,0 +1,2 @@
+class AngerLog < ApplicationRecord
+end

@@ -1,0 +1,2 @@
+class CalmingPoint < ApplicationRecord
+end

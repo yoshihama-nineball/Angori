@@ -1,0 +1,2 @@
+class TriggerWord < ApplicationRecord
+end
