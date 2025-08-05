@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_05_040310) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_05_051208) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -32,6 +32,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_05_040310) do
     t.index ["user_id"], name: "index_anger_logs_on_user_id"
   end
 
+  create_table "badges", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description", null: false
+    t.string "badge_type", null: false
+    t.jsonb "requirements"
+    t.integer "points_reward", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["badge_type"], name: "index_badges_on_badge_type"
+    t.index ["name"], name: "index_badges_on_name", unique: true
+  end
+
   create_table "calming_points", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.integer "total_points", default: 0
@@ -45,6 +57,38 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_05_040310) do
     t.index ["current_level"], name: "index_calming_points_on_current_level"
     t.index ["total_points"], name: "index_calming_points_on_total_points"
     t.index ["user_id"], name: "index_calming_points_on_user_id", unique: true
+  end
+
+  create_table "contact_messages", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "email", null: false
+    t.string "name", null: false
+    t.string "category"
+    t.string "subject", null: false
+    t.text "message", null: false
+    t.string "status", default: "open", null: false
+    t.text "admin_reply"
+    t.datetime "replied_at", precision: nil
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_contact_messages_on_category"
+    t.index ["status"], name: "index_contact_messages_on_status"
+    t.index ["user_id"], name: "index_contact_messages_on_user_id"
+  end
+
+  create_table "reminders", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "reminder_category", null: false
+    t.string "title", null: false
+    t.text "message", null: false
+    t.string "schedule_time"
+    t.jsonb "days_of_week"
+    t.boolean "is_active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["reminder_category"], name: "index_reminders_on_reminder_category"
+    t.index ["user_id", "is_active"], name: "index_reminders_on_user_id_and_is_active"
+    t.index ["user_id"], name: "index_reminders_on_user_id"
   end
 
   create_table "trigger_words", force: :cascade do |t|
@@ -62,6 +106,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_05_040310) do
     t.index ["user_id"], name: "index_trigger_words_on_user_id"
   end
 
+  create_table "user_badges", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "badge_id", null: false
+    t.datetime "earned_at", precision: nil, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["badge_id"], name: "index_user_badges_on_badge_id"
+    t.index ["earned_at"], name: "index_user_badges_on_earned_at"
+    t.index ["user_id", "badge_id"], name: "index_user_badges_on_user_id_and_badge_id", unique: true
+    t.index ["user_id"], name: "index_user_badges_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -75,7 +131,22 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_05_040310) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "wise_sayings", force: :cascade do |t|
+    t.text "content", null: false
+    t.string "author"
+    t.string "category"
+    t.string "anger_level_range"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["anger_level_range"], name: "index_wise_sayings_on_anger_level_range"
+    t.index ["category"], name: "index_wise_sayings_on_category"
+  end
+
   add_foreign_key "anger_logs", "users"
   add_foreign_key "calming_points", "users"
+  add_foreign_key "contact_messages", "users"
+  add_foreign_key "reminders", "users"
   add_foreign_key "trigger_words", "users"
+  add_foreign_key "user_badges", "badges"
+  add_foreign_key "user_badges", "users"
 end

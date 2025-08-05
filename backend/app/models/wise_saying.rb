@@ -1,0 +1,2 @@
+class WiseSaying < ApplicationRecord
+end
