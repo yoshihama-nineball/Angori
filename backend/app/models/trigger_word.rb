@@ -10,8 +10,8 @@ class TriggerWord < ApplicationRecord
 
   # Scopes
   scope :by_category, ->(category) { where(category: category) }
-  scope :high_frequency, -> { where('count >= ?', 3) }
-  scope :high_anger, -> { where('anger_level_avg >= ?', 7.0) }
+  scope :high_frequency, -> { where(count: 3..) }
+  scope :high_anger, -> { where(anger_level_avg: 7.0..) }
   scope :recent, -> { order(last_triggered_at: :desc) }
   scope :frequent, -> { order(count: :desc) }
   scope :dangerous, -> { where('anger_level_avg >= ? AND count >= ?', 6.0, 2) }
@@ -65,7 +65,7 @@ class TriggerWord < ApplicationRecord
 
       result[category] = {
         count: total_occurrences,
-        avg_anger: total_occurrences > 0 ? (weighted_anger_sum / total_occurrences).round(1) : 0,
+        avg_anger: total_occurrences.positive? ? (weighted_anger_sum / total_occurrences).round(1) : 0,
         triggers_count: triggers.count
       }
     end

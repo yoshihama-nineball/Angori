@@ -110,7 +110,7 @@ class CalmingPoint < ApplicationRecord
   def update_level_achievements(new_level)
     achievements = level_achievements || []
 
-    (current_level + 1..new_level).each do |level|
+    ((current_level + 1)..new_level).each do |level|
       achievements << {
         level: level,
         achieved_at: Time.current.iso8601,
