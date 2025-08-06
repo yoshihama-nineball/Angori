@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 import React from 'react'
 // import Loading from "./components/feedback//Loading/Loading";
-// import Footer from "./components/layouts/Footer/Footer";
-// import Header from "./components/layouts/Header/Header";
+import Footer from '../components/layouts/Footer/Footer'
+// import Header from "../components/layouts/Header/Header";
 import { ClientThemeProvider } from './components/layouts/ClientThemeProvider'
 
 export const metadata: Metadata = {
@@ -35,7 +35,7 @@ export default function RootLayout({
             {/* <React.Suspense fallback={<Loading />}>{children}</React.Suspense> */}
             <React.Suspense>{children}</React.Suspense>
           </main>
-          <div>フッター</div>
+          <Footer />
         </ClientThemeProvider>
       </body>
     </html>
