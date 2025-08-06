@@ -33,6 +33,7 @@ export default function Footer() {
 
   return (
     <Box
+      data-testid="footer-nav"
       sx={{
         width: '100%',
         position: 'fixed',
