@@ -1,4 +1,4 @@
-class CalmingPoints < ApplicationRecord
+class CalmingPoint < ApplicationRecord
   belongs_to :user
 
   # Validations

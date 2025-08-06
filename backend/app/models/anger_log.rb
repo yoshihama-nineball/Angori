@@ -52,7 +52,7 @@ class AngerLog < ApplicationRecord
   end
 
   def update_calming_points
-    user.calming_points.calculate_points!
+    user.calming_point&.calculate_points!
   end
 
   def calculate_avg_anger_level(word)
