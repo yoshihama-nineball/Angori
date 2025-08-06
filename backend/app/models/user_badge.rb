@@ -22,6 +22,7 @@ class UserBadge < ApplicationRecord
   scope :this_month, -> { where(created_at: 1.month.ago..) }
 
   # Callbacks
+  before_create :set_earned_at
   after_create :award_points
   after_create :update_user_achievements
   after_create :notify_achievement
@@ -127,6 +128,10 @@ class UserBadge < ApplicationRecord
   end
 
   private
+
+  def set_earned_at
+    self.earned_at ||= Time.current
+  end
 
   def award_points
     return unless user.calming_point.present?
