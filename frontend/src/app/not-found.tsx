@@ -13,8 +13,13 @@ export default function NotFound() {
           <Typography variant="h4" gutterBottom>
             ページが見つかりません
           </Typography>
-          <Typography>お探しのリソースが見つかりませんでした</Typography>
-          <Button sx={{ mt: 2 }} component={Link} href="/home" color="primary">
+          <Typography>お探しのリソースが見つかりませんウホ....</Typography>
+          <Button
+            sx={{ mt: 2 }}
+            component={Link}
+            href="/home"
+            variant="contained"
+          >
             トップページへ戻る
           </Button>
         </div>
