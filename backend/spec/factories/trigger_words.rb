@@ -1,3 +1,4 @@
+# backend/spec/factories/trigger_words.rb
 FactoryBot.define do
   factory :trigger_word do
     association :user
