@@ -38,7 +38,7 @@ RSpec.describe AngerLog, type: :model do
     end
 
     it 'anger_log作成後のcalming pointsの更新' do
-      expect(user.calming_points).to receive(:calculate_points!)
+      expect(user.calming_point).to receive(:calculate_points!)
       create(:anger_log, user: user)
     end
   end

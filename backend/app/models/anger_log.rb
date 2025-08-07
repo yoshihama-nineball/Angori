@@ -4,23 +4,17 @@ class AngerLog < ApplicationRecord
   # Validations
   validates :anger_level, presence: true, inclusion: { in: 1..10 }
   validates :occurred_at, presence: true
-  validates :situation_description, presence: true, length: { maximum: 300 }
-  validates :location, length: { maximum: 30 }
-  validates :ai_advice, length: { maximum: 400 }
-  validates :reflection, length: { maximum: 300 }
+  validates :situation_description, presence: true, length: { maximum: 1000 }
+  validates :location, length: { maximum: 100 }, allow_blank: true
+  validates :ai_advice, length: { maximum: 2000 }, allow_blank: true
+  validates :reflection, length: { maximum: 1000 }, allow_blank: true
 
   # Scopes
-  scope :recent, -> { order(occurred_at: :desc) } # 新しい順
-  scope :oldest, -> { order(occurred_at: :asc) } # 古い順
-  scope :high_anger_first, -> { order(anger_level: :desc) } # 怒りレベル高い順
-  scope :low_anger_first, -> { order(anger_level: :asc) }   # 怒りレベル低い順
-  # 期間の絞り込み
-  scope :by_date_range, ->(start_date, end_date) { where(occurred_at: start_date..end_date) }
-
-  # Scopesの使用例:
-  # AngerLog.recent.limit(10)                     # 最新10件
-  # AngerLog.high_anger_first                     # 怒りレベル高い順
-  # AngerLog.by_date_range(1.week.ago, Date.current).recent  # 今週分を最新順
+  scope :recent, -> { order(occurred_at: :desc) }
+  scope :by_anger_level, ->(level) { where(anger_level: level) }  # 追加
+  scope :by_date_range, ->(start_date, end_date) { where(occurred_at: start_date..end_date) }  # 追加
+  scope :high_anger, -> { where(anger_level: 7..) }  # 追加（オプション）
+  scope :with_ai_advice, -> { where.not(ai_advice: [nil, '']) }  # 追加（オプション）
 
   # Callbacks
   after_create :update_trigger_words
@@ -30,33 +24,31 @@ class AngerLog < ApplicationRecord
 
   def update_trigger_words
     return if trigger_words.blank?
-
-    trigger_words.split(/[,、]/).each do |word|
+    
+    trigger_words.split(',').each do |word|
       word = word.strip
       trigger_word = user.trigger_words.find_or_initialize_by(name: word)
-
-      # 既存レコードの場合はカウント更新
+      
       if trigger_word.persisted?
         trigger_word.count += 1
         trigger_word.anger_level_avg = calculate_avg_anger_level(word)
         trigger_word.last_triggered_at = occurred_at
       else
-        # 新規レコードの場合は初期値設定
-        trigger_word.count = 1
         trigger_word.anger_level_avg = anger_level.to_f
         trigger_word.last_triggered_at = occurred_at
         trigger_word.category = categorize_trigger_word(word)
       end
+      
       trigger_word.save!
     end
   end
 
   def update_calming_points
-    user.calming_point&.calculate_points!
+    user.calming_point.calculate_points! if user.calming_point
   end
 
   def calculate_avg_anger_level(word)
-    logs_with_word = user.anger_logs.where('trigger_words LIKE ?', "%#{word}%")
+    logs_with_word = user.anger_logs.where("trigger_words LIKE ?", "%#{word}%")
     logs_with_word.average(:anger_level).to_f
   end
 
@@ -70,7 +62,6 @@ class AngerLog < ApplicationRecord
     return 'family' if family_keywords.any? { |keyword| word.include?(keyword) }
     return 'social' if social_keywords.any? { |keyword| word.include?(keyword) }
     return 'sensory' if sensory_keywords.any? { |keyword| word.include?(keyword) }
-
     'other'
   end
 end
