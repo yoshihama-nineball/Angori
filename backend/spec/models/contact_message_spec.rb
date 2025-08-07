@@ -52,13 +52,13 @@ RSpec.describe ContactMessage, type: :model do
     let!(:resolved_msg) { create(:contact_message, status: 'resolved') }
 
     it 'pendingスコープで取得できること' do
-      expect(ContactMessage.pending).to include(pending_msg)
-      expect(ContactMessage.pending).not_to include(resolved_msg)
+      expect(described_class.pending).to include(pending_msg)
+      expect(described_class.pending).not_to include(resolved_msg)
     end
 
     it 'resolvedスコープで取得できること' do
-      expect(ContactMessage.resolved).to include(resolved_msg)
-      expect(ContactMessage.resolved).not_to include(pending_msg)
+      expect(described_class.resolved).to include(resolved_msg)
+      expect(described_class.resolved).not_to include(pending_msg)
     end
   end
 
@@ -86,32 +86,32 @@ RSpec.describe ContactMessage, type: :model do
     end
 
     it '#from_registered_user?が正しく判定すること' do
-      expect(msg.from_registered_user?).to be_falsey
+      expect(msg).not_to be_from_registered_user
       msg.user = build(:user)
-      expect(msg.from_registered_user?).to be_truthy
+      expect(msg).to be_from_registered_user
     end
   end
 
   describe 'クラスメソッド' do
     it '.priority_orderで優先度順に並ぶこと' do
       # ざっくり確認（詳細な順序は別途）
-      expect { ContactMessage.priority_order.to_sql }.not_to raise_error
+      expect { described_class.priority_order.to_sql }.not_to raise_error
     end
 
     it '.need_attentionで24時間以上前の未解決メッセージを取得できること' do
       old_msg = create(:contact_message, status: 'pending', created_at: 2.days.ago)
-      expect(ContactMessage.need_attention).to include(old_msg)
+      expect(described_class.need_attention).to include(old_msg)
     end
 
     it '.response_time_statsが統計を返すこと' do
       create(:contact_message, admin_reply: '返信済み', replied_at: 2.hours.ago)
-      stats = ContactMessage.response_time_stats
+      stats = described_class.response_time_stats
       expect(stats).to include(:average, :median, :min, :max)
     end
 
     it '.category_statsがカテゴリ別件数を返すこと' do
       create(:contact_message, category: 'bug_report', status: 'pending')
-      expect(ContactMessage.category_stats).to include(['bug_report', 'pending'] => 1)
+      expect(described_class.category_stats).to include(%w[bug_report pending] => 1)
     end
   end
 end
