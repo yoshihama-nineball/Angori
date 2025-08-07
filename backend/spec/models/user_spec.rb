@@ -18,9 +18,11 @@ RSpec.describe User, type: :model do
     end
 
     it '重複したメールアドレスの場合は無効であること' do
-      create(:user, email: 'test@example.com')
-      user = build(:user, email: 'test@example.com')
+      # 既存のユーザーがある場合でも、固有のメールアドレスを使用
+      existing_user = create(:user) # FactoryBotが自動的にユニークなemailを生成
+      user = build(:user, email: existing_user.email) # 同じemailを使用
       expect(user).not_to be_valid
+      expect(user.errors[:email]).to include('has already been taken')
     end
   end
 
