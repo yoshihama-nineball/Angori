@@ -219,16 +219,21 @@ class Reminder < ApplicationRecord
 
   def self.effectiveness_report(user)
     reminders = where(user: user)
+    active_reminders = reminders.active
+
+    effectiveness_scores = active_reminders.map(&:effectiveness_score)
+    avg_effectiveness = effectiveness_scores.any? ? (effectiveness_scores.sum.to_f / effectiveness_scores.size).round(1) : 0
 
     {
       total_reminders: reminders.count,
-      active_count: reminders.active.count,
+      active_count: active_reminders.count,
       inactive_count: reminders.inactive.count,
-      avg_effectiveness: reminders.active.average(&:effectiveness_score)&.round(1) || 0,
-      daily_frequency: reminders.active.sum { |r| r.days_of_week.length },
+      avg_effectiveness: avg_effectiveness,
+      daily_frequency: active_reminders.sum { |r| r.days_of_week.length },
       most_common_category: reminders.group(:reminder_category).count.max_by { |_k, v| v }&.first
     }
   end
+
 
   def self.suggest_optimal_times(user)
     # ユーザーの行動パターンに基づいて最適な時間を提案（簡略版）

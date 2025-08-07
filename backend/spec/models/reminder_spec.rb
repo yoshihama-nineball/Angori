@@ -42,22 +42,24 @@ RSpec.describe Reminder, type: :model do
     let!(:inactive_reminder) { create(:reminder, is_active: false) }
 
     it 'activeスコープで取得できること' do
-      expect(Reminder.active).to include(active_reminder)
-      expect(Reminder.active).not_to include(inactive_reminder)
+      expect(described_class.active).to include(active_reminder)
+      expect(described_class.active).not_to include(inactive_reminder)
     end
 
     it 'inactiveスコープで取得できること' do
-      expect(Reminder.inactive).to include(inactive_reminder)
-      expect(Reminder.inactive).not_to include(active_reminder)
+      expect(described_class.inactive).to include(inactive_reminder)
+      expect(described_class.inactive).not_to include(active_reminder)
     end
 
     it 'by_categoryスコープでカテゴリ別に取得できること' do
-      expect(Reminder.by_category('water_intake')).to include(active_reminder)
+      expect(described_class.by_category('water_intake')).to include(active_reminder)
     end
   end
 
   describe 'インスタンスメソッド' do
-    let(:reminder) { build(:reminder, reminder_category: 'reflection', schedule_time: '21:00', days_of_week: [Date.current.wday]) }
+    let(:reminder) do
+      build(:reminder, reminder_category: 'reflection', schedule_time: '21:00', days_of_week: [Date.current.wday])
+    end
 
     it '#category_emojiが正しい絵文字を返すこと' do
       expect(reminder.category_emoji).to eq('🪞')
@@ -72,7 +74,7 @@ RSpec.describe Reminder, type: :model do
     end
 
     it '#scheduled_for_today?が正しく判定すること' do
-      expect(reminder.scheduled_for_today?).to be_truthy
+      expect(reminder).to be_scheduled_for_today
     end
 
     it '#formatted_scheduleが曜日と時刻を返すこと' do
@@ -99,18 +101,18 @@ RSpec.describe Reminder, type: :model do
 
     it '.for_user_todayが今日のリマインダーを返すこと' do
       reminder = create(:reminder, user: user, days_of_week: [Date.current.wday])
-      expect(Reminder.for_user_today(user)).to include(reminder)
+      expect(described_class.for_user_today(user)).to include(reminder)
     end
 
     it '.category_statsがカテゴリ別件数を返すこと' do
       create(:reminder, user: user, reminder_category: 'reflection')
-      stats = Reminder.category_stats(user)
+      stats = described_class.category_stats(user)
       expect(stats).to include('reflection' => 1)
     end
 
     it '.effectiveness_reportが統計を返すこと' do
       create(:reminder, user: user, reminder_category: 'reflection')
-      report = Reminder.effectiveness_report(user)
+      report = described_class.effectiveness_report(user)
       expect(report).to include(:total_reminders, :active_count, :avg_effectiveness)
     end
   end
