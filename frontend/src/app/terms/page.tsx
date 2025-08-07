@@ -9,7 +9,7 @@ export default function TermsPage() {
     <Container maxWidth="md">
       <Box py={isMobile ? 4 : 8} px={isMobile ? 2 : 6}>
         <Typography
-          variant={isMobile ? 'h4' : 'h3'}
+          variant={isMobile ? 'h5' : 'h3'}
           align="center"
           gutterBottom
         >
