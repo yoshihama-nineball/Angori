@@ -130,6 +130,7 @@ class WiseSaying < ApplicationRecord
     group(:category).count
   end
 
+
   def self.anger_level_distribution
     group(:anger_level_range).count
   end
