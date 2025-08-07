@@ -4,7 +4,7 @@ class User < ApplicationRecord
 
   # Associations
   has_many :anger_logs, dependent: :destroy
-  has_one :calming_points, dependent: :destroy
+  has_one :calming_point, dependent: :destroy
   has_many :trigger_words, dependent: :destroy
   has_many :contact_messages, dependent: :nullify
   has_many :user_badges, dependent: :destroy
@@ -16,7 +16,7 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
 
   # Callbacks
-  after_create :create_calming_points
+  after_create :create_calming_point
 
   private
 
