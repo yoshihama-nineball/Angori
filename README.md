@@ -164,7 +164,40 @@ docker compose exec backend bundle exec rspec           # テスト実行
 docker compose logs -f                                  # ログ確認
 docker compose down                                     # 停止
 ./docker/scripts/cleanup.sh                            # 完全リセット
+
 ```
+
+## 🗄️ データベース
+
+### セットアップ
+
+```bash
+# データベース初期化（初回のみ）
+docker compose exec backend rails db:create
+docker compose exec backend rails db:migrate
+docker compose exec backend rails db:seed
+```
+
+### サンプルデータ
+
+Seedsで以下のデータが作成されます：
+- **管理者**: admin@angori.com / password123
+- **テストユーザー**: test@example.com / password123
+- **ASD特性ユーザー**: asd.user@example.com / password123  
+- **HSP特性ユーザー**: hsp.user@example.com / password123
+
+### データベース構成
+
+| テーブル | 件数 | 説明 |
+|---------|------|------|
+| **Users** | 4 | ユーザー（管理者+テスト） |
+| **AngerLogs** | 8+ | 怒りログ（多様なパターン） |
+| **CalmingPoints** | 4 | ゲーミフィケーション |
+| **TriggerWords** | 30+ | トリガーワード自動分析 |
+| **Badges** | 8 | 達成バッジシステム |
+| **WiseSayings** | 14 | レベル別格言 |
+| **Reminders** | 5+ | スマートリマインダー |
+| **ContactMessages** | 3 | 問い合わせ管理 |
 
 ## 🧪 開発状況
 
@@ -206,25 +239,6 @@ MIT License - 詳細は [LICENSE](./LICENSE) を参照
 ---
 
 🦍 Let's manage anger like a wise gorilla! 🍌
-
-## 🔧 開発コマンド
-
-```bash
-# フロントエンド開発
-docker compose exec frontend yarn add package-name      # パッケージ追加
-docker compose exec frontend yarn lint:fix              # コード修正
-docker compose exec frontend yarn test                  # テスト実行
-
-# バックエンド開発  
-docker compose exec backend rails console               # Railsコンソール
-docker compose exec backend rails db:migrate            # DB更新
-docker compose exec backend bundle exec rspec           # テスト実行
-
-# 環境管理
-docker compose logs -f                                  # ログ確認
-docker compose down                                     # 停止
-./docker/scripts/cleanup.sh                            # 完全リセット
-```
 
 ## 🧪 開発状況
 
