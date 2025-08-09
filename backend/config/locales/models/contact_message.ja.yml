@@ -1,0 +1,18 @@
+ja:
+  activerecord:
+    errors:
+      messages:
+        email_format: 'の形式が正しくありません'
+        contact_category_inclusion: 'が無効です'
+        contact_priority_inclusion: 'が無効です'
+    models:
+      contact_message: お問い合わせ
+    attributes:
+      contact_message:
+        name: お名前
+        email: メールアドレス
+        subject: 件名
+        message: メッセージ
+        category: カテゴリ
+        priority: 優先度
+        status: ステータス

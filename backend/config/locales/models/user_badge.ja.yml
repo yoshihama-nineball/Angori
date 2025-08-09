@@ -1,0 +1,12 @@
+ja:
+  activerecord:
+    errors:
+      messages:
+        user_badge_duplicate: 'このバッジは既に獲得済みです'
+    models:
+      user_badge: ユーザーバッジ
+    attributes:
+      user_badge:
+        user: ユーザー
+        badge: バッジ
+        earned_at: 獲得日時

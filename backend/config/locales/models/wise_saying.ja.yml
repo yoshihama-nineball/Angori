@@ -1,0 +1,14 @@
+ja:
+  activerecord:
+    errors:
+      messages:
+        wise_saying_category_inclusion: 'は有効なカテゴリを選択してください'
+        wise_saying_anger_level_inclusion: 'は all, low, medium, high のいずれかである必要があります'
+    models:
+      wise_saying: 格言
+    attributes:
+      wise_saying:
+        content: 内容
+        author: 著者
+        category: カテゴリ
+        anger_level_range: 怒りレベル範囲
