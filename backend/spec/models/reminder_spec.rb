@@ -38,21 +38,36 @@ RSpec.describe Reminder, type: :model do
   end
 
   describe 'スコープ' do
-    let!(:active_reminder) { create(:reminder, is_active: true) }
-    let!(:inactive_reminder) { create(:reminder, is_active: false) }
+    let(:active_reminder) { create(:reminder, is_active: true) }
+    let(:inactive_reminder) { create(:reminder, is_active: false) }
 
-    it 'activeスコープで取得できること' do
+    it 'activeスコープにアクティブなリマインダーが含まれること' do
+      active_reminder
+      inactive_reminder
       expect(described_class.active).to include(active_reminder)
+    end
+
+    it 'activeスコープに非アクティブなリマインダーが含まれないこと' do
+      active_reminder
+      inactive_reminder
       expect(described_class.active).not_to include(inactive_reminder)
     end
 
-    it 'inactiveスコープで取得できること' do
+    it 'inactiveスコープに非アクティブなリマインダーが含まれること' do
+      active_reminder
+      inactive_reminder
       expect(described_class.inactive).to include(inactive_reminder)
+    end
+
+    it 'inactiveスコープにアクティブなリマインダーが含まれないこと' do
+      active_reminder
+      inactive_reminder
       expect(described_class.inactive).not_to include(active_reminder)
     end
 
     it 'by_categoryスコープでカテゴリ別に取得できること' do
-      expect(described_class.by_category('water_intake')).to include(active_reminder)
+      reminder = create(:reminder, reminder_category: 'water_intake')
+      expect(described_class.by_category('water_intake')).to include(reminder)
     end
   end
 

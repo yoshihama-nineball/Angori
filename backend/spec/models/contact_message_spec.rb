@@ -48,16 +48,30 @@ RSpec.describe ContactMessage, type: :model do
   end
 
   describe 'スコープ' do
-    let!(:pending_msg) { create(:contact_message, status: 'pending') }
-    let!(:resolved_msg) { create(:contact_message, status: 'resolved') }
+    let(:pending_msg) { create(:contact_message, status: 'pending') }
+    let(:resolved_msg) { create(:contact_message, status: 'resolved') }
 
-    it 'pendingスコープで取得できること' do
+    it 'pendingスコープにpendingメッセージが含まれること' do
+      pending_msg
+      resolved_msg
       expect(described_class.pending).to include(pending_msg)
+    end
+
+    it 'pendingスコープにresolvedメッセージが含まれないこと' do
+      pending_msg
+      resolved_msg
       expect(described_class.pending).not_to include(resolved_msg)
     end
 
-    it 'resolvedスコープで取得できること' do
+    it 'resolvedスコープにresolvedメッセージが含まれること' do
+      pending_msg
+      resolved_msg
       expect(described_class.resolved).to include(resolved_msg)
+    end
+
+    it 'resolvedスコープにpendingメッセージが含まれないこと' do
+      pending_msg
+      resolved_msg
       expect(described_class.resolved).not_to include(pending_msg)
     end
   end
@@ -85,8 +99,11 @@ RSpec.describe ContactMessage, type: :model do
       expect(msg.display_category).to eq('🐛 バグ報告')
     end
 
-    it '#from_registered_user?が正しく判定すること' do
+    it '#from_registered_user?で未登録ユーザーはfalseを返すこと' do
       expect(msg).not_to be_from_registered_user
+    end
+
+    it '#from_registered_user?で登録済みユーザーはtrueを返すこと' do
       msg.user = build(:user)
       expect(msg).to be_from_registered_user
     end
@@ -94,7 +111,6 @@ RSpec.describe ContactMessage, type: :model do
 
   describe 'クラスメソッド' do
     it '.priority_orderで優先度順に並ぶこと' do
-      # ざっくり確認（詳細な順序は別途）
       expect { described_class.priority_order.to_sql }.not_to raise_error
     end
 

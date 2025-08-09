@@ -14,10 +14,12 @@ RSpec.describe AngerLog, type: :model do
       expect(anger_log).not_to be_valid
     end
 
-    it '1-10のAnger_level外の場合は無効であること' do
+    it 'anger_levelが11の場合は無効であること' do
       anger_log = build(:anger_log, user: user, anger_level: 11)
       expect(anger_log).not_to be_valid
+    end
 
+    it 'anger_levelが0の場合は無効であること' do
       anger_log = build(:anger_log, user: user, anger_level: 0)
       expect(anger_log).not_to be_valid
     end
@@ -38,24 +40,29 @@ RSpec.describe AngerLog, type: :model do
     end
 
     it 'anger_log作成後のcalming pointsの更新' do
-      expect(user.calming_point).to receive(:calculate_points!)
+      allow(user.calming_point).to receive(:calculate_points!)
       create(:anger_log, user: user)
+      expect(user.calming_point).to have_received(:calculate_points!)
     end
   end
 
   describe 'scopes' do
-    let!(:recent_log) { create(:anger_log, user: user, occurred_at: 1.hour.ago) }
-    let!(:old_log) { create(:anger_log, user: user, occurred_at: 1.week.ago) }
+    let(:recent_log) { create(:anger_log, user: user, occurred_at: 1.hour.ago) }
+    let(:old_log) { create(:anger_log, user: user, occurred_at: 1.week.ago) }
 
     it 'recentによるソート' do
+      recent_log
+      old_log
       expect(described_class.recent.first).to eq(recent_log)
     end
 
-    it 'anger levelによる絞り込み' do
+    it 'anger levelの高いログを絞り込むこと' do
       high_anger = create(:anger_log, user: user, anger_level: 8)
-      low_anger = create(:anger_log, user: user, anger_level: 3)
-
       expect(described_class.by_anger_level(8)).to include(high_anger)
+    end
+
+    it 'anger levelの低いログは絞り込まれないこと' do
+      low_anger = create(:anger_log, user: user, anger_level: 3)
       expect(described_class.by_anger_level(8)).not_to include(low_anger)
     end
   end

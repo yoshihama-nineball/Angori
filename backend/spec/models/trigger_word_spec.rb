@@ -61,34 +61,61 @@ RSpec.describe TriggerWord, type: :model do
   end
 
   describe 'スコープ' do
-    let!(:work_trigger) { create(:trigger_word, user: user, category: 'work', count: 5, anger_level_avg: 8.0) }
-    # count と anger_level_avg を下げる
-    let!(:family_trigger) do
-      create(:trigger_word, user: user, category: 'family', count: 1, anger_level_avg: 5.0)
-    end
-    let!(:high_trigger) { create(:trigger_word, user: user, category: 'social', count: 8, anger_level_avg: 9.0) }
+    let(:work_trigger) { create(:trigger_word, user: user, category: 'work', count: 5, anger_level_avg: 8.0) }
+    let(:family_trigger) { create(:trigger_word, user: user, category: 'family', count: 1, anger_level_avg: 5.0) }
+    let(:high_trigger) { create(:trigger_word, user: user, category: 'social', count: 8, anger_level_avg: 9.0) }
 
-    it 'by_categoryでカテゴリ絞り込みができること' do
+    it 'by_categoryでworkカテゴリを取得できること' do
+      work_trigger
+      family_trigger
       expect(described_class.by_category('work')).to include(work_trigger)
+    end
+
+    it 'by_categoryで他カテゴリが除外されること' do
+      work_trigger
+      family_trigger
       expect(described_class.by_category('work')).not_to include(family_trigger)
     end
 
-    it 'high_frequencyで頻度の高いトリガーを取得できること' do
-      expect(described_class.high_frequency).to include(work_trigger, high_trigger)
+    it 'high_frequencyで高頻度トリガーを取得できること' do
+      work_trigger
+      family_trigger
+      high_trigger
+      expect(described_class.high_frequency).to include(work_trigger)
+    end
+
+    it 'high_frequencyで低頻度トリガーが除外されること' do
+      work_trigger
+      family_trigger
+      high_trigger
       expect(described_class.high_frequency).not_to include(family_trigger)
     end
 
-    it 'high_angerで高い怒りレベルのトリガーを取得できること' do
-      expect(described_class.high_anger).to include(work_trigger, high_trigger)
+    it 'high_angerで高怒りレベルトリガーを取得できること' do
+      work_trigger
+      family_trigger
+      high_trigger
+      expect(described_class.high_anger).to include(work_trigger)
+    end
+
+    it 'high_angerで低怒りレベルトリガーが除外されること' do
+      work_trigger
+      family_trigger
+      high_trigger
       expect(described_class.high_anger).not_to include(family_trigger)
     end
 
     it 'dangerousで危険なトリガーを取得できること' do
-      # dangerous条件: anger_level_avg >= 6.0 AND count >= 2
-      # work_trigger: 8.0, count: 5 → dangerous ✅
-      # high_trigger: 9.0, count: 8 → dangerous ✅
-      # family_trigger: 5.0, count: 1 → not dangerous ✅
-      expect(described_class.dangerous).to include(work_trigger, high_trigger)
+      work_trigger
+      family_trigger
+      high_trigger
+      expect(described_class.dangerous).to include(work_trigger)
+    end
+
+    it 'dangerousで安全なトリガーが除外されること' do
+      work_trigger
+      family_trigger
+      high_trigger
       expect(described_class.dangerous).not_to include(family_trigger)
     end
   end
@@ -109,31 +136,57 @@ RSpec.describe TriggerWord, type: :model do
     end
 
     describe '#frequency_level' do
-      it 'countに応じた頻度レベルを返すこと' do
-        expect(create(:trigger_word, user: user, count: 1).frequency_level).to eq('low')
-        expect(create(:trigger_word, user: user, count: 4).frequency_level).to eq('medium')
-        expect(create(:trigger_word, user: user, count: 7).frequency_level).to eq('high')
-        expect(create(:trigger_word, user: user, count: 15).frequency_level).to eq('very_high')
+      it 'count 1でlowを返すこと' do
+        trigger = create(:trigger_word, user: user, count: 1)
+        expect(trigger.frequency_level).to eq('low')
+      end
+
+      it 'count 4でmediumを返すこと' do
+        trigger = create(:trigger_word, user: user, count: 4)
+        expect(trigger.frequency_level).to eq('medium')
+      end
+
+      it 'count 7でhighを返すこと' do
+        trigger = create(:trigger_word, user: user, count: 7)
+        expect(trigger.frequency_level).to eq('high')
+      end
+
+      it 'count 15でvery_highを返すこと' do
+        trigger = create(:trigger_word, user: user, count: 15)
+        expect(trigger.frequency_level).to eq('very_high')
       end
     end
 
     describe '#anger_severity' do
-      it 'anger_level_avgに応じた深刻度を返すこと' do
-        expect(create(:trigger_word, user: user, anger_level_avg: 2.0).anger_severity).to eq('mild')
-        expect(create(:trigger_word, user: user, anger_level_avg: 5.0).anger_severity).to eq('moderate')
-        expect(create(:trigger_word, user: user, anger_level_avg: 7.0).anger_severity).to eq('severe')
-        expect(create(:trigger_word, user: user, anger_level_avg: 9.0).anger_severity).to eq('extreme')
+      it 'anger_level_avg 2.0でmildを返すこと' do
+        trigger = create(:trigger_word, user: user, anger_level_avg: 2.0)
+        expect(trigger.anger_severity).to eq('mild')
+      end
+
+      it 'anger_level_avg 5.0でmoderateを返すこと' do
+        trigger = create(:trigger_word, user: user, anger_level_avg: 5.0)
+        expect(trigger.anger_severity).to eq('moderate')
+      end
+
+      it 'anger_level_avg 7.0でsevereを返すこと' do
+        trigger = create(:trigger_word, user: user, anger_level_avg: 7.0)
+        expect(trigger.anger_severity).to eq('severe')
+      end
+
+      it 'anger_level_avg 9.0でextremeを返すこと' do
+        trigger = create(:trigger_word, user: user, anger_level_avg: 9.0)
+        expect(trigger.anger_severity).to eq('extreme')
       end
     end
   end
 
   describe 'クラスメソッド' do
-    let!(:common_trigger) { create(:trigger_word, user: user, count: 10) }
-    let!(:rare_trigger) { create(:trigger_word, user: user, count: 1) }
-    let!(:dangerous_trigger) { create(:trigger_word, user: user, count: 5, anger_level_avg: 8.0) }
+    let(:common_trigger) { create(:trigger_word, user: user, count: 10) }
+    let(:dangerous_trigger) { create(:trigger_word, user: user, count: 5, anger_level_avg: 8.0) }
 
     describe '.most_common_for_user' do
       it 'ユーザーの最も一般的なトリガーを取得すること' do
+        common_trigger
         result = described_class.most_common_for_user(user, 2)
         expect(result.first).to eq(common_trigger)
       end
@@ -141,6 +194,7 @@ RSpec.describe TriggerWord, type: :model do
 
     describe '.most_dangerous_for_user' do
       it 'ユーザーの最も危険なトリガーを取得すること' do
+        dangerous_trigger
         result = described_class.most_dangerous_for_user(user, 2)
         expect(result).to include(dangerous_trigger)
       end

@@ -31,9 +31,9 @@ module CalmingPointCalculation
 
   def streak_bonus
     case streak_days
-    when 7..13  then 50   # 1週間連続
-    when 14..29 then 100  # 2週間連続
-    when 30..   then 200  # 1ヶ月連続
+    when 7..13  then 50
+    when 14..29 then 100
+    when 30..   then 200
     else 0
     end
   end
@@ -46,8 +46,8 @@ module CalmingPointCalculation
 
     improvement = previous_avg - recent_avg
     case improvement
-    when 2.. then 50  # 2レベル以上改善
-    when 1.. then 25  # 1レベル以上改善
+    when 2.. then 50
+    when 1.. then 25
     else 0
     end
   end
@@ -55,9 +55,9 @@ module CalmingPointCalculation
   def milestone_bonus
     consultation_count = user.anger_logs.where.not(ai_advice: [nil, '']).count
     case consultation_count
-    when 1  then 20   # 初回相談
-    when 10 then 30   # 相談マスター
-    when 30 then 50   # ゴリラの知恵袋
+    when 1  then 20
+    when 10 then 30
+    when 30 then 50
     else 0
     end
   end

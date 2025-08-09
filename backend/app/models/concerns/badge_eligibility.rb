@@ -19,12 +19,17 @@ module BadgeEligibility
     send(checker_method, user)
   end
 
-  def award_to_user_if_eligible(user)
+  def eligible_for_user?(user)
     return false if earned_by?(user)
-    return false unless check_eligibility(user)
+
+    check_eligibility(user)
+  end
+
+  def award_badge_to_user!(user)
+    return if earned_by?(user)
+    return unless check_eligibility(user)
 
     UserBadge.create!(user: user, badge: self)
-    true
   end
 
   private
