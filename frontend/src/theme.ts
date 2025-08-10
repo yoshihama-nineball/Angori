@@ -212,19 +212,17 @@ const theme = createTheme({
           fontSize: '1rem',
         },
         contained: {
-          background: 'linear-gradient(45deg, #5D4037 30%, #8D6E63 70%)',
+          background: '#5D4037',
           boxShadow: '0 4px 15px rgba(94, 64, 55, 0.3)',
           color: '#FFD700',
-          border: '1px solid #FFD700',
           '&:hover': {
-            background: 'linear-gradient(45deg, #3E2723 30%, #5D4037 70%)',
+            background: '#3E2723',
             boxShadow: '0 6px 20px rgba(94, 64, 55, 0.4)',
-            transform: 'translateY(-2px)',
           },
         },
         outlined: {
           borderColor: '#5D4037',
-          color: '#3E2723',
+          color: '#5D4037',
           '&:hover': {
             borderColor: '#3E2723',
             backgroundColor: 'rgba(94, 64, 55, 0.1)',
@@ -243,6 +241,49 @@ const theme = createTheme({
             transform: 'translateY(-1px)',
             boxShadow: '0 2px 8px rgba(94, 64, 55, 0.2)',
           },
+        },
+      },
+    },
+    // theme.ts の components に追加
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#FFFACD', // アプリ背景と同じ
+          borderRadius: 16,
+          border: '1px solid #E0E0E0',
+          padding: '8px',
+          boxShadow: '0 8px 32px rgba(94, 64, 55, 0.2)',
+        },
+      },
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          color: '#3E2723', // ダークブラウン
+          fontWeight: 600,
+          textAlign: 'center',
+          paddingBottom: '8px',
+          fontSize: '1.25rem',
+        },
+      },
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: {
+          color: '#5D4037', // ミディアムブラウン
+          textAlign: 'center',
+          paddingTop: '16px',
+          paddingBottom: '16px',
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          justifyContent: 'center',
+          gap: '16px',
+          paddingBottom: '16px',
+          paddingTop: '8px',
         },
       },
     },
@@ -320,9 +361,10 @@ const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          background:
-            'linear-gradient(45deg, #5D4037 0%, #8D6E63 50%, #FFD700 100%)',
-          color: '#FFFFFF',
+          backgroundColor: '#FFF8DC',
+          color: '#5D4037',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+          borderBottom: '1px solid #E0E0E0',
         },
       },
     },

@@ -4,6 +4,7 @@ import React from 'react'
 import Footer from '../components/layouts/Footer/Footer'
 // import Header from "../components/layouts/Header/Header";
 import { ClientThemeProvider } from './components/layouts/ClientThemeProvider'
+import Header from '@/components/layouts/Header/Header'
 
 export const metadata: Metadata = {
   title: 'アンガーアプリ | TOP',
@@ -22,7 +23,7 @@ export default function RootLayout({
     <html lang="ja">
       <body>
         <ClientThemeProvider>
-          <div>ヘッダー</div>
+          <Header />
           {/* メインコンテンツをラップして、ヘッダーの高さ分のパディングを追加 */}
           <main
             style={{
