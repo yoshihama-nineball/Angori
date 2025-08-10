@@ -28,6 +28,9 @@ module Backend
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
 
+    config.autoload_paths = config.autoload_paths.dup
+    config.eager_load_paths = config.eager_load_paths.dup
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
