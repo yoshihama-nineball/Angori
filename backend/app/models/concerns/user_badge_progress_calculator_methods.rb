@@ -1,4 +1,4 @@
-module ProgressCalculatorMethods
+module UserBadgeProgressCalculatorMethods
   def consultation_progress(user, threshold)
     count = user.anger_logs.where.not(ai_advice: [nil, '']).count
     (count.to_f / threshold) * 100

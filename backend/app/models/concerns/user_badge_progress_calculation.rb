@@ -1,4 +1,4 @@
-module BadgeProgressCalculation
+module UserBadgeProgressCalculation
   def progress_towards_badges(user)
     earned_badge_ids = where(user: user).pluck(:badge_id)
     available_badges = Badge.where.not(id: earned_badge_ids)

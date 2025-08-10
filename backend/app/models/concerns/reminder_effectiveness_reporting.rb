@@ -1,4 +1,4 @@
-module EffectivenessReporting
+module ReminderEffectivenessReporting
   def effectiveness_report(user)
     reminders = user.reminders.active.includes(:reminder_logs)
     effectiveness_scores = reminders.map(&:effectiveness_score)

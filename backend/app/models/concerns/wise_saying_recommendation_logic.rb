@@ -1,4 +1,4 @@
-module RecommendationLogic
+module WiseSayingRecommendationLogic
   def random_for_level(anger_level)
     for_anger_level(anger_level).random_order.first
   end

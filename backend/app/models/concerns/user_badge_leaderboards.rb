@@ -1,4 +1,4 @@
-module BadgeLeaderboards
+module UserBadgeLeaderboards
   def badge_leaderboard(limit = 10)
     User.joins(:user_badges)
         .group('users.id')

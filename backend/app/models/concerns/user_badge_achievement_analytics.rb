@@ -1,4 +1,4 @@
-module BadgeAchievementAnalytics
+module UserBadgeAchievementAnalytics
   def recent_achievements(limit = 10)
     recent.includes(:user, :badge).limit(limit)
   end

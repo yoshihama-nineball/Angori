@@ -1,4 +1,4 @@
-module QuoteCategories
+module WiseSayingQuoteCategories
   def motivational_quotes
     where(category: %w[motivation self_care self_acceptance])
   end

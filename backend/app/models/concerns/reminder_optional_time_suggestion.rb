@@ -1,4 +1,4 @@
-module OptimalTimeSuggestion
+module ReminderOptionalTimeSuggestion
   def suggest_optimal_times(_user)
     # ReminderLogが実装されるまで一時的にデフォルト値を返す
     default_suggestion
