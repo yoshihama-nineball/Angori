@@ -1,8 +1,8 @@
 module OptimalTimeSuggestion
-  def suggest_optimal_times(user)
+  def suggest_optimal_times(_user)
     # ReminderLogが実装されるまで一時的にデフォルト値を返す
     default_suggestion
-    
+
     # 元のコード（ReminderLog実装後に有効化予定）
     # completed_logs = user.reminder_logs.completed.includes(:reminder)
     # return default_suggestion if completed_logs.empty?

@@ -13,8 +13,8 @@ class ContactMessage < ApplicationRecord
   validates :subject, presence: true, length: { maximum: 200 }
   validates :message, presence: true, length: { maximum: 2000 }
   validates :category, presence: true, inclusion: {
-    in: %w[general bug_report feature_request support feedback],
-    message: 'カテゴリが無効です'
+    in: %w[general general_inquiry bug_report feature_request support feedback],
+    message: I18n.t('activerecord.errors.messages.contact_category_inclusion')
   }
 
   validates :status, inclusion: { in: %w[pending in_progress resolved closed] }

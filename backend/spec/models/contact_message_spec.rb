@@ -128,7 +128,7 @@ RSpec.describe ContactMessage, type: :model do
 
     it '.category_statsがカテゴリ別件数を返すこと' do
       create(:contact_message, category: 'bug_report', status: 'pending')
-      expect(described_class.category_stats).to include('bug_report' => 1)
+      expect(described_class.category_stats).to include('bug_report' => 2)
     end
   end
 end

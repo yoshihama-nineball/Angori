@@ -31,7 +31,7 @@ module ReminderEffectiveness
   def completion_rate
     # 一時的に固定値を返す（ReminderLogが実装されるまで）
     75.0
-    
+
     # 元のコード（コメントアウト）
     # total_scheduled = reminder_logs.count
     # return 0.0 if total_scheduled.zero?

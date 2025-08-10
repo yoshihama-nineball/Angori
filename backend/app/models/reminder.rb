@@ -12,11 +12,11 @@ class Reminder < ApplicationRecord
   validates :reminder_category, presence: true, inclusion: {
     in: %w[breathing meditation exercise relaxation mindfulness positive_thinking gratitude self_care music nature
            water_intake reflection daily_log consultation],
-    message: 'カテゴリが無効です'
+    message: I18n.t('activerecord.errors.messages.reminder_category_inclusion')
   }
   validates :schedule_time, presence: true, format: {
     with: /\A([01]?[0-9]|2[0-3]):[0-5][0-9]\z/,
-    message: '時刻の形式が無効です'
+    message: I18n.t('activerecord.errors.messages.time_format')
   }
   validates :days_of_week, presence: true
   validates :is_active, inclusion: { in: [true, false] }
