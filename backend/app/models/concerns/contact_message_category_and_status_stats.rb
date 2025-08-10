@@ -1,4 +1,4 @@
-module CategoryAndStatusStats
+module ContactMessageCategoryAndStatusStats
   def category_stats
     group(:category).count
   end
