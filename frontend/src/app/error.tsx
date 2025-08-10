@@ -8,7 +8,6 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { useEffect } from 'react'
 
 export default function Error({
   error,
@@ -18,11 +17,6 @@ export default function Error({
   reset: () => void
 }) {
   const theme = useTheme()
-
-  useEffect(() => {
-    // オプション: エラーロギングサービスにエラーを報告
-    console.error(error)
-  }, [error])
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
