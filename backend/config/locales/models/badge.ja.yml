@@ -1,0 +1,14 @@
+ja:
+  activerecord:
+    errors:
+      messages:
+        badge_type_inclusion: 'は milestone, achievement, special, rare のいずれかである必要があります'
+    models:
+      badge: バッジ
+    attributes:
+      badge:
+        name: 名前
+        description: 説明
+        badge_type: バッジタイプ
+        points_reward: 報酬ポイント
+        requirements: 取得条件

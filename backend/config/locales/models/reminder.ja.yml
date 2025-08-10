@@ -1,0 +1,16 @@
+ja:
+  activerecord:
+    errors:
+      messages:
+        reminder_category_inclusion: 'は有効なカテゴリを選択してください'
+        reminder_time_format: 'は HH:MM 形式で入力してください（例: 09:30）'
+    models:
+      reminder: リマインダー
+    attributes:
+      reminder:
+        title: タイトル
+        message: メッセージ
+        category: カテゴリ
+        schedule_time: 予定時刻
+        frequency: 頻度
+        active: 有効
