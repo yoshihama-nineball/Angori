@@ -5,6 +5,8 @@ import Footer from '../components/layouts/Footer/Footer'
 // import Header from "../components/layouts/Header/Header";
 import { ClientThemeProvider } from './components/layouts/ClientThemeProvider'
 import Header from '@/components/layouts/Header/Header'
+import FlashMessage from '@/components/feedback/Alert/FlashMessage'
+import { MessageProvider } from '../../context/MessageContext'
 
 export const metadata: Metadata = {
   title: 'アンガーアプリ | TOP',
@@ -23,20 +25,23 @@ export default function RootLayout({
     <html lang="ja">
       <body>
         <ClientThemeProvider>
-          <Header />
-          {/* メインコンテンツをラップして、ヘッダーの高さ分のパディングを追加 */}
-          <main
-            style={{
-              paddingTop: 'var(--header-height, 64px)', // デフォルト値として64pxを設定
-              minHeight: 'calc(100vh - var(--footer-height, 56px))', // フッターの高さを考慮
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            {/* <React.Suspense fallback={<Loading />}>{children}</React.Suspense> */}
-            <React.Suspense>{children}</React.Suspense>
-          </main>
-          <Footer />
+          <MessageProvider>
+            <Header />
+            <FlashMessage />
+            {/* メインコンテンツをラップして、ヘッダーの高さ分のパディングを追加 */}
+            <main
+              style={{
+                paddingTop: 'var(--header-height, 64px)', // デフォルト値として64pxを設定
+                minHeight: 'calc(100vh - var(--footer-height, 56px))', // フッターの高さを考慮
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              {/* <React.Suspense fallback={<Loading />}>{children}</React.Suspense> */}
+              <React.Suspense>{children}</React.Suspense>
+            </main>
+            <Footer />
+          </MessageProvider>
         </ClientThemeProvider>
       </body>
     </html>

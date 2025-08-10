@@ -9,6 +9,8 @@ import {
   Chip,
   TextField,
   Paper,
+  AppBar,
+  Toolbar,
   Grid,
 } from '@mui/material'
 import {
@@ -17,6 +19,7 @@ import {
   SentimentVeryDissatisfied,
   SentimentSatisfied,
   SentimentVerySatisfied,
+  Pets,
 } from '@mui/icons-material'
 import { useTheme } from '@mui/material/styles'
 import axios from 'axios'
@@ -97,6 +100,16 @@ const TestPage = () => {
 
   return (
     <>
+      {/* AppBar テスト */}
+      <AppBar position="static">
+        <Toolbar>
+          <Pets sx={{ mr: 2 }} />
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            🦍 Angori ライブラリテスト
+          </Typography>
+        </Toolbar>
+      </AppBar>
+
       <Box sx={{ p: 3 }}>
         <Typography variant="h3" gutterBottom align="center">
           🍌 ゴリラテーマ動作確認 🍌
