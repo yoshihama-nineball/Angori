@@ -6,7 +6,7 @@ import { Box } from '@mui/material'
 
 export default function FlashMessage() {
   const { message, clearMessage } = useMessage()
-  
+
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => {
@@ -19,13 +19,15 @@ export default function FlashMessage() {
   if (!message || !message.text) return null
 
   return (
-    <Box sx={{ 
-      position: 'sticky', // または 'fixed'
-      top: 'var(--header-height, 64px)', // ヘッダーの下に配置
-      zIndex: 1300, // MUIのModalより上に表示
-      width: '100%',
-      px: 2 // 左右にパディング
-    }}>
+    <Box
+      sx={{
+        position: 'sticky', // または 'fixed'
+        top: 'var(--header-height, 64px)', // ヘッダーの下に配置
+        zIndex: 1300, // MUIのModalより上に表示
+        width: '100%',
+        px: 2, // 左右にパディング
+      }}
+    >
       <Alert severity={message.severity}>{message.text}</Alert>
     </Box>
   )

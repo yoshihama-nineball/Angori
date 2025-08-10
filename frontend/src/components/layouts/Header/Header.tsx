@@ -55,55 +55,6 @@ export default function Header() {
           borderBottom: '1px solid #E0E0E0',
         }}
       >
-        // 開発環境でのみ表示するテストボタン
-        {process.env.NODE_ENV === 'development' && (
-          <div
-            style={{
-              position: 'fixed',
-              bottom: '10px',
-              right: '10px',
-              zIndex: 9999,
-            }}
-          >
-            <button
-              onClick={() =>
-                setMessage({
-                  severity: 'success',
-                  text: 'テスト成功メッセージ',
-                })
-              }
-            >
-              Success
-            </button>
-            <button
-              onClick={() =>
-                setMessage({
-                  severity: 'error',
-                  text: 'テストエラーメッセージ',
-                })
-              }
-            >
-              Error
-            </button>
-            <button
-              onClick={() =>
-                setMessage({
-                  severity: 'warning',
-                  text: 'テスト警告メッセージ',
-                })
-              }
-            >
-              Warning
-            </button>
-            <button
-              onClick={() =>
-                setMessage({ severity: 'info', text: 'テスト情報メッセージ' })
-              }
-            >
-              Info
-            </button>
-          </div>
-        )}
         <Toolbar
           sx={{
             minHeight: { xs: 56, md: 64 },
