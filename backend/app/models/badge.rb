@@ -1,4 +1,3 @@
-# app/models/badge.rb
 class Badge < ApplicationRecord
   include BadgeDisplay
   include BadgeEligibility
@@ -28,7 +27,19 @@ class Badge < ApplicationRecord
   scope :recently_created, -> { order(created_at: :desc) }
 
   def earned_by?(user)
+    return false if user.nil?
+
     user_badges.exists?(user: user)
+  end
+
+  def award_to_user_if_eligible(user)
+    return false unless check_eligibility(user)
+    return false if earned_by?(user)
+
+    UserBadge.create!(user: user, badge: self)
+    true
+  rescue ActiveRecord::RecordInvalid
+    false
   end
 
   class << self

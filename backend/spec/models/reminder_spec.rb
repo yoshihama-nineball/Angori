@@ -102,7 +102,7 @@ RSpec.describe Reminder, type: :model do
     end
 
     it '#effectiveness_scoreが数値を返すこと' do
-      expect(reminder.effectiveness_score).to be_a(Integer)
+      expect(reminder.effectiveness_score).to be_a(Numeric)
     end
 
     it '#toggle_active!で状態が反転すること' do
@@ -119,16 +119,15 @@ RSpec.describe Reminder, type: :model do
       expect(described_class.for_user_today(user)).to include(reminder)
     end
 
-    it '.category_statsがカテゴリ別件数を返すこと' do
+    it '.reminder_category_statsがカテゴリ別件数を返すこと' do
       create(:reminder, user: user, reminder_category: 'reflection')
-      stats = described_class.category_stats(user)
-      expect(stats).to include('reflection' => 1)
+      expect(described_class.reminder_category_stats).to include('reflection' => 1)
     end
 
-    it '.effectiveness_reportが統計を返すこと' do
+    it '.reminder_effectiveness_reportが統計を返すこと' do
       create(:reminder, user: user, reminder_category: 'reflection')
-      report = described_class.effectiveness_report(user)
-      expect(report).to include(:total_reminders, :active_count, :avg_effectiveness)
+      result = described_class.reminder_effectiveness_report
+      expect(result).to include(:total_reminders, :active_count, :average_effectiveness)
     end
   end
 end

@@ -104,7 +104,8 @@ RSpec.describe ContactMessage, type: :model do
     end
 
     it '#from_registered_user?で登録済みユーザーはtrueを返すこと' do
-      msg.user = build(:user)
+      user = create(:user)
+      msg.user = user
       expect(msg).to be_from_registered_user
     end
   end
@@ -127,7 +128,7 @@ RSpec.describe ContactMessage, type: :model do
 
     it '.category_statsがカテゴリ別件数を返すこと' do
       create(:contact_message, category: 'bug_report', status: 'pending')
-      expect(described_class.category_stats).to include(%w[bug_report pending] => 1)
+      expect(described_class.category_stats).to include('bug_report' => 1)
     end
   end
 end

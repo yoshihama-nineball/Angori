@@ -11,7 +11,9 @@ module ReminderDisplay
     'gratitude' => '🙏',
     'self_care' => '💆‍♀️',
     'music' => '🎵',
-    'nature' => '🌿'
+    'nature' => '🌿',
+    'water_intake' => '💧',
+    'reflection' => '🪞'
   }.freeze
 
   CATEGORY_NAMES = {
@@ -24,15 +26,17 @@ module ReminderDisplay
     'gratitude' => '感謝',
     'self_care' => 'セルフケア',
     'music' => '音楽',
-    'nature' => '自然'
+    'nature' => '自然',
+    'water_intake' => '水分補給',
+    'reflection' => '振り返り・内省'
   }.freeze
 
   def category_emoji
-    CATEGORY_EMOJIS[category] || '📝'
+    CATEGORY_EMOJIS[reminder_category] || '📝'
   end
 
   def category_name
-    CATEGORY_NAMES[category] || category
+    CATEGORY_NAMES[reminder_category] || reminder_category
   end
 
   def display_title

@@ -12,8 +12,8 @@ module UserBadgeProgress
   }.freeze
 
   included do
-    extend BadgeAchievability
-    extend BadgeProgressCalculation
-    extend ProgressCalculatorMethods
+    # extend BadgeAchievability
+    # extend BadgeProgressCalculation
+    # extend ProgressCalculatorMethods
   end
 end

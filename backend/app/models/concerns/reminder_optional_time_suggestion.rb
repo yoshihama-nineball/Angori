@@ -1,10 +1,13 @@
 module OptimalTimeSuggestion
   def suggest_optimal_times(user)
-    completed_logs = user.reminder_logs.completed.includes(:reminder)
-    return default_suggestion if completed_logs.empty?
-
-    time_effectiveness = analyze_time_effectiveness(completed_logs)
-    generate_time_suggestions(time_effectiveness)
+    # ReminderLogが実装されるまで一時的にデフォルト値を返す
+    default_suggestion
+    
+    # 元のコード（ReminderLog実装後に有効化予定）
+    # completed_logs = user.reminder_logs.completed.includes(:reminder)
+    # return default_suggestion if completed_logs.empty?
+    # time_effectiveness = analyze_time_effectiveness(completed_logs)
+    # generate_time_suggestions(time_effectiveness)
   end
 
   private

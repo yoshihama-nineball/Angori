@@ -4,10 +4,9 @@ FactoryBot.define do
     name { 'テストユーザー' }
     subject { 'テスト件名' }
     message { 'これはテストメッセージです。' }
-    category { 'general_inquiry' }
+    category { 'general' }
     status { 'pending' }
     admin_reply { nil }
     replied_at { nil }
-    user { nil }
   end
 end

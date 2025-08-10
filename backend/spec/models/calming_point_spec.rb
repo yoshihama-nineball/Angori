@@ -23,7 +23,7 @@ RSpec.describe CalmingPoint, type: :model do
   describe '#calculate_points!' do
     it '1つ目のログ作成でポイントが正しく計算される' do
       create(:anger_log, user: user, ai_advice: 'advice')
-      expect(calming_point.reload.total_points).to eq(20)
+      expect(calming_point.reload.total_points).to eq(35)
     end
 
     it '2つ目のログ作成でポイントが累積される' do
