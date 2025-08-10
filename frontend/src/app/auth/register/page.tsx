@@ -2,7 +2,7 @@
 import RegisterForm from '@/components/auth/RegisterForm'
 import LinkButton from '@/components/ui/LinkButton/LinkButton'
 // import RegisterForm from "@/components/auth/RegisterForm";
-import { Box, Container, Paper, Typography } from '@mui/material'
+import { Box, Paper, Typography } from '@mui/material'
 
 const RegisterPage = () => {
   return (

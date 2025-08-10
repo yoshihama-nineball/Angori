@@ -14,14 +14,13 @@ import {
   TextField,
 } from '@mui/material'
 import { useRouter } from 'next/navigation'
-import { useActionState, useEffect, useRef, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useRef, useState } from 'react'
 // import { register as registerUser } from '../../../actions/create-account-action'
 // import { RegisterFormValues, RegisterSchema } from '../../../libs/schemas/auth'
 // import Button from '../ui/Button/Button'
 
 export default function RegisterForm() {
-  const router = useRouter()
+  // const router = useRouter()
   const ref = useRef<HTMLFormElement>(null)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
