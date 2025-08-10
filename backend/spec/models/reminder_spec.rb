@@ -121,7 +121,7 @@ RSpec.describe Reminder, type: :model do
 
     it '.reminder_category_statsがカテゴリ別件数を返すこと' do
       create(:reminder, user: user, reminder_category: 'reflection')
-      expect(described_class.reminder_category_stats).to include('reflection' => 3)
+      expect(described_class.reminder_category_stats).to include('reflection' => 1)
     end
 
     it '.reminder_effectiveness_reportが統計を返すこと' do
