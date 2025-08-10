@@ -1,4 +1,4 @@
-module ResponseTimeStats
+module ContactMessageResponseTimeStats
   def response_time_stats
     resolved_messages = where(status: 'resolved').where.not(replied_at: nil)
     return default_stats if resolved_messages.empty?

@@ -4,6 +4,7 @@ class ContactMessage < ApplicationRecord
   include ContactMessageDisplay
   include ContactMessageStats
   include ContactMessageWorkflow
+  include ContactMessageResponseTimeStats
 
   validates :name, presence: true, length: { maximum: 100 }
   validates :email, presence: true, format: {
