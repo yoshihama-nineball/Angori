@@ -5,7 +5,7 @@ import * as useMediaQueryModule from '@mui/material/useMediaQuery'
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
-  usePathname: jest.fn(() => '/home'),
+  usePathname: jest.fn(() => '/'),
 }))
 
 describe('Footer', () => {
