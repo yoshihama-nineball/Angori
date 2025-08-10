@@ -12,8 +12,6 @@ import {
   Grid,
 } from '@mui/material'
 import {
-  // Favorite,
-  // Face,
   SentimentVeryDissatisfied,
   SentimentSatisfied,
   SentimentVerySatisfied,
