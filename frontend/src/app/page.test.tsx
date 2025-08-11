@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from '@/theme'
 import TutorialPage from './page'
@@ -143,11 +143,6 @@ describe('TutorialPage', () => {
 
   describe('ユーザーインタラクション', () => {
     test('ユーザ登録ボタンをクリックするとhandleUserRegisterが呼ばれる', () => {
-      // handleUserRegister関数をモック化
-      const mockHandleUserRegister = jest.fn()
-
-      // TutorialPageコンポーネントを直接テストする代わりに、
-      // ボタンが存在し、クリック可能であることを確認
       renderWithTheme(<TutorialPage />)
 
       const userRegisterButton = screen.getByRole('button', {
