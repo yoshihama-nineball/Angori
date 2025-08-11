@@ -9,7 +9,6 @@ import {
   Card,
   Chip,
   useTheme,
-  useMediaQuery,
 } from '@mui/material'
 import Image from 'next/image'
 const useScrollAnimation = () => {
@@ -38,15 +37,15 @@ const useScrollAnimation = () => {
 
 export default function TutorialPage() {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  // const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const visibleElements = useScrollAnimation()
 
   const handleUserRegister = () => {
-    console.log('ユーザ登録画面へ遷移')
+    // console.log('ユーザ登録画面へ遷移')
   }
 
   const handleGuestLogin = () => {
-    console.log('ゲストログイン')
+    // console.log('ゲストログイン')
   }
 
   return (

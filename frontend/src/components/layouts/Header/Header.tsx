@@ -35,7 +35,7 @@ export default function Header() {
 
   const handleLogoutConfirm = () => {
     // TODO:ここにログアウト処理を実装
-    console.log('ログアウト実行')
+    // console.log('ログアウト実行')
     setLogoutDialogOpen(false)
     // 例: router.push('/login') など
   }
