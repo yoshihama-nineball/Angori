@@ -35,7 +35,7 @@ export default function Header() {
 
   const handleLogoutConfirm = () => {
     // TODO:ここにログアウト処理を実装
-    console.log('ログアウト実行')
+    // console.log('ログアウト実行')
     setLogoutDialogOpen(false)
     // 例: router.push('/login') など
   }
@@ -49,9 +49,9 @@ export default function Header() {
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: '#FFF8DC',
-          color: '#5D4037',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+          backgroundColor: 'background.default', // theme.tsと同じ背景色
+          color: 'text.primary',
+          boxShadow: 1, // theme.tsのshadow使用
           borderBottom: '1px solid #E0E0E0',
         }}
       >
@@ -123,22 +123,23 @@ export default function Header() {
                 <MenuItem
                   onClick={handleClose}
                   sx={{
-                    color: '#5D4037',
+                    color: 'text.primary',
                     '&:hover': {
                       backgroundColor: 'rgba(94, 64, 55, 0.1)',
-                      color: '#3E2723',
+                      color: '#3E2723', // primary.dark より濃い茶色
                     },
                   }}
                 >
                   アプリについて
                 </MenuItem>
+
                 <MenuItem
                   onClick={handleLogoutClick}
                   sx={{
-                    color: '#5D4037',
+                    color: 'text.primary',
                     '&:hover': {
                       backgroundColor: 'rgba(94, 64, 55, 0.1)',
-                      color: '#3E2723',
+                      color: '#3E2723', // 同じく濃い茶色
                     },
                   }}
                 >

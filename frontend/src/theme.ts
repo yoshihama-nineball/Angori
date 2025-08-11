@@ -44,24 +44,24 @@ declare module '@mui/material/styles' {
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#5D4037', // ブラウン（メインカラー）
+      main: '#FFD700', // バナナイエロー
+      light: '#FFFF57',
+      dark: '#C8A415',
+      contrastText: '#5D4037', // ブラウンテキスト
+    },
+    secondary: {
+      main: '#5D4037', // ブラウン（現在これが効いていない）
       light: '#8D6E63',
       dark: '#3E2723',
       contrastText: '#FFFFFF',
     },
-    secondary: {
-      main: '#FFD700', // 濃いバナナイエロー（アクセント）
-      light: '#FFFF57',
-      dark: '#C8A415',
-      contrastText: '#3E2723',
-    },
     background: {
-      default: '#FFF8DC', // 淡いバナナクリーム（ベースカラー）
-      paper: '#FFFACD', // レモンクリーム
+      default: '#FFFEF7', // 薄いグレー
+      paper: '#FFFFFF', // 極薄いクリーム
     },
     text: {
-      primary: '#8B4513', // ログと同じダークブラウン
-      secondary: '#A0522D', // ログと同じミディアムブラウン
+      primary: '#5D4037', // メインブラウン（現在の#8B4513から変更）
+      secondary: '#8D6E63', // ライトブラウン（現在の#A0522Dから変更）
     },
     error: {
       main: '#D32F2F', // 怒りの赤
@@ -112,13 +112,7 @@ const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: `
         body {
-          background: linear-gradient(135deg, 
-            #FFF8DC 0%,     /* 淡いバナナクリーム */
-            #FFFACD 25%,    /* レモンクリーム */
-            #FFFFE0 50%,    /* ライトイエロー */
-            #F5F5DC 75%,    /* ベージュ */
-            #FAF0E6 100%    /* リネン */
-          );
+          background: #FFFEF7;
           background-attachment: fixed;
           font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
         }
@@ -206,26 +200,23 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 30,
           fontWeight: 600,
           textTransform: 'none',
           fontSize: '1rem',
         },
-        contained: {
-          background: '#5D4037',
-          boxShadow: '0 4px 15px rgba(94, 64, 55, 0.3)',
-          color: '#FFD700',
-          '&:hover': {
-            background: '#3E2723',
-            boxShadow: '0 6px 20px rgba(94, 64, 55, 0.4)',
-          },
-        },
-        outlined: {
-          borderColor: '#5D4037',
+        containedPrimary: {
+          backgroundColor: '#FFD700',
           color: '#5D4037',
           '&:hover': {
-            borderColor: '#3E2723',
-            backgroundColor: 'rgba(94, 64, 55, 0.1)',
+            backgroundColor: '#C8A415',
+          },
+        },
+        containedSecondary: {
+          backgroundColor: '#5D4037',
+          color: '#FFFFFF',
+          '&:hover': {
+            backgroundColor: '#3E2723',
           },
         },
       },
@@ -347,7 +338,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
-          backgroundColor: '#FFFACD',
+          backgroundColor: '#FFFFFF',
           border: '1px solid #E0E0E0',
           '&.MuiPaper-elevation1': {
             boxShadow: '0 2px 8px rgba(94, 64, 55, 0.1)',
@@ -371,7 +362,7 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          backgroundColor: '#FFFACD',
+          backgroundColor: '#FFFFFF',
           border: '1px solid #E0E0E0',
           borderRadius: 16,
           '&:hover': {
