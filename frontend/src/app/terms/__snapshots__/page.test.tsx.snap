@@ -1,0 +1,349 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`TermsPage スナップショット デスクトップ表示のスナップショット 1`] = `
+<div
+  class="MuiContainer-root MuiContainer-maxWidthMd css-u4uvlt-MuiContainer-root"
+>
+  <div
+    class="MuiBox-root css-hr01ig"
+  >
+    <h3
+      class="MuiTypography-root MuiTypography-h3 MuiTypography-alignCenter MuiTypography-gutterBottom css-1x6g1an-MuiTypography-root"
+      style="--Typography-textAlign: center;"
+    >
+      利用規約
+    </h3>
+    <h6
+      class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-alignCenter MuiTypography-gutterBottom css-a81oqr-MuiTypography-root"
+      style="--Typography-textAlign: center;"
+    >
+      Angori（アンゴリ）サービス利用条件
+    </h6>
+    <span
+      class="MuiTypography-root MuiTypography-caption MuiTypography-alignRight css-16dt7zz-MuiTypography-root"
+      style="--Typography-textAlign: right;"
+    >
+      最終更新日：2025年8月11日
+    </span>
+    <div
+      class="MuiBox-root css-1yjvs5a"
+    >
+      <h6
+        class="MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-1wmifpn-MuiTypography-root"
+      >
+        第1条（サービス内容）
+      </h6>
+      <p
+        class="MuiTypography-root MuiTypography-body1 MuiTypography-paragraph css-1822gya-MuiTypography-root"
+      >
+        Angori（アンゴリ）は、アンガーマネジメントをサポートするWebアプリです。感情記録、AI相談、過去ログ管理などの機能を提供します。
+      </p>
+    </div>
+    <hr
+      class="MuiDivider-root MuiDivider-fullWidth css-1jpc804-MuiDivider-root"
+    />
+    <div
+      class="MuiBox-root css-1ujl41g"
+    >
+      <h6
+        class="MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-1wmifpn-MuiTypography-root"
+      >
+        第2条（禁止事項）
+      </h6>
+      <p
+        class="MuiTypography-root MuiTypography-body1 MuiTypography-paragraph css-1822gya-MuiTypography-root"
+      >
+        以下の行為を禁止します：
+      </p>
+      <ul
+        class="MuiBox-root css-n085mf"
+      >
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-e7whih-MuiTypography-root"
+        >
+          法令に違反する行為
+        </li>
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-e7whih-MuiTypography-root"
+        >
+          他の利用者に迷惑をかける行為
+        </li>
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-e7whih-MuiTypography-root"
+        >
+          サービスの運営を妨害する行為
+        </li>
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-w6zn47-MuiTypography-root"
+        >
+          虚偽の情報を登録する行為
+        </li>
+      </ul>
+    </div>
+    <hr
+      class="MuiDivider-root MuiDivider-fullWidth css-1jpc804-MuiDivider-root"
+    />
+    <div
+      class="MuiBox-root css-1ujl41g"
+    >
+      <h6
+        class="MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-1wmifpn-MuiTypography-root"
+      >
+        第3条（免責事項）
+      </h6>
+      <ol
+        class="MuiBox-root css-n085mf"
+      >
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-e7whih-MuiTypography-root"
+        >
+          本サービスは医療行為ではありません
+        </li>
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-e7whih-MuiTypography-root"
+        >
+          AI相談の内容について責任を負いません
+        </li>
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-e7whih-MuiTypography-root"
+        >
+          データの損失について責任を負いません
+        </li>
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-w6zn47-MuiTypography-root"
+        >
+          サービスの完全性を保証しません
+        </li>
+      </ol>
+    </div>
+    <hr
+      class="MuiDivider-root MuiDivider-fullWidth css-1jpc804-MuiDivider-root"
+    />
+    <div
+      class="MuiBox-root css-1ujl41g"
+    >
+      <h6
+        class="MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-1wmifpn-MuiTypography-root"
+      >
+        第4条（サービス変更・停止）
+      </h6>
+      <p
+        class="MuiTypography-root MuiTypography-body1 MuiTypography-paragraph css-1822gya-MuiTypography-root"
+      >
+        事前通知なくサービス内容の変更・停止を行う場合があります。
+      </p>
+    </div>
+    <hr
+      class="MuiDivider-root MuiDivider-fullWidth css-1jpc804-MuiDivider-root"
+    />
+    <div
+      class="MuiBox-root css-1ujl41g"
+    >
+      <h6
+        class="MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-1wmifpn-MuiTypography-root"
+      >
+        第5条（規約変更）
+      </h6>
+      <p
+        class="MuiTypography-root MuiTypography-body1 MuiTypography-paragraph css-1822gya-MuiTypography-root"
+      >
+        必要に応じて本規約を変更することがあります。
+      </p>
+    </div>
+    <hr
+      class="MuiDivider-root MuiDivider-fullWidth css-1jpc804-MuiDivider-root"
+    />
+    <div
+      class="MuiBox-root css-1ujl41g"
+    >
+      <h6
+        class="MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-1wmifpn-MuiTypography-root"
+      >
+        第6条（準拠法）
+      </h6>
+      <p
+        class="MuiTypography-root MuiTypography-body1 MuiTypography-paragraph css-1822gya-MuiTypography-root"
+      >
+        本規約は日本法に準拠します。
+      </p>
+    </div>
+    <hr
+      class="MuiDivider-root MuiDivider-fullWidth css-1jpc804-MuiDivider-root"
+    />
+    <div
+      class="MuiBox-root css-1hnm6b6"
+    >
+      <h6
+        class="MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-hf4z0-MuiTypography-root"
+      >
+        以上
+      </h6>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TermsPage スナップショット モバイル表示のスナップショット 1`] = `
+<div
+  class="MuiContainer-root MuiContainer-maxWidthMd css-u4uvlt-MuiContainer-root"
+>
+  <div
+    class="MuiBox-root css-mjemct"
+  >
+    <h5
+      class="MuiTypography-root MuiTypography-h5 MuiTypography-alignCenter MuiTypography-gutterBottom css-1tch7cl-MuiTypography-root"
+      style="--Typography-textAlign: center;"
+    >
+      利用規約
+    </h5>
+    <h6
+      class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-alignCenter MuiTypography-gutterBottom css-g4pvl8-MuiTypography-root"
+      style="--Typography-textAlign: center;"
+    >
+      Angori（アンゴリ）サービス利用条件
+    </h6>
+    <span
+      class="MuiTypography-root MuiTypography-caption MuiTypography-alignCenter css-1bw342z-MuiTypography-root"
+      style="--Typography-textAlign: center;"
+    >
+      最終更新日：2025年8月11日
+    </span>
+    <div
+      class="MuiBox-root css-i3pbo"
+    >
+      <h6
+        class="MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-1wmifpn-MuiTypography-root"
+      >
+        第1条（サービス内容）
+      </h6>
+      <p
+        class="MuiTypography-root MuiTypography-body1 MuiTypography-paragraph css-gy9ob4-MuiTypography-root"
+      >
+        Angori（アンゴリ）は、アンガーマネジメントをサポートするWebアプリです。感情記録、AI相談、過去ログ管理などの機能を提供します。
+      </p>
+    </div>
+    <div
+      class="MuiBox-root css-5vb4lz"
+    >
+      <h6
+        class="MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-1wmifpn-MuiTypography-root"
+      >
+        第2条（禁止事項）
+      </h6>
+      <p
+        class="MuiTypography-root MuiTypography-body1 MuiTypography-paragraph css-gy9ob4-MuiTypography-root"
+      >
+        以下の行為を禁止します：
+      </p>
+      <ul
+        class="MuiBox-root css-n085mf"
+      >
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-1a6x0pn-MuiTypography-root"
+        >
+          法令に違反する行為
+        </li>
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-1a6x0pn-MuiTypography-root"
+        >
+          他の利用者に迷惑をかける行為
+        </li>
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-1a6x0pn-MuiTypography-root"
+        >
+          サービスの運営を妨害する行為
+        </li>
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-pjzxq1-MuiTypography-root"
+        >
+          虚偽の情報を登録する行為
+        </li>
+      </ul>
+    </div>
+    <div
+      class="MuiBox-root css-5vb4lz"
+    >
+      <h6
+        class="MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-1wmifpn-MuiTypography-root"
+      >
+        第3条（免責事項）
+      </h6>
+      <ol
+        class="MuiBox-root css-n085mf"
+      >
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-1a6x0pn-MuiTypography-root"
+        >
+          本サービスは医療行為ではありません
+        </li>
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-1a6x0pn-MuiTypography-root"
+        >
+          AI相談の内容について責任を負いません
+        </li>
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-1a6x0pn-MuiTypography-root"
+        >
+          データの損失について責任を負いません
+        </li>
+        <li
+          class="MuiTypography-root MuiTypography-body1 css-pjzxq1-MuiTypography-root"
+        >
+          サービスの完全性を保証しません
+        </li>
+      </ol>
+    </div>
+    <div
+      class="MuiBox-root css-5vb4lz"
+    >
+      <h6
+        class="MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-1wmifpn-MuiTypography-root"
+      >
+        第4条（サービス変更・停止）
+      </h6>
+      <p
+        class="MuiTypography-root MuiTypography-body1 MuiTypography-paragraph css-gy9ob4-MuiTypography-root"
+      >
+        事前通知なくサービス内容の変更・停止を行う場合があります。
+      </p>
+    </div>
+    <div
+      class="MuiBox-root css-5vb4lz"
+    >
+      <h6
+        class="MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-1wmifpn-MuiTypography-root"
+      >
+        第5条（規約変更）
+      </h6>
+      <p
+        class="MuiTypography-root MuiTypography-body1 MuiTypography-paragraph css-gy9ob4-MuiTypography-root"
+      >
+        必要に応じて本規約を変更することがあります。
+      </p>
+    </div>
+    <div
+      class="MuiBox-root css-5vb4lz"
+    >
+      <h6
+        class="MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-1wmifpn-MuiTypography-root"
+      >
+        第6条（準拠法）
+      </h6>
+      <p
+        class="MuiTypography-root MuiTypography-body1 MuiTypography-paragraph css-gy9ob4-MuiTypography-root"
+      >
+        本規約は日本法に準拠します。
+      </p>
+    </div>
+    <div
+      class="MuiBox-root css-h5fkc8"
+    >
+      <h6
+        class="MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-hf4z0-MuiTypography-root"
+      >
+        以上
+      </h6>
+    </div>
+  </div>
+</div>
+`;

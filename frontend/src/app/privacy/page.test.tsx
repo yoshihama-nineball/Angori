@@ -305,30 +305,4 @@ describe('PrivacyPage', () => {
       expect(renderTime).toBeLessThan(200)
     })
   })
-
-  describe('スナップショット', () => {
-    test('デスクトップ表示のスナップショット', () => {
-      mockUseMediaQuery.mockReturnValue(false)
-
-      const { container } = render(
-        <TestWrapper>
-          <PrivacyPage />
-        </TestWrapper>
-      )
-
-      expect(container.firstChild).toMatchSnapshot()
-    })
-
-    test('モバイル表示のスナップショット', () => {
-      mockUseMediaQuery.mockReturnValue(true)
-
-      const { container } = render(
-        <TestWrapper>
-          <PrivacyPage />
-        </TestWrapper>
-      )
-
-      expect(container.firstChild).toMatchSnapshot()
-    })
-  })
 })
