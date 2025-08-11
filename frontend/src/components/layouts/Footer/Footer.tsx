@@ -40,7 +40,7 @@ export default function Footer() {
         bottom: 0,
         zIndex: 9999,
         boxShadow: 3,
-        bgcolor: 'background.paper',
+        // bgcolor: 'background.paper',
         height: '56px',
       }}
     >
