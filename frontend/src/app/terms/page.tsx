@@ -192,13 +192,10 @@ export default function TermsPage() {
         </Box>
 
         {!isMobile && <Divider />}
-        <Box
-          mt={isMobile ? 4 : 6}
-        >
+        <Box mt={isMobile ? 4 : 6}>
           <Typography variant="h6" sx={{ mb: 8 }} gutterBottom>
             以上
           </Typography>
-         
         </Box>
       </Box>
     </Container>

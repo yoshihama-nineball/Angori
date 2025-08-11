@@ -565,10 +565,7 @@ export default function PrivacyPage() {
 
         {!isMobile && <Divider />}
 
-        <Box
-          mt={isMobile ? 4 : 6}
-          sx={{ mb: 8 }}
-        >
+        <Box mt={isMobile ? 4 : 6} sx={{ mb: 8 }}>
           <Typography variant="h6" gutterBottom>
             以上
           </Typography>
