@@ -17,10 +17,54 @@ import {
   DialogActions,
   Link,
   Container,
+  Alert,
+  CircularProgress,
 } from '@mui/material'
 import { Visibility, VisibilityOff, OpenInNew } from '@mui/icons-material'
+import { useActionState } from 'react'
+import { useFormStatus } from 'react-dom'
+import { registerUser } from '../../../lib/actions/auth'
+
+const initialState = {
+  success: false,
+  message: '',
+  errors: {},
+}
+
+function SubmitButton({ agreeToTerms }: { agreeToTerms: boolean }) {
+  const { pending } = useFormStatus()
+
+  return (
+    <Button
+      type="submit"
+      variant="contained"
+      size="large"
+      disabled={!agreeToTerms || pending}
+      sx={{
+        py: { xs: 1.2, sm: 1.5 },
+        mt: { xs: -1, sm: -2 },
+        fontSize: { xs: '1rem', sm: '1.1rem' },
+        backgroundColor: agreeToTerms && !pending ? 'primary.main' : 'grey.300',
+        '&:hover': {
+          backgroundColor:
+            agreeToTerms && !pending ? 'primary.dark' : 'grey.400',
+        },
+      }}
+    >
+      {pending ? (
+        <>
+          <CircularProgress size={20} sx={{ mr: 1 }} />
+          登録中...
+        </>
+      ) : (
+        '🍌 アカウント作成'
+      )}
+    </Button>
+  )
+}
 
 const RegisterForm = () => {
+  const [state, formAction] = useActionState(registerUser, initialState)
   const [showPassword, setShowPassword] = useState(false)
   const [showPasswordConfirmation, setShowPasswordConfirmation] =
     useState(false)
@@ -78,7 +122,7 @@ const RegisterForm = () => {
               </Typography>
             </Box>
 
-            <form autoComplete="off">
+            <form action={formAction} autoComplete="off">
               <Box
                 sx={{
                   display: 'flex',
@@ -94,6 +138,8 @@ const RegisterForm = () => {
                   placeholder="ニックネームでOK"
                   size="medium"
                   autoComplete="off"
+                  error={!!state.errors?.name}
+                  helperText={state.errors?.name?.[0]}
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -108,6 +154,8 @@ const RegisterForm = () => {
                   placeholder="example@example.com"
                   size="medium"
                   autoComplete="off"
+                  error={!!state.errors?.email}
+                  helperText={state.errors?.email?.[0]}
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -119,9 +167,13 @@ const RegisterForm = () => {
                   type={showPassword ? 'text' : 'password'}
                   fullWidth
                   required
-                  helperText="8文字以上、大文字・小文字・数字を含む"
+                  helperText={
+                    state.errors?.password?.[0] ||
+                    '8文字以上、大文字・小文字・数字を含む'
+                  }
                   size="medium"
                   autoComplete="new-password"
+                  error={!!state.errors?.password}
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -154,6 +206,8 @@ const RegisterForm = () => {
                   required
                   size="medium"
                   autoComplete="new-password"
+                  error={!!state.errors?.password_confirmation}
+                  helperText={state.errors?.password_confirmation?.[0]}
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -185,6 +239,16 @@ const RegisterForm = () => {
                     ),
                   }}
                 />
+
+                {/* エラーメッセージ表示 */}
+                {state.message && !state.success && (
+                  <Alert severity="error">{state.message}</Alert>
+                )}
+
+                {/* 成功メッセージ表示 */}
+                {state.message && state.success && (
+                  <Alert severity="success">{state.message}</Alert>
+                )}
 
                 {/* 利用規約・プライバシーポリシー同意 */}
                 <Box>
@@ -223,25 +287,7 @@ const RegisterForm = () => {
                   />
                 </Box>
 
-                <Button
-                  type="submit"
-                  variant="contained"
-                  size="large"
-                  disabled={!agreeToTerms}
-                  sx={{
-                    py: { xs: 1.2, sm: 1.5 },
-                    mt: { xs: -1, sm: -2 },
-                    fontSize: { xs: '1rem', sm: '1.1rem' },
-                    backgroundColor: agreeToTerms ? 'primary.main' : 'grey.300',
-                    '&:hover': {
-                      backgroundColor: agreeToTerms
-                        ? 'primary.dark'
-                        : 'grey.400',
-                    },
-                  }}
-                >
-                  🍌 アカウント作成
-                </Button>
+                <SubmitButton agreeToTerms={agreeToTerms} />
 
                 <Typography
                   variant="body2"
@@ -254,7 +300,7 @@ const RegisterForm = () => {
                 >
                   既にアカウントをお持ちですか？{' '}
                   <a
-                    href="/login"
+                    href="/auth/login"
                     style={{
                       color: 'inherit',
                       textDecoration: 'underline',

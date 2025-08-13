@@ -6,19 +6,57 @@ import {
   TextField,
   Button,
   Typography,
+  Alert,
   Paper,
   InputAdornment,
   IconButton,
-  FormControlLabel,
-  Checkbox,
-  Link,
   Container,
+  CircularProgress,
 } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
+import { useActionState } from 'react'
+import { useFormStatus } from 'react-dom'
+import { loginUser } from '../../../lib/actions/auth'
 
-const LoginForm = () => {
+const initialState = {
+  success: false,
+  message: '',
+  errors: {},
+}
+
+function SubmitButton() {
+  const { pending } = useFormStatus()
+
+  return (
+    <Button
+      type="submit"
+      variant="contained"
+      size="large"
+      disabled={pending}
+      sx={{
+        mt: 2,
+        py: 1.5,
+        backgroundColor: pending ? 'grey.300' : 'primary.main',
+        '&:hover': {
+          backgroundColor: pending ? 'grey.400' : 'primary.dark',
+        },
+      }}
+    >
+      {pending ? (
+        <>
+          <CircularProgress size={20} sx={{ mr: 1 }} />
+          ログイン中...
+        </>
+      ) : (
+        '🍌 ログイン'
+      )}
+    </Button>
+  )
+}
+
+export default function LoginForm() {
+  const [state, formAction] = useActionState(loginUser, initialState)
   const [showPassword, setShowPassword] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
 
   return (
     <Container maxWidth="sm">
@@ -28,62 +66,41 @@ const LoginForm = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          py: 0,
-          mt: '-64px',
+          py: 4,
         }}
       >
         <Paper
-          elevation={4}
+          elevation={3}
           sx={{
             p: 4,
-            maxWidth: 500,
             width: '100%',
+            maxWidth: 400,
+            backgroundColor: 'background.paper',
           }}
         >
-          <form autoComplete="off">
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: { xs: 4, sm: 6 },
-              }}
-            >
-              <Box sx={{ textAlign: 'center', mb: { xs: 3, sm: 4 } }}>
-                <Typography
-                  variant="h4"
-                  fontWeight="bold"
-                  color="primary.dark"
-                  gutterBottom
-                  sx={{
-                    fontSize: {
-                      xs: '1.5rem',
-                      sm: '2rem',
-                      md: '2.5rem',
-                    },
-                  }}
-                >
-                  ログイン
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mt: 2,
-                    fontSize: { xs: '0.8rem', sm: '1rem' },
-                  }}
-                >
-                  おかえりウホ！今日も来てくれてありがとうな！
-                </Typography>
-              </Box>
+          <Box sx={{ textAlign: 'center', mb: 3 }}>
+            <Typography variant="h4" gutterBottom>
+              🦍 Angori
+            </Typography>
+            <Typography variant="h6" color="text.secondary">
+              ログイン
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              おかえり！今日の調子はどうだ？
+            </Typography>
+          </Box>
+
+          <form action={formAction}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
               <TextField
                 name="email"
                 label="メールアドレス"
                 type="email"
                 fullWidth
                 required
+                error={!!state.errors?.email}
+                helperText={state.errors?.email?.[0]}
                 placeholder="example@example.com"
-                size="medium"
-                autoComplete="off"
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -95,103 +112,42 @@ const LoginForm = () => {
                 type={showPassword ? 'text' : 'password'}
                 fullWidth
                 required
-                size="medium"
-                autoComplete="current-password"
-                inputProps={{
-                  autoComplete: 'current-password',
-                }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                error={!!state.errors?.password}
+                helperText={state.errors?.password?.[0]}
                 InputProps={{
-                  sx: {
-                    '& input': {
-                      color: '#000',
-                    },
-                    backgroundColor: '#fff',
-                  },
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
                         onClick={() => setShowPassword(!showPassword)}
                         edge="end"
-                        size="small"
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
                   ),
                 }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
 
-              <Box>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                      size="small"
-                      sx={{ mt: -1 }}
-                    />
-                  }
-                  label={
-                    <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
-                      ログイン状態を保持する
-                    </Typography>
-                  }
-                  sx={{ alignItems: 'flex-start', ml: 0, mt: -1 }}
-                />
-              </Box>
+              {state.message && !state.success && (
+                <Alert severity="error">{state.message}</Alert>
+              )}
 
-              <Button
-                type="submit"
-                variant="contained"
-                size="large"
-                sx={{
-                  py: { xs: 1.2, sm: 1.5 },
-                  mt: { xs: -1, sm: -2 },
-                  fontSize: { xs: '1rem', sm: '1.1rem' },
-                  backgroundColor: 'primary.main',
-                  '&:hover': {
-                    backgroundColor: 'primary.dark',
-                  },
-                }}
-              >
-                🍌 ログイン
-              </Button>
-
-              <Box sx={{ textAlign: 'center' }}>
-                <Link
-                  href="/forgot-password"
-                  sx={{
-                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                    textDecoration: 'underline',
-                    color: 'text.secondary',
-                    '&:hover': {
-                      color: 'primary.main',
-                    },
-                  }}
-                >
-                  パスワードを忘れた場合
-                </Link>
-              </Box>
+              <SubmitButton />
 
               <Typography
                 variant="body2"
                 color="text.secondary"
-                sx={{
-                  textAlign: 'center',
-                  fontSize: { xs: '0.875rem', sm: '1rem' },
-                  mt: { xs: -1, sm: -3 },
-                }}
+                sx={{ textAlign: 'center' }}
               >
                 アカウントをお持ちでない方は{' '}
                 <a
-                  href="/register"
+                  href="/auth/register"
                   style={{
                     color: 'inherit',
                     textDecoration: 'underline',
-                    fontSize: 'inherit',
                   }}
                 >
                   新規登録
@@ -204,5 +160,3 @@ const LoginForm = () => {
     </Container>
   )
 }
-
-export default LoginForm
