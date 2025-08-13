@@ -282,14 +282,12 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '& .MuiOutlinedInput-root': {
-            backgroundColor: '#FFFFFF', // 白背景に変更
-            color: '#3E2723', // ダークブラウンテキスト
+            backgroundColor: '#FFFFFF', // 白背景
             '& fieldset': {
               borderColor: '#D7CCC8',
             },
             '&:hover fieldset': {
               borderColor: '#8D6E63',
-              backgroundColor: '#FFFFFF', // ホバー時も白背景
             },
             '&.Mui-focused': {
               backgroundColor: '#FFFFFF', // フォーカス時も白背景
@@ -298,22 +296,34 @@ const theme = createTheme({
                 borderWidth: '2px',
               },
             },
-            // 入力文字の色を明示的に指定
+            // 入力文字の色を強制的に指定（重要！）
             '& input': {
-              color: '#3E2723 !important', // ダークブラウン（重要度高）
+              color: '#3E2723 !important',
               fontSize: '1rem',
               fontWeight: 500,
+              '&:focus': {
+                color: '#3E2723 !important', // フォーカス時も確実に
+                backgroundColor: 'transparent !important',
+              },
+            },
+            // textarea の場合も同様
+            '& textarea': {
+              color: '#3E2723 !important',
+              fontSize: '1rem',
+              fontWeight: 500,
+              '&:focus': {
+                color: '#3E2723 !important',
+                backgroundColor: 'transparent !important',
+              },
             },
             // プレースホルダーの色
             '& input::placeholder': {
               color: '#8D6E63',
               opacity: 0.7,
             },
-            // textarea（複数行）の場合
-            '& textarea': {
-              color: '#3E2723 !important',
-              fontSize: '1rem',
-              fontWeight: 500,
+            '& textarea::placeholder': {
+              color: '#8D6E63',
+              opacity: 0.7,
             },
           },
           // ラベルの色
