@@ -1,17 +1,22 @@
 'use server'
 
 import { z } from 'zod'
-import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+// Docker環境に対応した設定
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://backend:5000'
 
-// 型定義を追加
-interface AuthState {
-  success: boolean
-  message: string
-  errors?: Record<string, string[]>
-  shouldRedirect?: boolean
+// デバッグ用ログ
+console.log(
+  '🐛 Debug - process.env.NEXT_PUBLIC_API_URL:',
+  process.env.NEXT_PUBLIC_API_URL
+)
+console.log('🐛 Debug - API_BASE:', API_BASE)
+
+// 型定義をシンプルに
+type ActionStateType = {
+  errors: string[]
+  success: string
 }
 
 // バリデーションスキーマ
@@ -42,36 +47,39 @@ const LoginSchema = z.object({
 })
 
 export async function registerUser(
-  prevState: AuthState,
+  prevState: ActionStateType,
   formData: FormData
-): Promise<AuthState> {
+): Promise<ActionStateType> {
   try {
-    // デバッグ用ログ
     console.log('🔍 Register attempt started')
-    console.log('FormData:', Object.fromEntries(formData))
+    console.log('📊 API_BASE:', API_BASE)
 
-    const validatedFields = RegisterSchema.safeParse({
+    const registerData = {
       name: formData.get('name'),
       email: formData.get('email'),
       password: formData.get('password'),
       password_confirmation: formData.get('password_confirmation'),
-    })
+    }
 
+    console.log('📊 Register data:', registerData)
+
+    // バリデーション
+    const validatedFields = RegisterSchema.safeParse(registerData)
     if (!validatedFields.success) {
-      console.log(
-        '❌ Validation failed:',
-        validatedFields.error.flatten().fieldErrors
-      )
+      const errors = validatedFields.error.issues.map((issue) => issue.message)
+      console.log('❌ Validation failed:', errors)
       return {
-        success: false,
-        message: 'バリデーションエラーが発生しました',
-        errors: validatedFields.error.flatten().fieldErrors,
+        errors,
+        success: '',
       }
     }
 
-    console.log('✅ Validation passed, sending to API...')
+    // 正しいURL構築 - API_BASEにapi/v1を含めない
+    const apiUrl = `${API_BASE}/api/v1/users`
+    console.log('📡 Calling API:', apiUrl)
 
-    const response = await fetch(`${API_BASE}/api/v1/users`, {
+    // API呼び出し
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -87,59 +95,93 @@ export async function registerUser(
 
     if (response.ok) {
       console.log('🎉 Registration successful!')
+
       // JWTトークンがあれば保存
       const authToken = response.headers.get('Authorization')
       if (authToken) {
-        ;(await cookies()).set('auth_token', authToken, {
+        const cookieStore = await cookies()
+        cookieStore.set('auth_token', authToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict',
           maxAge: 60 * 60 * 24 * 7, // 7日間
         })
       }
-
-      // 成功の場合は特別なフラグを立てて、クライアントサイドでリダイレクト
       return {
-        success: true,
-        message: '🎉 登録が完了しました！',
-        shouldRedirect: true,
+        errors: [],
+        success: '🎉 登録が完了しました！ダッシュボードにリダイレクトします...',
       }
     }
 
+    // エラーレスポンスの処理
     console.log('❌ Registration failed:', data.message)
-    return {
-      success: false,
-      message: data.message || '登録に失敗しました',
-      errors: data.errors,
+    const errorMessages = []
+
+    if (data.message) {
+      errorMessages.push(data.message)
     }
-  } catch (error) {
-    console.error('Registration error:', error)
+
+    if (data.errors) {
+      if (Array.isArray(data.errors)) {
+        errorMessages.push(...data.errors)
+      } else if (typeof data.errors === 'object') {
+        Object.values(data.errors).forEach((errorArray: any) => {
+          if (Array.isArray(errorArray)) {
+            errorMessages.push(...errorArray)
+          }
+        })
+      }
+    }
+
     return {
-      success: false,
-      message: 'サーバーエラーが発生しました',
+      errors: errorMessages.length > 0 ? errorMessages : ['登録に失敗しました'],
+      success: '',
+    }
+  } catch (error: any) {
+    console.error('❌ Registration error details:', error)
+    console.error('❌ Error message:', error?.message)
+    console.error('❌ Error stack:', error?.stack)
+
+    return {
+      errors: [
+        `サーバーエラーが発生しました: ${error?.message || 'Unknown error'}`,
+      ],
+      success: '',
     }
   }
 }
 
 export async function loginUser(
-  prevState: AuthState,
+  prevState: ActionStateType,
   formData: FormData
-): Promise<AuthState> {
+): Promise<ActionStateType> {
   try {
-    const validatedFields = LoginSchema.safeParse({
+    console.log('🔍 Login attempt started')
+
+    const loginData = {
       email: formData.get('email'),
       password: formData.get('password'),
-    })
+    }
 
+    // バリデーション
+    const validatedFields = LoginSchema.safeParse(loginData)
     if (!validatedFields.success) {
+      const errors = validatedFields.error.issues.map((issue) => issue.message)
+      console.log('❌ Validation failed:', errors)
       return {
-        success: false,
-        message: 'バリデーションエラーが発生しました',
-        errors: validatedFields.error.flatten().fieldErrors,
+        errors,
+        success: '',
       }
     }
 
-    const response = await fetch(`${API_BASE}/api/v1/users/sign_in`, {
+    console.log('✅ Validation passed, sending to API...')
+
+    // 正しいURL構築
+    const apiUrl = `${API_BASE}/api/v1/users/sign_in`
+    console.log('📡 Full API URL:', apiUrl)
+
+    // API呼び出し
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -149,13 +191,18 @@ export async function loginUser(
       }),
     })
 
+    console.log('📡 API Response status:', response.status)
     const data = await response.json()
+    console.log('📡 API Response data:', data)
 
     if (response.ok) {
+      console.log('🎉 Login successful!')
+
       // JWTトークンがあれば保存
       const authToken = response.headers.get('Authorization')
       if (authToken) {
-        ;(await cookies()).set('auth_token', authToken, {
+        const cookieStore = await cookies()
+        cookieStore.set('auth_token', authToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict',
@@ -163,38 +210,27 @@ export async function loginUser(
         })
       }
 
-      // 成功時はダッシュボードにリダイレクト
-      redirect('/dashboard')
+      return {
+        errors: [],
+        success: '🎉 ログインしました！ダッシュボードにリダイレクトします...',
+      }
     }
 
+    // エラーレスポンスの処理
+    console.log('❌ Login failed:', data.message)
     return {
-      success: false,
-      message: data.message || 'ログインに失敗しました',
+      errors: [data.message || 'ログインに失敗しました'],
+      success: '',
     }
-  } catch (error) {
-    console.error('Login error:', error)
-    return {
-      success: false,
-      message: 'サーバーエラーが発生しました',
-    }
-  }
-}
+  } catch (error: any) {
+    console.error('❌ Login error details:', error)
+    console.error('❌ Error message:', error?.message)
 
-export async function logoutUser() {
-  try {
-    // クッキーを削除
-    ;(
-      await // クッキーを削除
-      cookies()
-    ).delete('auth_token')
-
-    // ログインページにリダイレクト
-    redirect('/auth/login')
-  } catch (error) {
-    console.error('Logout error:', error)
     return {
-      success: false,
-      message: 'ログアウトに失敗しました',
+      errors: [
+        `サーバーエラーが発生しました: ${error?.message || 'Unknown error'}`,
+      ],
+      success: '',
     }
   }
 }
