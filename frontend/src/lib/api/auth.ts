@@ -167,3 +167,43 @@ export async function loginUser(data: LoginData): Promise<ApiResponse> {
     }
   }
 }
+
+// auth.ts に追加
+export async function logoutUser(): Promise<ApiResponse> {
+  try {
+    const apiUrl = `${API_BASE}/api/v1/users/sign_out`
+
+    const response = await fetch(apiUrl, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    })
+
+    // クッキーを削除
+    document.cookie = 'auth_token=; path=/; max-age=0; samesite=strict'
+
+    if (response.ok) {
+      return {
+        errors: [],
+        success: 'ログアウトしました',
+      }
+    }
+
+    return {
+      errors: ['ログアウトに失敗しました'],
+      success: '',
+    }
+  } catch (error: unknown) {
+    // エラーでもクッキーは削除
+    document.cookie = 'auth_token=; path=/; max-age=0; samesite=strict'
+
+    return {
+      errors: [
+        `ネットワークエラーが発生しました: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      ],
+      success: '',
+    }
+  }
+}
