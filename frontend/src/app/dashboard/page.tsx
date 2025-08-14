@@ -1,7 +1,8 @@
+import AuthGuard from '@/components/auth/AuthGuard'
 import React from 'react'
 
 const DashboardPage = () => {
-  return <div>ダッシュボード画面</div>
+  return <AuthGuard>ダッシュボード画面</AuthGuard>
 }
 
 export default DashboardPage
