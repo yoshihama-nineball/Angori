@@ -22,7 +22,7 @@ import {
   CircularProgress,
 } from '@mui/material'
 import { Visibility, VisibilityOff, OpenInNew } from '@mui/icons-material'
-import { registerUser, type ApiResponse } from '@/lib/api/auth'
+import { registerUser, type ApiResponse } from '../../../lib/api/auth'
 
 const RegisterForm = () => {
   const router = useRouter()

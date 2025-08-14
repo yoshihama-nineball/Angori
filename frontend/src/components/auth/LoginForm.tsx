@@ -15,7 +15,7 @@ import {
   CircularProgress,
 } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
-import { loginUser, type ApiResponse } from '@/lib/api/auth'
+import { loginUser, type ApiResponse } from '../../../lib/api/auth'
 import { useAuthStore } from '../../../lib/stores/authStore'
 
 const LoginForm = () => {
@@ -27,7 +27,7 @@ const LoginForm = () => {
   })
   const [showPassword, setShowPassword] = useState(false)
   // const [rememberMe, setRememberMe] = useState(false)
-  const { setAuthenticated } = useAuthStore()
+    const { setAuthenticated } = useAuthStore()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
