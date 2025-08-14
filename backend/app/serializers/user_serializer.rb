@@ -1,8 +1,8 @@
 class UserSerializer
   include JSONAPI::Serializer
-  
+
   attributes :id, :email, :name, :created_at, :updated_at
-  
+
   attribute :calming_point do |user|
     if user.calming_point
       {

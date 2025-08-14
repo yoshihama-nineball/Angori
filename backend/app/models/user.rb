@@ -28,9 +28,9 @@ class User < ApplicationRecord
   end
 
   def password_complexity
-    return unless password.present?
-    
-    errors.add :password, 'は大文字、小文字、数字を含む必要があります' unless 
+    return if password.blank?
+
+    errors.add :password, 'は大文字、小文字、数字を含む必要があります' unless
       password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
   end
 
