@@ -30,23 +30,6 @@ const TermsModal: React.FC<TermsModalProps> = ({ open, onClose }) => {
         </Box>
       </DialogTitle>
       <DialogContent dividers>
-        <Typography
-          variant="subtitle1"
-          align="center"
-          color="text.secondary"
-          gutterBottom
-        >
-          Angori（アンゴリ）サービス利用条件
-        </Typography>
-        <Typography
-          variant="caption"
-          display="block"
-          color="text.secondary"
-          sx={{ mb: 3, textAlign: 'right' }}
-        >
-          最終更新日：2025年8月11日
-        </Typography>
-
         <Typography paragraph>
           <strong>第1条（サービス内容）</strong>
           <br />
