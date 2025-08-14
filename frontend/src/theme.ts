@@ -239,7 +239,7 @@ const theme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#FFFACD', // アプリ背景と同じ
+          backgroundColor: '#FFFFFF',
           borderRadius: 16,
           border: '1px solid #E0E0E0',
           padding: '8px',
