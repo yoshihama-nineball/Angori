@@ -12,17 +12,15 @@ import {
   IconButton,
   FormControlLabel,
   Checkbox,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Link,
   Container,
   Alert,
   CircularProgress,
 } from '@mui/material'
-import { Visibility, VisibilityOff, OpenInNew } from '@mui/icons-material'
+import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { registerUser, type ApiResponse } from '../../../lib/api/auth'
+import TermsModal from './TermsModal'
+import PrivacyModal from './PrivacyModal'
 
 const RegisterForm = () => {
   const router = useRouter()
@@ -338,110 +336,14 @@ const RegisterForm = () => {
           </Paper>
         </Box>
       </Container>
-
-      {/* 利用規約モーダル */}
-      <Dialog
+      <TermsModal
         open={termsModalOpen}
         onClose={() => setTermsModalOpen(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            🦍 Angori 利用規約
-            <OpenInNew fontSize="small" />
-          </Box>
-        </DialogTitle>
-        <DialogContent dividers>
-          <Typography paragraph>
-            <strong>第1条（適用）</strong>
-            <br />
-            本規約は、Angori（以下「本サービス」）の利用に関して適用されます。
-          </Typography>
-          <Typography paragraph>
-            <strong>第2条（利用目的）</strong>
-            <br />
-            本サービスは、ユーザーのアンガーマネジメントをサポートすることを目的としています。
-            ゴリラのキャラクターと一緒に、健康的な感情管理を学ぶことができます。
-          </Typography>
-          <Typography paragraph>
-            <strong>第3条（禁止事項）</strong>
-            <br />
-            以下の行為を禁止します：
-            <br />• 他のユーザーへの誹謗中傷
-            <br />• 本サービスの妨害行為
-            <br />• バナナの独占（冗談です🍌）
-          </Typography>
-          <Typography paragraph>
-            <strong>第4条（免責）</strong>
-            <br />
-            本サービスの利用により生じた損害について、当社は責任を負いかねます。
-            ただし、ゴリラの可愛さによる癒し効果については保証いたします。
-          </Typography>
-          <Typography paragraph>
-            <strong>第5条（規約の変更）</strong>
-            <br />
-            本規約は、ユーザーへの通知なく変更される場合があります。
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setTermsModalOpen(false)}>閉じる</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* プライバシーポリシーモーダル */}
-      <Dialog
+      />
+      <PrivacyModal
         open={privacyModalOpen}
         onClose={() => setPrivacyModalOpen(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            🔒 プライバシーポリシー
-            <OpenInNew fontSize="small" />
-          </Box>
-        </DialogTitle>
-        <DialogContent dividers>
-          <Typography paragraph>
-            <strong>1. 収集する情報</strong>
-            <br />
-            以下の情報を収集します：
-            <br />• ユーザー名（ニックネーム）
-            <br />• メールアドレス
-            <br />• アンガーログデータ
-            <br />• 落ち着きポイント
-          </Typography>
-          <Typography paragraph>
-            <strong>2. 情報の利用目的</strong>
-            <br />
-            収集した情報は以下の目的で利用します：
-            <br />• サービスの提供・改善
-            <br />• ユーザーサポート
-            <br />• ゴリラからのアドバイス生成
-            <br />• 統計データの作成（個人を特定できない形式）
-          </Typography>
-          <Typography paragraph>
-            <strong>3. 情報の管理</strong>
-            <br />
-            お預かりした情報は適切に管理し、第三者への提供は行いません。
-            ただし、ゴリラが興味を示しても絶対に教えません🦍
-          </Typography>
-          <Typography paragraph>
-            <strong>4. Cookieについて</strong>
-            <br />
-            本サービスではCookieを使用してユーザー体験を向上させています。
-          </Typography>
-          <Typography paragraph>
-            <strong>5. お問い合わせ</strong>
-            <br />
-            プライバシーに関するご質問は、お問い合わせフォームからご連絡ください。
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setPrivacyModalOpen(false)}>閉じる</Button>
-        </DialogActions>
-      </Dialog>
+      />
     </>
   )
 }
