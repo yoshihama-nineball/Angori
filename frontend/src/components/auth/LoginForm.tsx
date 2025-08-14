@@ -27,7 +27,7 @@ const LoginForm = () => {
   })
   const [showPassword, setShowPassword] = useState(false)
   // const [rememberMe, setRememberMe] = useState(false)
-    const { setAuthenticated } = useAuthStore()
+  const { setAuthenticated } = useAuthStore()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
