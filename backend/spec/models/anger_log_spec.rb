@@ -30,19 +30,23 @@ RSpec.describe AngerLog, type: :model do
     end
   end
 
-  describe 'callbacks' do
-    it 'anger_log作成後のtrigger_wordsの更新' do
-      expect do
-        create(:anger_log,
-               user: user,
-               trigger_words: 'ストレス,仕事,締切')
-      end.to change(user.trigger_words, :count).by(3)
-    end
+  describe 'associations' do
+    it { is_expected.to belong_to(:user) }
+  end
 
-    it 'anger_log作成後のcalming pointsの更新' do
-      allow(user.calming_point).to receive(:calculate_points!)
-      create(:anger_log, user: user)
-      expect(user.calming_point).to have_received(:calculate_points!)
+  describe 'callbacks' do
+    context 'when anger_log is created' do
+      it 'trigger_wordsが作成される' do
+        expect do
+          create(:anger_log, user: user, trigger_words: 'ストレス,仕事,締切')
+        end.to change(user.trigger_words, :count).by(3)
+      end
+
+      it 'calculate_points!が呼ばれる' do
+        allow(user.calming_point).to receive(:calculate_points!)
+        create(:anger_log, user: user)
+        expect(user.calming_point).to have_received(:calculate_points!)
+      end
     end
   end
 

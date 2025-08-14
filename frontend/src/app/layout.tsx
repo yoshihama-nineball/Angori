@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: 'アンガーアプリ | TOP',
   description: 'TOPページです',
   icons: {
-    icon: '/icon.png',
+    icon: '/favicon.ico',
   },
 }
 

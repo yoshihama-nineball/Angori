@@ -17,7 +17,7 @@ export default function NotFound() {
           <Button
             sx={{ mt: 2 }}
             component={Link}
-            href="/home"
+            href="/dashboard"
             variant="contained"
           >
             トップページへ戻る

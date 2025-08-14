@@ -14,11 +14,19 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import Button from '@mui/material/Button'
+import { logoutUser } from '../../../../lib/api/auth'
+import { useRouter } from 'next/navigation'
+import { useAuthStore } from '../../../../lib/stores/authStore'
 
 export default function Header() {
-  const [auth] = React.useState(true)
+  const router = useRouter()
+  const { isAuthenticated, setAuthenticated, initialize } = useAuthStore()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [logoutDialogOpen, setLogoutDialogOpen] = React.useState(false)
+
+  React.useEffect(() => {
+    initialize()
+  }, [initialize])
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -33,11 +41,16 @@ export default function Header() {
     handleClose()
   }
 
-  const handleLogoutConfirm = () => {
-    // TODO:ここにログアウト処理を実装
-    // console.log('ログアウト実行')
+  const handleLogoutConfirm = async () => {
+    const result = await logoutUser()
     setLogoutDialogOpen(false)
-    // 例: router.push('/login') など
+
+    if (result.success) {
+      setAuthenticated(false)
+      router.push('/auth/login')
+    } else {
+      router.push('/auth/login')
+    }
   }
 
   const handleLogoutCancel = () => {
@@ -80,7 +93,7 @@ export default function Header() {
             </Typography>
           </Link>
           <Box sx={{ flexGrow: 1 }} />
-          {auth && (
+          {isAuthenticated ? (
             <div>
               <IconButton
                 size="large"
@@ -147,6 +160,15 @@ export default function Header() {
                 </MenuItem>
               </Menu>
             </div>
+          ) : (
+            <Button
+              component={Link}
+              href="/auth/login"
+              variant="contained"
+              size="small"
+            >
+              ログイン
+            </Button>
           )}
         </Toolbar>
       </AppBar>
@@ -165,13 +187,13 @@ export default function Header() {
         </DialogContent>
 
         <DialogActions sx={{ justifyContent: 'center', gap: 2, pb: 2 }}>
-          <Button onClick={handleLogoutCancel} variant="outlined">
+          <Button onClick={handleLogoutCancel} color="secondary">
             キャンセル
           </Button>
           <Button
             onClick={handleLogoutConfirm}
             variant="contained"
-            color="error"
+            color="primary"
           >
             ログアウト
           </Button>

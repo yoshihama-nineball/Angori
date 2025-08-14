@@ -18,7 +18,7 @@ export default function Forbidden() {
         <Typography variant="body1" sx={{ mb: 2 }}>
           このページにアクセスするためには適切な権限が必要です。
         </Typography>
-        <Button component={Link} href="/home" variant="contained">
+        <Button component={Link} href="/dashboard" variant="contained">
           トップページへ戻る
         </Button>
       </Box>
