@@ -35,7 +35,7 @@ export default function Error({
           <Button color="secondary" onClick={reset} size="large" sx={{ mr: 2 }}>
             再試行する
           </Button>
-          <Button component={Link} href="/home" variant="contained">
+          <Button component={Link} href="/dashboard" variant="contained">
             トップページへ戻る
           </Button>
         </Box>
