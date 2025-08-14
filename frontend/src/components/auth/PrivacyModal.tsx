@@ -30,7 +30,6 @@ const PrivacyModal: React.FC<PrivacyModalProps> = ({ open, onClose }) => {
         </Box>
       </DialogTitle>
       <DialogContent dividers>
-
         <Typography paragraph>
           <strong>第1条（収集する情報）</strong>
         </Typography>
