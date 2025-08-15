@@ -49,9 +49,9 @@ export default function Footer() {
         value={value}
         onChange={handleChange}
       >
-        <BottomNavigationAction value="home" icon={<HomeIcon />} />
-        <BottomNavigationAction value="log" icon={<ListIcon />} />
-        <BottomNavigationAction value="consult" icon={<ChatBubbleIcon />} />
+        <BottomNavigationAction value="dashboard" icon={<HomeIcon />} />
+        <BottomNavigationAction value="logs" icon={<ListIcon />} />
+        <BottomNavigationAction value="counseling" icon={<ChatBubbleIcon />} />
         <BottomNavigationAction value="calendar" icon={<CalendarMonthIcon />} />
         <BottomNavigationAction value="analysis" icon={<BubbleChartIcon />} />
       </BottomNavigation>
