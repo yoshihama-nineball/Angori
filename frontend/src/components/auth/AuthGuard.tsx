@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { CircularProgress, Box } from '@mui/material'
+import { Box } from '@mui/material'
 import { useAuthStore } from '../../../lib/stores/authStore'
+import Loading from '../feedback/Loading/Loading'
 
 interface AuthGuardProps {
   children: React.ReactNode
@@ -39,7 +40,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
           minHeight: '100vh',
         }}
       >
-        <CircularProgress />
+        <Loading />
       </Box>
     )
   }
@@ -55,7 +56,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
           minHeight: '100vh',
         }}
       >
-        <CircularProgress />
+        <Loading />
       </Box>
     )
   }
