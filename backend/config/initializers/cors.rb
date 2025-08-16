@@ -6,7 +6,8 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
               [
                 'http://localhost:3000',
                 'http://127.0.0.1:3000',
-                %r{https://angori-.*\.vercel\.app$}
+                # より広範囲のVercelパターンに対応
+                %r{\Ahttps://.*\.vercel\.app\z}
               ]
             when 'production'
               ['https://angori.vercel.app']
