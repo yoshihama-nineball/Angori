@@ -8,6 +8,7 @@ import { CounselingCompletionModal } from './CounselingCompletionModal'
 import { questionFlow } from '@/data/questionFlow'
 import type { AngerLogFormData, Message } from '@/types/counseling'
 import { useCounselingStore } from '../../../lib/stores/counselingStore'
+import dayjs from 'dayjs'
 
 export const CounselingLayout = () => {
   const {
@@ -18,7 +19,6 @@ export const CounselingLayout = () => {
     addMessage,
     setLoading,
     nextQuestion,
-    updateAngerLogField,
     getCreateAngerLogData,
   } = useCounselingStore()
 
@@ -66,20 +66,26 @@ export const CounselingLayout = () => {
 
   // メッセージ送信処理
   const handleSendMessage = async (content: string) => {
+    let displayContent = content.trim()
+
+    // datetime形式の場合は読みやすい形式に変換
+    const currentQuestion = questionFlow[currentQuestionIndex]
+    if (currentQuestion?.type === 'datetime' && content) {
+      try {
+        displayContent = dayjs(content).format('YYYY年MM月DD日 HH:mm')
+      } catch {
+        displayContent = content.trim() // フォーマットに失敗した場合は元の値
+      }
+    }
+
     const userMessage: Message = {
       id: `user_${Date.now()}`,
-      content: content.trim(),
+      content: displayContent, // フォーマットされた内容を表示
       sender: 'user',
       timestamp: new Date(),
     }
 
     addMessage(userMessage)
-
-    // 現在の質問に対応するフィールドにデータを保存
-    const currentQuestion = questionFlow[currentQuestionIndex]
-    if (currentQuestion) {
-      updateAngerLogField(currentQuestion.field, content.trim())
-    }
 
     setLoading(true)
 

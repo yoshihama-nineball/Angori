@@ -1,4 +1,4 @@
-export type QuestionType = 'text' | 'select' | 'emotion' | 'rating'
+export type QuestionType = 'text' | 'select' | 'emotion' | 'rating' | 'datetime'
 
 export interface Message {
   id: string

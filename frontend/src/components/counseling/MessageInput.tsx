@@ -12,6 +12,7 @@ import {
 import { Send as SendIcon } from '@mui/icons-material'
 import { QuestionOptions } from './QuestionOptions'
 import { QuestionType } from '@/types/counseling'
+import dayjs from 'dayjs'
 
 interface MessageInputProps {
   onSendMessage: (message: string) => void
@@ -55,81 +56,138 @@ export const MessageInput: React.FC<MessageInputProps> = ({
           options={options}
           selectedValue={inputValue}
           onSelect={handleOptionSelect}
+          onSendMessage={onSendMessage}
         />
       )}
-      {/* 入力エリア */}
-      <Box sx={{ p: 2, borderTop: '1px solid #e0e0e0' }}>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          {questionType === 'select' ? (
-            // Select表示
-            <>
-              <Select
-                fullWidth
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                variant="outlined"
-                disabled={isLoading}
-                displayEmpty
-                sx={{
-                  borderRadius: '20px',
-                  '& .MuiOutlinedInput-root': {
+
+      {/* 入力エリア - emotion時は非表示 */}
+      {questionType !== 'emotion' && (
+        <Box sx={{ p: 2, borderTop: '1px solid #e0e0e0' }}>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            {questionType === 'datetime' ? (
+              // DateTimePicker表示
+              <>
+                <TextField
+                  fullWidth
+                  type="datetime-local"
+                  // label="発生日時"
+                  value={
+                    inputValue
+                      ? dayjs(inputValue).format('YYYY-MM-DDTHH:mm')
+                      : ''
+                  }
+                  onChange={(e) =>
+                    setInputValue(dayjs(e.target.value).toISOString())
+                  }
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '20px',
+                    },
+                  }}
+                />
+                <IconButton
+                  color="primary"
+                  onClick={handleSendMessage}
+                  disabled={!inputValue || isLoading}
+                  sx={{
+                    bgcolor: theme.palette.primary.main,
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: theme.palette.primary.dark,
+                    },
+                    '&.Mui-disabled': {
+                      bgcolor: theme.palette.grey[300],
+                    },
+                  }}
+                >
+                  <SendIcon />
+                </IconButton>
+              </>
+            ) : questionType === 'select' ? (
+              // Select表示
+              <>
+                <Select
+                  fullWidth
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  variant="outlined"
+                  disabled={isLoading}
+                  displayEmpty
+                  sx={{
                     borderRadius: '20px',
-                  },
-                }}
-              >
-                <MenuItem value="" disabled>
-                  選択してください...
-                </MenuItem>
-                {options?.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '20px',
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    選択してください...
                   </MenuItem>
-                ))}
-              </Select>
-              <IconButton
-                color="primary"
-                onClick={handleSendMessage}
-                disabled={!inputValue.trim() || isLoading}
-                sx={{
-                  bgcolor: theme.palette.primary.main,
-                  color: 'white',
-                  '&:hover': {
-                    bgcolor: theme.palette.primary.dark,
-                  },
-                  '&.Mui-disabled': {
-                    bgcolor: theme.palette.grey[300],
-                  },
-                }}
-              >
-                <SendIcon />
-              </IconButton>
-            </>
-          ) : (
-            // 通常のTextField表示
-            <>
-              <TextField
-                fullWidth
-                multiline
-                maxRows={4}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="メッセージを入力してください..."
-                variant="outlined"
-                disabled={isLoading || questionType === 'emotion'}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '20px',
-                  },
-                }}
-              />
-              <IconButton /* 既存のスタイル */>
-                <SendIcon />
-              </IconButton>
-            </>
-          )}
+                  {options?.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <IconButton
+                  color="primary"
+                  onClick={handleSendMessage}
+                  disabled={!inputValue.trim() || isLoading}
+                  sx={{
+                    bgcolor: theme.palette.primary.main,
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: theme.palette.primary.dark,
+                    },
+                    '&.Mui-disabled': {
+                      bgcolor: theme.palette.grey[300],
+                    },
+                  }}
+                >
+                  <SendIcon />
+                </IconButton>
+              </>
+            ) : (
+              // 通常のTextField表示
+              <>
+                <TextField
+                  fullWidth
+                  multiline
+                  maxRows={4}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="メッセージを入力してください..."
+                  variant="outlined"
+                  disabled={isLoading}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '20px',
+                    },
+                  }}
+                />
+                <IconButton
+                  color="primary"
+                  onClick={handleSendMessage}
+                  disabled={!inputValue.trim() || isLoading}
+                  sx={{
+                    bgcolor: theme.palette.primary.main,
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: theme.palette.primary.dark,
+                    },
+                    '&.Mui-disabled': {
+                      bgcolor: theme.palette.grey[300],
+                    },
+                  }}
+                >
+                  <SendIcon />
+                </IconButton>
+              </>
+            )}
+          </Box>
         </Box>
-      </Box>
+      )}
     </>
   )
 }
