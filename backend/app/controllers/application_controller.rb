@@ -1,4 +1,3 @@
-# backend/app/controllers/application_controller.rb
 class ApplicationController < ActionController::API
   include ActionController::MimeResponds
 
@@ -15,23 +14,28 @@ class ApplicationController < ActionController::API
   private
 
   def set_cors_headers
-    headers['Access-Control-Allow-Origin'] = allowed_origin
+    origin = request.headers['Origin']
+    
+    # デバッグログを追加
+    Rails.logger.info "=== CORS Debug ==="
+    Rails.logger.info "Origin: #{origin}"
+    Rails.logger.info "Rails.env: #{Rails.env}"
+    
+    if Rails.env.development? && origin&.match?(%r{\Ahttps://.*\.vercel\.app\z})
+      headers['Access-Control-Allow-Origin'] = origin
+      Rails.logger.info "Allowing dynamic origin: #{origin}"
+    elsif Rails.env.production?
+      headers['Access-Control-Allow-Origin'] = 'https://angori.vercel.app'
+    else
+      headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    end
+    
     headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD'
     headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-
-    head :ok if request.request_method == 'OPTIONS'
-  end
-
-  def allowed_origin
-    origin = request.headers['Origin']
-
-    return origin if development_vercel_domain?(origin)
-    return 'https://angori.vercel.app' if Rails.env.production?
-
-    'http://localhost:3000'
-  end
-
-  def development_vercel_domain?(origin)
-    Rails.env.development? && origin&.match?(%r{\Ahttps://.*\.vercel\.app\z})
+    
+    if request.request_method == 'OPTIONS'
+      Rails.logger.info "Handling OPTIONS request"
+      head :ok
+    end
   end
 end
