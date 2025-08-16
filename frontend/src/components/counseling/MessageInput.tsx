@@ -79,6 +79,9 @@ export const MessageInput: React.FC<MessageInputProps> = ({
                   onChange={(e) =>
                     setInputValue(dayjs(e.target.value).toISOString())
                   }
+                  inputProps={{
+                    max: dayjs().format('YYYY-MM-DDTHH:mm'), // 現在時刻まで選択可能
+                  }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '20px',
