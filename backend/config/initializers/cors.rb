@@ -6,8 +6,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
               [
                 'http://localhost:3000',
                 'http://127.0.0.1:3000',
-                # より広範囲のVercelパターンに対応
-                %r{\Ahttps://.*\.vercel\.app\z}
+                %r{\Ahttps://.*\.vercel\.app\z} # 正規表現で特定パターンのみ許可
               ]
             when 'production'
               ['https://angori.vercel.app']
@@ -15,18 +14,10 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
               []
             end
 
-    resource '/api/*',
+    resource '*',
              headers: :any,
              methods: %i[get post put patch delete options head],
              expose: ['Authorization'],
-             credentials: true
-  end
-
-  allow do
-    origins '*'
-    resource '/api/*',
-             headers: :any,
-             methods: [:options],
-             credentials: false
+             credentials: true # 特定オリジンのみなので安全
   end
 end
