@@ -49,14 +49,14 @@ export const questionFlow: QuestionData[] = [
     id: 'anger_level',
     content:
       '今回の怒りはバナナ何本分...じゃなくて10段階中いくつだウホ？🍌 1が全然怒ってない、10が超激怒している状態ウホ！',
-    type: 'rating',
+    type: 'select',
     options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
     field: 'anger_level',
   },
   {
     id: 'trigger',
     content:
-      '今回の出来事は何がトリガーだったと思うウホか？できれば単語や短い言葉で教えてほしいウホ(騒音、遅刻、無視など)',
+      '今回の出来事は何がトリガーだったと思うウホか？できれば単語や短い言葉で、複数の場合「、」などで区切って教えてほしいウホ(騒音、遅刻、無視など)',
     type: 'text',
     field: 'trigger_words',
   },

@@ -38,8 +38,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                   : theme.palette.gorilla.lightBanana,
               width: 40,
               height: 40,
+              position: 'relative',
               '& img': {
-                objectPosition: 'center bottom', // 画像を下寄せに配置
+                objectPosition: 'center bottom',
               },
             }}
           >
@@ -49,13 +50,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
               <Image
                 src="/angori-image/angori-counseling.jpg"
                 alt="アンゴリ先生"
+                fill
                 style={{
-                  width: '100%',
-                  height: '100%',
                   objectFit: 'cover',
                   objectPosition: 'center top',
                   transform: 'translateY(3px)',
                 }}
+                sizes="40px"
               />
             )}
           </Avatar>

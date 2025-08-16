@@ -1,7 +1,16 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Box, Typography, Grid, Chip, useTheme } from '@mui/material'
+import {
+  Box,
+  Typography,
+  Grid,
+  Chip,
+  useTheme,
+  Select,
+  MenuItem,
+  Button,
+} from '@mui/material'
 import { Mood as MoodIcon } from '@mui/icons-material'
 import { QuestionType } from '@/types/counseling'
 
@@ -10,6 +19,7 @@ interface QuestionOptionsProps {
   options: string[]
   selectedValue: string
   onSelect: (value: string) => void
+  onSendMessage?: (message: string) => void
 }
 
 export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
@@ -17,6 +27,7 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
   options,
   selectedValue,
   onSelect,
+  onSendMessage,
 }) => {
   const theme = useTheme()
   const [selectedEmotions, setSelectedEmotions] = useState<string[]>([])
@@ -27,7 +38,7 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
       : [...selectedEmotions, emotion]
 
     setSelectedEmotions(newSelectedEmotions)
-    onSelect(newSelectedEmotions.join(', '))
+    // onSelect(newSelectedEmotions.join(', '))
   }
 
   const handleRatingSelect = (rating: string) => {
@@ -40,7 +51,7 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
         <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
           感情を選んでください（複数選択可）:
         </Typography>
-        <Grid container spacing={1}>
+        <Grid container spacing={1} sx={{ mb: 2 }}>
           {options.map((emotion) => (
             <Grid item key={emotion}>
               <Chip
@@ -56,18 +67,50 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
                 sx={{
                   cursor: 'pointer',
                   bgcolor: selectedEmotions.includes(emotion)
-                    ? theme.palette.gorilla.banana
-                    : 'transparent', // 追加
-                  '&:hover': {
-                    bgcolor: selectedEmotions.includes(emotion)
-                      ? theme.palette.gorilla.lightBanana
-                      : theme.palette.grey[100], // 追加
-                  },
+                    ? theme.palette.primary.main
+                    : 'transparent',
+                  color: selectedEmotions.includes(emotion)
+                    ? 'white'
+                    : 'inherit',
                 }}
               />
             </Grid>
           ))}
         </Grid>
+
+        {/* 決定ボタンを追加 */}
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => onSendMessage?.(selectedEmotions.join(', '))}
+            disabled={selectedEmotions.length === 0}
+            sx={{ borderRadius: '20px', px: 3 }}
+          >
+            決定
+          </Button>
+        </Box>
+      </Box>
+    )
+  }
+  if (questionType === 'select') {
+    return (
+      <Box sx={{ p: 2, borderTop: '1px solid #e0e0e0' }}>
+        <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+          選択してください:
+        </Typography>
+        <Select
+          value={selectedValue}
+          onChange={(e) => onSelect(e.target.value)}
+          fullWidth
+          variant="outlined"
+        >
+          {options.map((option) => (
+            <MenuItem key={option} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </Select>
       </Box>
     )
   }
