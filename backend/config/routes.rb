@@ -18,11 +18,11 @@ Rails.application.routes.draw do
                    registrations: 'api/v1/registrations',
                    sessions: 'api/v1/sessions'
                  }
-
+      match '*path', via: [:options], to: ->(_env) { [200, {}, ['']] }
       get '/auth/me', to: 'users#me'
     end
   end
-
+  match '*path', via: [:options], to: ->(_env) { [200, {}, ['']] }
   # Defines the root path route ("/")
   # root "posts#index"
 end
