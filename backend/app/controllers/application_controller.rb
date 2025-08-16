@@ -20,10 +20,10 @@ class ApplicationController < ActionController::API
     headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD'
     headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
     headers['Access-Control-Allow-Credentials'] = 'true'
-    
+
     # OPTIONSリクエストの場合は即座にレスポンス
-    if request.request_method == 'OPTIONS'
-      head :ok
-    end
+    return unless request.request_method == 'OPTIONS'
+
+    head :ok
   end
 end
