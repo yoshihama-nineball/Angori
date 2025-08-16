@@ -127,8 +127,13 @@ RSpec.describe ContactMessage, type: :model do
     end
 
     it '.category_statsがカテゴリ別件数を返すこと' do
+      # テスト開始前のbug_reportの件数を記録
+      initial_count = described_class.category_stats['bug_report'] || 0
+
       create(:contact_message, category: 'bug_report', status: 'pending')
-      expect(described_class.category_stats).to include('bug_report' => 1)
+
+      # 新しい件数が1つ増えていることを確認
+      expect(described_class.category_stats['bug_report']).to eq(initial_count + 1)
     end
   end
 end

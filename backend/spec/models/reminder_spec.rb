@@ -120,8 +120,13 @@ RSpec.describe Reminder, type: :model do
     end
 
     it '.reminder_category_statsがカテゴリ別件数を返すこと' do
+      # テスト開始前のreflectionの件数を記録
+      initial_count = described_class.reminder_category_stats['reflection'] || 0
+
       create(:reminder, user: user, reminder_category: 'reflection')
-      expect(described_class.reminder_category_stats).to include('reflection' => 1)
+
+      # 新しい件数が1つ増えていることを確認
+      expect(described_class.reminder_category_stats['reflection']).to eq(initial_count + 1)
     end
 
     it '.reminder_effectiveness_reportが統計を返すこと' do
