@@ -1,28 +1,26 @@
+# backend/config/routes.rb
 Rails.application.routes.draw do
   devise_for :users
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  
   get 'up' => 'rails/health#show', as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/*
   get 'service-worker' => 'rails/pwa#service_worker', as: :pwa_service_worker
   get 'manifest' => 'rails/pwa#manifest', as: :pwa_manifest
 
   namespace :api do
     namespace :v1 do
-      # ... 既存のAPI ルート
       devise_for :users,
                  controllers: {
                    registrations: 'api/v1/registrations',
                    sessions: 'api/v1/sessions'
                  }
-      match '*path', via: [:options], to: ->(_env) { [200, {}, ['']] }
       get '/auth/me', to: 'users#me'
+      
+      # OPTIONSルートを復活させる
+      match '*path', via: [:options], to: proc { [200, {
+        'Access-Control-Allow-Origin' => '*',
+        'Access-Control-Allow-Methods' => 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD',
+        'Access-Control-Allow-Headers' => 'Content-Type, Authorization'
+      }, ['']] }
     end
   end
-  match '*path', via: [:options], to: ->(_env) { [200, {}, ['']] }
-  # Defines the root path route ("/")
-  # root "posts#index"
 end
