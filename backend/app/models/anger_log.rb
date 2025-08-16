@@ -9,6 +9,7 @@ class AngerLog < ApplicationRecord
   validates :location, length: { maximum: 100 }, allow_blank: true
   validates :ai_advice, length: { maximum: 2000 }, allow_blank: true
   validates :reflection, length: { maximum: 1000 }, allow_blank: true
+  validates :perception, length: { maximum: 1000 }, allow_blank: true
 
   scope :recent, -> { order(occurred_at: :desc) }
   scope :by_anger_level, ->(level) { where(anger_level: level) }

@@ -8,6 +8,7 @@ class CreateAngerLogs < ActiveRecord::Migration[7.1]
       t.text :situation_description,        null: false
       t.string :trigger_words
       t.jsonb :emotions_felt
+      t.text :perception
       t.text :ai_advice
       t.text :reflection
       t.timestamps null: false

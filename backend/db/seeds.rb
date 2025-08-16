@@ -1,23 +1,23 @@
 # データベースクリア（開発環境のみ）
-if Rails.env.development?
-  Rails.logger.debug '🧹 Cleaning database...'
-  UserBadge.destroy_all
-  TriggerWord.destroy_all
-  CalmingPoint.destroy_all
-  AngerLog.destroy_all
-  ContactMessage.destroy_all
-  Reminder.destroy_all
-  User.destroy_all
-  Badge.destroy_all
-  WiseSaying.destroy_all
-end
+# if Rails.env.development?
+#   Rails.logger.debug '🧹 Cleaning database...'
+#   UserBadge.destroy_all
+#   TriggerWord.destroy_all
+#   CalmingPoint.destroy_all
+#   AngerLog.destroy_all
+#   ContactMessage.destroy_all
+#   Reminder.destroy_all
+#   User.destroy_all
+#   Badge.destroy_all
+#   WiseSaying.destroy_all
+# end
 
 Rails.logger.debug '🦍 Starting Angori seeds...'
 
 # 管理者ユーザー作成
 admin_user = User.create!(
   email: 'admin@angori.com',
-  password: 'password123',
+  password: 'Password123!',
   name: 'Angori管理者'
 )
 Rails.logger.debug { "✅ Created admin user: #{admin_user.email}" }
@@ -26,17 +26,17 @@ Rails.logger.debug { "✅ Created admin user: #{admin_user.email}" }
 test_users = [
   {
     email: 'test@example.com',
-    password: 'password123',
+    password: 'Password123!',
     name: 'テストゴリラ'
   },
   {
     email: 'asd.user@example.com',
-    password: 'password123',
+    password: 'Password123!',
     name: 'ASD特性ユーザー'
   },
   {
     email: 'hsp.user@example.com',
-    password: 'password123',
+    password: 'Password123!',
     name: 'HSP特性ユーザー'
   }
 ]
@@ -227,6 +227,7 @@ anger_log_patterns = [
     situation_description: '急な締切変更で残業確定。事前連絡もなく、他の予定もキャンセルになった。',
     trigger_words: '締切,残業,突然の変更,コミュニケーション不足',
     emotions_felt: %w[怒り 呆れ ストレス 疲労],
+    perception: '急な変更は困るし、事前に相談してくれれば対応できたのに',
     ai_advice: 'この状況では怒りを感じるのは自然です。深呼吸をして、上司との建設的な対話を考えてみましょう。事前の情報共有の改善を提案してみてください。',
     reflection: '確かに急な変更は困るけど、チームでルールを決めて予防できるかも。'
   },
@@ -238,6 +239,7 @@ anger_log_patterns = [
     situation_description: '満員電車で隣の人がイヤホンから大音量で音楽を流している。車内も蒸し暑く、不快感が増した。',
     trigger_words: '騒音,満員電車,感覚過敏,マナー違反',
     emotions_felt: %w[イライラ 疲労 不快感],
+    perception: '周りの人はあまり気にしてないみたいだけど、私には本当に辛い',
     ai_advice: '感覚過敏の方には辛い状況ですね。ノイズキャンセリングイヤホンや乗車時間の調整などの対策を検討してみてください。',
     reflection: '朝の通勤時間をずらすか、対策グッズを用意しよう。'
   },
@@ -249,6 +251,7 @@ anger_log_patterns = [
     situation_description: '家族が約束を守らず、掃除当番をサボった。何度も注意しているのに改善されない。',
     trigger_words: '約束破り,家事分担,繰り返し,責任感',
     emotions_felt: %w[怒り 失望 疲れ],
+    perception: '何度も言ってるのに何で約束を破るの',
     ai_advice: '家族との約束事は感情的になりやすい問題です。冷静に話し合いの場を設けて、具体的なルールと結果を決めてみましょう。',
     reflection: 'ルールを明文化して、みんなで共有するのが良いかも。'
   },
@@ -260,6 +263,7 @@ anger_log_patterns = [
     situation_description: 'レジで店員の接客態度が悪く、商品を乱雑に扱われた。急いでいたので余計にイライラした。',
     trigger_words: '接客態度,マナー,時間プレッシャー,雑な扱い',
     emotions_felt: %w[イライラ 焦り],
+    perception: '商品を乱雑に扱われると不愉快だし、迷惑をかけられた気分になる',
     ai_advice: '急いでいる時は些細なことでもイライラしやすくなります。時間に余裕を持つことと、相手の立場も考えてみることが大切です。',
     reflection: '急いでいたから敏感になってたかも。時間に余裕を持とう。'
   },
@@ -271,6 +275,7 @@ anger_log_patterns = [
     situation_description: 'スマホの充電が切れていて、大事な連絡を確認できなかった。充電し忘れた自分にもイライラ。',
     trigger_words: '準備不足,自己管理,連絡ミス,技術トラブル',
     emotions_felt: %w[軽いイライラ 自己嫌悪],
+    perception: '何で肝心な時に限って充電が切れるかな...',
     ai_advice: '準備不足による小さなトラブルですね。充電習慣の見直しや、予備バッテリーの準備など、予防策を考えてみましょう。',
     reflection: '毎晩充電する習慣をつけよう。'
   }

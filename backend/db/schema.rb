@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_13_070904) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_16_024311) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -26,6 +26,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_13_070904) do
     t.text "reflection"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "perception"
     t.index ["anger_level"], name: "index_anger_logs_on_anger_level"
     t.index ["occurred_at"], name: "index_anger_logs_on_occurred_at"
     t.index ["trigger_words"], name: "index_anger_logs_on_trigger_words"
