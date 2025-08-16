@@ -1,12 +1,15 @@
-# backend/config/initializers/cors.rb (Step 2 - 本番レベル)
+# backend/config/initializers/cors.rb
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    # 環境に応じた設定
     origins case Rails.env
             when 'development'
-              ['http://localhost:3000', 'http://127.0.0.1:3000']
+              [
+                'http://localhost:3000',
+                'http://127.0.0.1:3000',
+                %r{https://angori-.*\.vercel\.app$}
+              ]
             when 'production'
-              ['https://angori.vercel.app'] # 本番ドメイン
+              ['https://angori.vercel.app']
             else
               []
             end
@@ -18,7 +21,6 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
              credentials: true
   end
 
-  # プリフライトリクエスト用
   allow do
     origins '*'
     resource '/api/*',
