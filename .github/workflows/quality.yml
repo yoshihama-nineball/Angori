@@ -38,7 +38,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - uses: ruby/setup-ruby@v1
+    - uses: ruby/setup-ruby@v1.203.0  # 最新版に更新
       with:
         ruby-version: '3.2.3'
         bundler-cache: true
