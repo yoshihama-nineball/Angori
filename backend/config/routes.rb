@@ -13,25 +13,7 @@ Rails.application.routes.draw do
         sessions: 'api/v1/sessions'
       }
       get '/auth/me', to: 'users#me'
-
-      # 環境に応じたOPTIONSハンドラー
-      match '*path', via: [:options], to: proc { |env|
-        origin = env['HTTP_ORIGIN']
-
-        allowed_origin = if Rails.env.development? && origin&.match?(%r{\Ahttps://.*\.vercel\.app\z})
-                           origin
-                         elsif Rails.env.production?
-                           'https://angori.vercel.app'
-                         else
-                           'http://localhost:3000'
-                         end
-
-        [200, {
-          'Access-Control-Allow-Origin' => allowed_origin,
-          'Access-Control-Allow-Methods' => 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD',
-          'Access-Control-Allow-Headers' => 'Content-Type, Authorization'
-        }, ['']]
-      }
+      # OPTIONSハンドラーを削除
     end
   end
 end
