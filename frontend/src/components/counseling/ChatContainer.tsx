@@ -16,7 +16,10 @@ export const ChatContainer = () => {
   }
 
   useEffect(() => {
-    scrollToBottom()
+    // 初期メッセージ（1個）の場合はスクロールしない
+    if (messages.length > 1) {
+      scrollToBottom()
+    }
   }, [messages])
 
   return (
