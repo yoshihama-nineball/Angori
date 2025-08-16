@@ -205,10 +205,10 @@ docker compose exec backend rails db:seed
 ### サンプルデータ
 
 Seedsで以下のデータが作成されます：
-- **管理者**: admin@angori.com / password123
-- **テストユーザー**: test@example.com / password123
-- **ASD特性ユーザー**: asd.user@example.com / password123  
-- **HSP特性ユーザー**: hsp.user@example.com / password123
+- **管理者**: admin@angori.com / Password123!
+- **テストユーザー**: test@example.com / Password123!
+- **ASD特性ユーザー**: asd.user@example.com / Password123!
+- **HSP特性ユーザー**: hsp.user@example.com / Password123!
 
 ### データベース構成
 
