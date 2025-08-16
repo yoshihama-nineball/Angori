@@ -12,11 +12,11 @@ import {
   IconButton,
   Container,
   Alert,
+  CircularProgress,
 } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { loginUser, type ApiResponse } from '../../../lib/api/auth'
 import { useAuthStore } from '../../../lib/stores/authStore'
-import Loading from '../feedback/Loading/Loading'
 
 const LoginForm = () => {
   const router = useRouter()
@@ -216,7 +216,7 @@ const LoginForm = () => {
               >
                 {loading ? (
                   <>
-                    <Loading />
+                    <CircularProgress size={16} />
                     ログイン中...
                   </>
                 ) : (
