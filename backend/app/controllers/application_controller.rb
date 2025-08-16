@@ -1,8 +1,7 @@
+# backend/app/controllers/application_controller.rb
 class ApplicationController < ActionController::API
-  # API用の基本設定
   include ActionController::MimeResponds
 
-  # CORS設定を追加
   before_action :set_cors_headers
   before_action :configure_permitted_parameters, if: :devise_controller?
 
@@ -16,6 +15,7 @@ class ApplicationController < ActionController::API
   private
 
   def set_cors_headers
+    # POSTリクエストでもCORSヘッダーを設定
     headers['Access-Control-Allow-Origin'] = '*'
     headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD'
     headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
