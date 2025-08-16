@@ -3,6 +3,7 @@
 import React from 'react'
 import { Box, Avatar, Paper, Typography, Fade, useTheme } from '@mui/material'
 import { Message } from '@/types/counseling'
+import Image from 'next/image'
 
 interface MessageBubbleProps {
   message: Message
@@ -45,10 +46,16 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             {message.sender === 'user' ? (
               '👤'
             ) : (
-              <img
+              <Image
                 src="/angori-image/angori-counseling.jpg"
                 alt="アンゴリ先生"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', transform: 'translateY(3px)' }}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center top',
+                  transform: 'translateY(3px)',
+                }}
               />
             )}
           </Avatar>

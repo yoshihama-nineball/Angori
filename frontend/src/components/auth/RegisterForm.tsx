@@ -15,12 +15,12 @@ import {
   Link,
   Container,
   Alert,
-  CircularProgress,
 } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { registerUser, type ApiResponse } from '../../../lib/api/auth'
 import TermsModal from './TermsModal'
 import PrivacyModal from './PrivacyModal'
+import Loading from '../feedback/Loading/Loading'
 
 const RegisterForm = () => {
   const router = useRouter()
@@ -302,7 +302,7 @@ const RegisterForm = () => {
                 >
                   {loading ? (
                     <>
-                      <CircularProgress size={20} sx={{ mr: 1 }} />
+                      <Loading />
                       登録中...
                     </>
                   ) : (
@@ -336,6 +336,8 @@ const RegisterForm = () => {
           </Paper>
         </Box>
       </Container>
+
+      {/* モーダルコンポーネント */}
       <TermsModal
         open={termsModalOpen}
         onClose={() => setTermsModalOpen(false)}

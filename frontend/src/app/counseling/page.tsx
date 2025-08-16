@@ -2,7 +2,7 @@
 
 import React from 'react'
 import AuthGuard from '@/components/auth/AuthGuard'
-import CounselingLayout from '@/components/counseling/CounselingLayout'
+import { CounselingLayout } from '@/components/counseling/CounselingLayout'
 
 const CounselingPage = () => {
   return (

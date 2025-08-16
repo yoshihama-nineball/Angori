@@ -1,12 +1,12 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Container, Typography, Paper, Box } from '@mui/material'
+import { Typography, Paper, Box } from '@mui/material'
 import { ChatContainer } from './ChatContainer'
 import { MessageInput } from './MessageInput'
 import { CounselingCompletionModal } from './CounselingCompletionModal'
 import { questionFlow } from '@/data/questionFlow'
-import type { Message } from '@/types/counseling'
+import type { AngerLogFormData, Message } from '@/types/counseling'
 import { useCounselingStore } from '../../../lib/stores/counselingStore'
 
 export const CounselingLayout = () => {
@@ -20,7 +20,6 @@ export const CounselingLayout = () => {
     nextQuestion,
     updateAngerLogField,
     getCreateAngerLogData,
-    resetChat,
   } = useCounselingStore()
 
   const [showCompletionModal, setShowCompletionModal] = useState(false)
@@ -40,7 +39,7 @@ export const CounselingLayout = () => {
   }, [messages.length, addMessage])
 
   // AIアドバイス取得（仮実装）
-  const getAIAdvice = async (data: any): Promise<string> => {
+  const getAIAdvice = async (data: AngerLogFormData): Promise<string> => {
     // TODO: 実際のAI API呼び出しに置き換える
     await new Promise((resolve) => setTimeout(resolve, 2000)) // 2秒の遅延をシミュレート
 
@@ -57,9 +56,10 @@ export const CounselingLayout = () => {
   }
 
   // アンガーログ保存（仮実装）
-  const saveAngerLog = async (data: any): Promise<any> => {
+  const saveAngerLog = async (
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> => {
     // TODO: 実際のAPI呼び出しに置き換える
-    console.log('保存するデータ:', data)
     await new Promise((resolve) => setTimeout(resolve, 1000))
     return { id: Date.now(), ...data }
   }
@@ -142,8 +142,7 @@ export const CounselingLayout = () => {
 
         // Modal表示
         setShowCompletionModal(true)
-      } catch (error) {
-        console.error('処理エラー:', error)
+      } catch {
         const errorMessage: Message = {
           id: `error_${Date.now()}`,
           content:
@@ -163,13 +162,6 @@ export const CounselingLayout = () => {
     setShowCompletionModal(false)
   }
 
-  // 新しいチャットを開始
-  const handleStartNewChat = () => {
-    resetChat()
-    setShowCompletionModal(false)
-    setAiAdvice('')
-  }
-
   // 現在の質問タイプを取得
   const getCurrentQuestionType = () => {
     if (currentQuestionIndex >= questionFlow.length) return 'text'
@@ -181,71 +173,71 @@ export const CounselingLayout = () => {
     return questionFlow[currentQuestionIndex].options
   }
 
- return (
-   <Box
-     sx={{
-       height: '100vh',
-       display: 'flex',
-       flexDirection: 'column',
-       maxWidth: 'md',
-       mx: 'auto',
-       py: 2,
-       px: 2,
-     }}
-   >
-     {/* チャット部分（スクロール可能） */}
-     <Box
-       sx={{
-         flexGrow: 1,
-         overflow: 'hidden',
-         mb: 2,
-       }}
-     >
-       <ChatContainer />
-     </Box>
+  return (
+    <Box
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        maxWidth: 'md',
+        mx: 'auto',
+        py: 2,
+        px: 2,
+      }}
+    >
+      {/* チャット部分（スクロール可能） */}
+      <Box
+        sx={{
+          flexGrow: 1,
+          overflow: 'hidden',
+          mb: 2,
+        }}
+      >
+        <ChatContainer />
+      </Box>
 
-     {/* 入力エリア（固定） */}
-     {!showCompletionModal && (
-       <Box
-         sx={{
-           borderTop: '1px solid #e0e0e0',
-           bgcolor: 'white',
-           pt: 2,
-           pb: 1,
-         }}
-       >
-         <MessageInput
-           onSendMessage={handleSendMessage}
-           isLoading={isLoading}
-           questionType={getCurrentQuestionType()}
-           options={getCurrentOptions()}
-         />
-       </Box>
-     )}
+      {/* 入力エリア（固定） */}
+      {!showCompletionModal && (
+        <Box
+          sx={{
+            borderTop: '1px solid #e0e0e0',
+            bgcolor: 'white',
+            pt: 2,
+            pb: 1,
+          }}
+        >
+          <MessageInput
+            onSendMessage={handleSendMessage}
+            isLoading={isLoading}
+            questionType={getCurrentQuestionType()}
+            options={getCurrentOptions()}
+          />
+        </Box>
+      )}
 
-     {/* 完了Modal */}
-     <CounselingCompletionModal
-       open={showCompletionModal}
-       onClose={handleCloseModal}
-       angerLogData={angerLogData}
-       aiAdvice={aiAdvice}
-     />
+      {/* 完了Modal */}
+      <CounselingCompletionModal
+        open={showCompletionModal}
+        onClose={handleCloseModal}
+        angerLogData={angerLogData}
+        aiAdvice={aiAdvice}
+      />
 
-     {/* デバッグ情報（開発時のみ） */}
-     {process.env.NODE_ENV === 'development' && (
-       <Paper elevation={1} sx={{ p: 2, mt: 2, bgcolor: '#f5f5f5' }}>
-         <Typography variant="caption" component="div">
-           <strong>デバッグ情報:</strong>
-         </Typography>
-         <Typography
-           variant="caption"
-           component="pre"
-           sx={{ fontSize: '10px', overflow: 'auto' }}
-         >
-           {JSON.stringify(angerLogData, null, 2)}
-         </Typography>
-       </Paper>
-     )}
-   </Box>
- )
+      {/* デバッグ情報（開発時のみ） */}
+      {process.env.NODE_ENV === 'development' && (
+        <Paper elevation={1} sx={{ p: 2, mt: 2, bgcolor: '#f5f5f5' }}>
+          <Typography variant="caption" component="div">
+            <strong>デバッグ情報:</strong>
+          </Typography>
+          <Typography
+            variant="caption"
+            component="pre"
+            sx={{ fontSize: '10px', overflow: 'auto' }}
+          >
+            {JSON.stringify(angerLogData, null, 2)}
+          </Typography>
+        </Paper>
+      )}
+    </Box>
+  )
 }
