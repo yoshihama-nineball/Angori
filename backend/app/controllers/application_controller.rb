@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::API
   include ActionController::MimeResponds
-
+  
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   protected

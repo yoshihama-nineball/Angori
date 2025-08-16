@@ -22,11 +22,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_16_024311) do
     t.text "situation_description", null: false
     t.string "trigger_words"
     t.jsonb "emotions_felt"
+    t.text "perception"
     t.text "ai_advice"
     t.text "reflection"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "perception"
     t.index ["anger_level"], name: "index_anger_logs_on_anger_level"
     t.index ["occurred_at"], name: "index_anger_logs_on_occurred_at"
     t.index ["trigger_words"], name: "index_anger_logs_on_trigger_words"

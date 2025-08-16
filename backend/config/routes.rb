@@ -1,7 +1,6 @@
-# backend/config/routes.rb
 Rails.application.routes.draw do
   devise_for :users
-
+  
   get 'up' => 'rails/health#show', as: :rails_health_check
   get 'service-worker' => 'rails/pwa#service_worker', as: :pwa_service_worker
   get 'manifest' => 'rails/pwa#manifest', as: :pwa_manifest
@@ -13,7 +12,6 @@ Rails.application.routes.draw do
         sessions: 'api/v1/sessions'
       }
       get '/auth/me', to: 'users#me'
-      # OPTIONSハンドラーを削除
     end
   end
 end
