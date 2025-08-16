@@ -22,6 +22,7 @@ import {
 } from '@mui/icons-material'
 import { useRouter } from 'next/navigation'
 import type { AngerLogFormData } from '@/types/counseling'
+import dayjs from 'dayjs'
 
 interface CounselingCompletionModalProps {
   open: boolean
@@ -135,6 +136,7 @@ export const CounselingCompletionModal: React.FC<
 
           <Grid container spacing={2}>
             {/* 発生日時 */}
+            {/* 発生日時 */}
             <Grid item xs={12} sm={6}>
               <Box
                 sx={{ p: 2, bgcolor: theme.palette.grey[50], borderRadius: 2 }}
@@ -143,7 +145,11 @@ export const CounselingCompletionModal: React.FC<
                   発生日時
                 </Typography>
                 <Typography variant="body1" fontWeight="500">
-                  {angerLogData.occurred_at || '未入力'}
+                  {angerLogData.occurred_at
+                    ? dayjs(angerLogData.occurred_at).format(
+                        'YYYY年MM月DD日 HH:mm'
+                      )
+                    : '未入力'}
                 </Typography>
               </Box>
             </Grid>

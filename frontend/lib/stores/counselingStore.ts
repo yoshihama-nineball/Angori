@@ -56,7 +56,7 @@ export const useCounselingStore = create<CounselingState>((set, get) => ({
       currentQuestionIndex: state.currentQuestionIndex + 1,
     })),
 
-  updateAngerLogField: (field, value) =>
+  updateAngerLogField: (field, value) => {
     set((state) => {
       const updatedData = { ...state.angerLogData }
 
@@ -75,12 +75,12 @@ export const useCounselingStore = create<CounselingState>((set, get) => ({
         updatedData.situation_description =
           `${updatedData.situation_description}\n\n【認知・解釈】\n${value}`.trim()
       } else {
-        // 型アサーションで解決
         ;(updatedData as Record<string, unknown>)[field] = value
       }
 
       return { angerLogData: updatedData }
-    }),
+    })
+  },
 
   getCreateAngerLogData: (): CreateAngerLogData => {
     const data = get().angerLogData

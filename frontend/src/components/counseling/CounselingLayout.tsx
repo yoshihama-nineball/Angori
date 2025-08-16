@@ -19,6 +19,7 @@ export const CounselingLayout = () => {
     addMessage,
     setLoading,
     nextQuestion,
+    updateAngerLogField,
     getCreateAngerLogData,
   } = useCounselingStore()
 
@@ -74,18 +75,22 @@ export const CounselingLayout = () => {
       try {
         displayContent = dayjs(content).format('YYYY年MM月DD日 HH:mm')
       } catch {
-        displayContent = content.trim() // フォーマットに失敗した場合は元の値
+        displayContent = content.trim()
       }
     }
 
     const userMessage: Message = {
       id: `user_${Date.now()}`,
-      content: displayContent, // フォーマットされた内容を表示
+      content: displayContent,
       sender: 'user',
       timestamp: new Date(),
     }
 
     addMessage(userMessage)
+
+    if (currentQuestion) {
+      updateAngerLogField(currentQuestion.field, content.trim())
+    }
 
     setLoading(true)
 
