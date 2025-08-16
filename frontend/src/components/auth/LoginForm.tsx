@@ -216,7 +216,7 @@ const LoginForm = () => {
               >
                 {loading ? (
                   <>
-                    <CircularProgress size={20} sx={{ mr: 1 }} />
+                    <CircularProgress size={16} />
                     ログイン中...
                   </>
                 ) : (

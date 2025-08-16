@@ -23,7 +23,8 @@ module AngerLogTriggerWords
   end
 
   def parse_trigger_words
-    trigger_words.split(',').map(&:strip).reject(&:empty?)
+    # 複数の区切り文字に対応（カンマ類 + スペース類）
+    trigger_words.split(/[,，、\s　]+/).map(&:strip).reject(&:empty?)
   end
 
   def process_trigger_word(word)

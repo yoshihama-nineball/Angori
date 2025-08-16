@@ -93,7 +93,7 @@ const theme = createTheme({
 
       // バナナ系
       banana: '#FFD700', // 濃いバナナイエロー
-      lightBanana: '#FFFF57', // ライトバナナ
+      lightBanana: '#FFF9C4', // ライトバナナ
       bananaAccent: '#FFA000', // バナナオレンジ
 
       // ジャングル要素

@@ -302,7 +302,7 @@ const RegisterForm = () => {
                 >
                   {loading ? (
                     <>
-                      <CircularProgress size={20} sx={{ mr: 1 }} />
+                      <CircularProgress size={16} />
                       登録中...
                     </>
                   ) : (
@@ -336,6 +336,8 @@ const RegisterForm = () => {
           </Paper>
         </Box>
       </Container>
+
+      {/* モーダルコンポーネント */}
       <TermsModal
         open={termsModalOpen}
         onClose={() => setTermsModalOpen(false)}

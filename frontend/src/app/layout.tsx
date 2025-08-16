@@ -7,6 +7,7 @@ import { ClientThemeProvider } from './components/layouts/ClientThemeProvider'
 import Header from '@/components/layouts/Header/Header'
 import FlashMessage from '@/components/feedback/Alert/FlashMessage'
 import { MessageProvider } from '../../context/MessageContext'
+import Loading from '@/components/feedback/Loading/Loading'
 
 export const metadata: Metadata = {
   title: 'アンガーアプリ | TOP',
@@ -37,8 +38,8 @@ export default function RootLayout({
                 flexDirection: 'column',
               }}
             >
-              {/* <React.Suspense fallback={<Loading />}>{children}</React.Suspense> */}
-              <React.Suspense>{children}</React.Suspense>
+              <React.Suspense fallback={<Loading />}>{children}</React.Suspense>
+              {/* <React.Suspense>{children}</React.Suspense> */}
             </main>
             <Footer />
           </MessageProvider>
