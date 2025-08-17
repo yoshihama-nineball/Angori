@@ -178,7 +178,6 @@ export async function logoutUser(): Promise<ApiResponse> {
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
     })
 
     // クッキーを削除
