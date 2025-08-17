@@ -76,7 +76,7 @@ export const CounselingCompletionModal: React.FC<
         sx: {
           borderRadius: 3,
           maxHeight: '85vh',
-          marginTop: '80px', // ヘッダーの高さ分下にずらす
+          marginTop: '20px',
           marginBottom: '20px',
         },
       }}
