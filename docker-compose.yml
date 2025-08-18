@@ -41,6 +41,8 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - RAILS_ENV=development
       - RACK_ENV=development
+      - DEVISE_JWT_SECRET_KEY=${DEVISE_JWT_SECRET_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     depends_on:
       - postgres
       - redis
