@@ -12,6 +12,8 @@ Rails.application.routes.draw do
         sessions: 'api/v1/sessions'
       }
       get '/auth/me', to: 'users#me'
+
+      resources :anger_logs, only: %i[index show create update destroy]
     end
   end
 end
