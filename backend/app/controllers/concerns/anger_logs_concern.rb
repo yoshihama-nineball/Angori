@@ -53,7 +53,7 @@ module AngerLogsConcern
   end
 
   def create_params_valid?
-    required_fields = %i[occurred_at situation_description anger_level]
+    required_fields = %i[occurred_at situation_description anger_level perception emotions_felt reflection location]
     anger_log_data = params[:anger_log]
 
     return false if anger_log_data.blank?
