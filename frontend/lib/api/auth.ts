@@ -146,18 +146,7 @@ export async function loginUser(data: LoginData): Promise<ApiResponse> {
       // まずAuthorizationヘッダーを試す
       let authToken = response.headers.get('Authorization')
 
-      console.log(
-        'Login response headers:',
-        Array.from(response.headers.entries())
-      ) // 全ヘッダー確認
-      console.log('Login - Retrieved auth token from header:', authToken) // トークン確認
-
-      // ヘッダーからトークンが取得できない場合は、直接curlでトークンを取得
       if (!authToken) {
-        console.log(
-          'Authorization header not accessible, attempting direct token fetch...'
-        )
-
         try {
           // 同じリクエストをもう一度実行してheadersを確認
           const directResponse = await fetch(apiUrl, {
@@ -174,33 +163,16 @@ export async function loginUser(data: LoginData): Promise<ApiResponse> {
           const directToken =
             directResponse.headers.get('authorization') ||
             directResponse.headers.get('Authorization')
-          console.log('Direct token fetch result:', directToken)
 
           if (directToken) {
             authToken = directToken
           }
-        } catch (error) {
-          console.log('Direct token fetch failed:', error)
-        }
+        } catch {}
       }
 
       if (authToken) {
-        console.log('Setting cookie with token:', authToken)
         document.cookie = `auth_token=${authToken}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=strict`
-        console.log('Cookie set. Current cookies:', document.cookie)
-      } else {
-        console.log(
-          'No Authorization header found in response - CORS issue suspected'
-        )
-        console.log('Response status:', response.status)
-        console.log(
-          'Response headers available:',
-          response.headers.keys
-            ? Array.from(response.headers.keys())
-            : 'headers.keys not available'
-        )
       }
-
       return {
         errors: [],
         success: '🎉 ログインしました！ダッシュボードにリダイレクトします...',
@@ -221,38 +193,15 @@ export async function loginUser(data: LoginData): Promise<ApiResponse> {
   }
 }
 
-// auth.ts のlogoutUser関数のみ修正
 export async function logoutUser(): Promise<ApiResponse> {
   try {
-    // まずクッキーを削除（最優先）
     document.cookie = 'auth_token=; path=/; max-age=0; samesite=strict'
-    console.log('Cookie cleared')
-
-    // サーバー側のログアウトは試すが、失敗しても気にしない
-    try {
-      const apiUrl = `${API_BASE}/api/v1/users/sign_out`
-
-      const response = await fetch(apiUrl, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      console.log('Server logout attempted:', response.status)
-    } catch (serverError) {
-      console.log(
-        'Server logout failed (but client logout successful):',
-        serverError
-      )
-    }
 
     return {
       errors: [],
       success: 'ログアウトしました',
     }
-  } catch (error: unknown) {
-    // エラーでもクッキーは削除済みなので成功扱い
+  } catch {
     return {
       errors: [],
       success: 'ログアウトしました',
