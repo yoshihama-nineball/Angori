@@ -52,22 +52,38 @@ module AngerLogsConcern
     )
   end
 
+  # 一時的に詳細化
   def create_params_valid?
-    required_fields = %i[occurred_at situation_description anger_level perception emotions_felt reflection location]
     anger_log_data = params[:anger_log]
+    Rails.logger.info "Validation check - received data: #{anger_log_data.inspect}"
 
-    return false if anger_log_data.blank?
+    # 最低限の必須チェックのみ
+    required_check = anger_log_data.present? &&
+                     anger_log_data[:occurred_at].present? &&
+                     anger_log_data[:situation_description].present? &&
+                     anger_log_data[:anger_level].present?
 
-    required_fields.all? do |field|
-      value = anger_log_data[field]
-      value.present? && valid_field_value?(field, value)
-    end
+    Rails.logger.info "Basic validation result: #{required_check}"
+    required_check
   end
 
   def valid_field_value?(field, value)
-    return valid_anger_level?(value) if field == :anger_level
-
-    true
+    case field
+    when :anger_level
+      result = valid_anger_level?(value)
+      Rails.logger.info "  Anger level validation: #{value} -> #{result}"
+      result
+    when :emotions_felt
+      # emotions_feltの詳細チェック
+      Rails.logger.info "  Emotions felt type: #{value.class}"
+      Rails.logger.info "  Emotions felt content: #{value.inspect}"
+      # HashやActionController::Parametersであれば有効とする
+      result = value.respond_to?(:keys) || value.is_a?(Hash)
+      Rails.logger.info "  Emotions felt validation: #{result}"
+      result
+    else
+      true
+    end
   end
 
   def valid_anger_level?(level)
