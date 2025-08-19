@@ -51,26 +51,34 @@ export const MessageInput: React.FC<MessageInputProps> = ({
     <>
       {/* 選択肢表示エリア */}
       {(questionType === 'emotion' || questionType === 'rating') && options && (
-        <QuestionOptions
-          questionType={questionType}
-          options={options}
-          selectedValue={inputValue}
-          onSelect={handleOptionSelect}
-          onSendMessage={onSendMessage}
-        />
+        <Box sx={{ maxHeight: '35vh', overflow: 'auto', mb: 4 }}>
+          <QuestionOptions
+            questionType={questionType}
+            options={options}
+            selectedValue={inputValue}
+            onSelect={handleOptionSelect}
+            onSendMessage={onSendMessage}
+          />
+        </Box>
       )}
-
-      {/* 入力エリア - emotion時は非表示 */}
-      {questionType !== 'emotion' && (
-        <Box sx={{ p: 2, borderTop: '1px solid #e0e0e0' }}>
-          <Box sx={{ display: 'flex', gap: 1 }}>
+      {/* 入力エリア - emotion, rating時は非表示 */}
+      {questionType !== 'emotion' && questionType !== 'rating' && (
+        <Box
+          sx={{
+            p: 2,
+            borderTop: '1px solid #e0e0e0',
+            position: 'sticky',
+            bottom: 0,
+            bgcolor: 'white',
+          }}
+        >
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}>
             {questionType === 'datetime' ? (
               // DateTimePicker表示
               <>
                 <TextField
                   fullWidth
                   type="datetime-local"
-                  // label="発生日時"
                   value={
                     inputValue
                       ? dayjs(inputValue).format('YYYY-MM-DDTHH:mm')
@@ -80,7 +88,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
                     setInputValue(dayjs(e.target.value).toISOString())
                   }
                   inputProps={{
-                    max: dayjs().format('YYYY-MM-DDTHH:mm'), // 現在時刻まで選択可能
+                    max: dayjs().format('YYYY-MM-DDTHH:mm'),
                   }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
@@ -95,6 +103,8 @@ export const MessageInput: React.FC<MessageInputProps> = ({
                   sx={{
                     bgcolor: theme.palette.primary.main,
                     color: 'white',
+                    flexShrink: 0,
+                    alignSelf: 'flex-end',
                     '&:hover': {
                       bgcolor: theme.palette.primary.dark,
                     },
@@ -139,6 +149,8 @@ export const MessageInput: React.FC<MessageInputProps> = ({
                   sx={{
                     bgcolor: theme.palette.primary.main,
                     color: 'white',
+                    flexShrink: 0,
+                    alignSelf: 'flex-end',
                     '&:hover': {
                       bgcolor: theme.palette.primary.dark,
                     },
@@ -176,6 +188,8 @@ export const MessageInput: React.FC<MessageInputProps> = ({
                   sx={{
                     bgcolor: theme.palette.primary.main,
                     color: 'white',
+                    flexShrink: 0,
+                    alignSelf: 'flex-end',
                     '&:hover': {
                       bgcolor: theme.palette.primary.dark,
                     },

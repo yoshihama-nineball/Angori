@@ -121,9 +121,9 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
         <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
           怒りのレベルを選んでください:
         </Typography>
-        <Grid container spacing={1}>
+        <Grid container spacing={1} sx={{ mb: 2 }}>
           {options.map((rating) => (
-            <Grid item key={rating}>
+            <Grid item xs={2.4} key={rating}>
               <Chip
                 label={rating}
                 onClick={() => handleRatingSelect(rating)}
@@ -131,16 +131,29 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
                 variant={selectedValue === rating ? 'filled' : 'outlined'}
                 sx={{
                   cursor: 'pointer',
-                  minWidth: 40,
+                  width: '100%',
                   bgcolor:
                     selectedValue === rating
                       ? theme.palette.gorilla.banana
-                      : 'transparent', // 追加
+                      : 'transparent',
                 }}
               />
             </Grid>
           ))}
         </Grid>
+
+        {/* 決定ボタンを追加 */}
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => onSendMessage?.(selectedValue)}
+            disabled={!selectedValue}
+            sx={{ borderRadius: '20px', px: 3 }}
+          >
+            決定
+          </Button>
+        </Box>
       </Box>
     )
   }

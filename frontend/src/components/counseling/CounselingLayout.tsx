@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Typography, Paper, Box } from '@mui/material'
+import { Box } from '@mui/material'
 import { ChatContainer } from './ChatContainer'
 import { MessageInput } from './MessageInput'
 import { CounselingCompletionModal } from './CounselingCompletionModal'
@@ -22,11 +22,19 @@ export const CounselingLayout = () => {
     setLoading,
     nextQuestion,
     updateAngerLogField,
+    resetChat,
   } = useCounselingStore()
 
   const [showCompletionModal, setShowCompletionModal] = useState(false)
   const [aiAdvice, setAiAdvice] = useState('')
-  const [savedAngerLogId, setSavedAngerLogId] = useState<number | null>(null)
+  const [, setSavedAngerLogId] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (currentQuestionIndex >= questionFlow.length && !showCompletionModal) {
+      // 相談が完了しているがモーダルが表示されていない場合はリセット
+      resetChat()
+    }
+  }, [currentQuestionIndex, showCompletionModal, resetChat])
 
   // 初期メッセージの設定
   useEffect(() => {
@@ -188,7 +196,7 @@ export const CounselingLayout = () => {
   return (
     <Box
       sx={{
-        height: '100vh',
+        height: '88vh',
         display: 'flex',
         flexDirection: 'column',
         maxWidth: 'md',
@@ -236,7 +244,7 @@ export const CounselingLayout = () => {
       />
 
       {/* デバッグ情報（開発時のみ） */}
-      {process.env.NODE_ENV === 'development' && (
+      {/* {process.env.NODE_ENV === 'development' && (
         <Paper elevation={1} sx={{ p: 2, mt: 2, bgcolor: '#f5f5f5' }}>
           <Typography variant="caption" component="div">
             <strong>デバッグ情報:</strong>
@@ -249,7 +257,7 @@ export const CounselingLayout = () => {
             {JSON.stringify({ ...angerLogData, savedAngerLogId }, null, 2)}
           </Typography>
         </Paper>
-      )}
+      )} */}
     </Box>
   )
 }
