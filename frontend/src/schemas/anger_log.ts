@@ -15,16 +15,23 @@ export const CreateAngerLogSchema = z.object({
   situation_description: z
     .string()
     .min(1, '状況説明は必須です')
-    .max(1000, '状況説明は1000文字以内で入力してください'),
+    .max(1000, '状況説明は200文字以内で入力してください'),
   location: z
     .string()
     .max(100, '場所は100文字以内で入力してください')
     .optional()
     .or(z.literal('')), // 空文字も許可
   trigger_words: z.string().optional().or(z.literal('')), // 空文字も許可
-  emotions_felt: z
-    .record(z.string(), z.any()) // JSONB対応（key: string, value: any）
-    .optional(),
+  perception: z
+    .string()
+    .min(1, '出来事をどう捉えたかの項目は必須です')
+    .max(1000, '出来事をどう捉えたかは200文字以内で入力してください'),
+  emotions_felt: z.record(z.string(), z.any()).optional(),
+  reflection: z
+    .string()
+    .max(1000, '振り返りは300文字以内で入力してください')
+    .optional()
+    .or(z.literal('')), // 空文字も許可
 })
 
 export const UpdateAngerLogSchema = z.object({
@@ -50,10 +57,14 @@ export const UpdateAngerLogSchema = z.object({
     .optional()
     .or(z.literal('')),
   trigger_words: z.string().optional().or(z.literal('')),
+  perception: z
+    .string()
+    .min(1, '出来事をどう捉えたかの項目は必須です')
+    .max(1000, '出来事をどう捉えたかは200文字以内で入力してください'),
   emotions_felt: z.record(z.string(), z.any()).optional(),
   reflection: z
     .string()
-    .max(1000, '振り返りは1000文字以内で入力してください')
+    .max(1000, '振り返りは300文字以内で入力してください')
     .optional()
     .or(z.literal('')), // 空文字も許可
 })
@@ -109,10 +120,11 @@ export const AngerLogAPIResponseSchema = z.object({
   occurred_at: z.string(), // timestamp → ISO string
   location: z.string().nullable(),
   situation_description: z.string(),
+  perception: z.string(),
   trigger_words: z.string().nullable(),
   emotions_felt: z.record(z.string(), z.any()).nullable(), // JSONB
-  ai_advice: z.string().nullable(), // 最大2000文字
-  reflection: z.string().nullable(), // 最大1000文字
+  ai_advice: z.string().nullable(),
+  reflection: z.string().nullable(), // 最大1300文字
   created_at: z.string(),
   updated_at: z.string(),
 })
