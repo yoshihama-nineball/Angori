@@ -23,6 +23,7 @@ import {
 import { useRouter } from 'next/navigation'
 import type { AngerLogFormData } from '@/types/counseling'
 import dayjs from 'dayjs'
+import { useCounselingStore } from '../../../lib/stores/counselingStore'
 
 interface CounselingCompletionModalProps {
   open: boolean
@@ -36,6 +37,8 @@ export const CounselingCompletionModal: React.FC<
 > = ({ open, onClose, angerLogData, aiAdvice }) => {
   const theme = useTheme()
   const router = useRouter()
+
+  const { resetChat } = useCounselingStore()
 
   // 感情を配列に変換
   const selectedEmotions = Object.keys(angerLogData.emotions_felt || {}).filter(
@@ -55,6 +58,7 @@ export const CounselingCompletionModal: React.FC<
 
   // トップページに戻る
   const handleGoHome = () => {
+    resetChat()
     router.push('/dashboard')
     onClose()
   }
@@ -106,7 +110,7 @@ export const CounselingCompletionModal: React.FC<
           </Typography>
           <Box
             sx={{
-              p: 3,
+              p: { xs: 2, sm: 3 }, // スマホでpadding小さく
               bgcolor: `${theme.palette.gorilla.lightBanana}20`,
               border: `2px solid ${theme.palette.gorilla.lightBanana}`,
               borderRadius: 3,
@@ -115,7 +119,11 @@ export const CounselingCompletionModal: React.FC<
           >
             <Typography
               variant="body1"
-              sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}
+              sx={{
+                whiteSpace: 'pre-wrap',
+                lineHeight: { xs: 1.5, sm: 1.6 }, // スマホで行間調整
+                fontSize: { xs: '14px', sm: '16px' }, // スマホでフォント小さく
+              }}
             >
               {aiAdvice || 'AIアドバイスを生成中です...'}
             </Typography>
