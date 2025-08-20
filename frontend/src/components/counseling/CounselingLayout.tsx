@@ -1,14 +1,16 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Typography, Paper, Box } from '@mui/material'
+import { Box } from '@mui/material'
 import { ChatContainer } from './ChatContainer'
 import { MessageInput } from './MessageInput'
 import { CounselingCompletionModal } from './CounselingCompletionModal'
 import { questionFlow } from '@/data/questionFlow'
 import type { AngerLogFormData, Message } from '@/types/counseling'
 import { useCounselingStore } from '../../../lib/stores/counselingStore'
+import { createAngerLog } from '../../../lib/api/anger_log'
 import dayjs from 'dayjs'
+import { CreateAngerLogData } from '@/schemas/anger_log'
 
 export const CounselingLayout = () => {
   const {
@@ -20,11 +22,12 @@ export const CounselingLayout = () => {
     setLoading,
     nextQuestion,
     updateAngerLogField,
-    getCreateAngerLogData,
+    resetChat,
   } = useCounselingStore()
 
   const [showCompletionModal, setShowCompletionModal] = useState(false)
   const [aiAdvice, setAiAdvice] = useState('')
+  const [, setSavedAngerLogId] = useState<number | null>(null)
 
   // 初期メッセージの設定
   useEffect(() => {
@@ -39,30 +42,20 @@ export const CounselingLayout = () => {
     }
   }, [messages.length, addMessage])
 
-  // AIアドバイス取得（仮実装）
-  const getAIAdvice = async (data: AngerLogFormData): Promise<string> => {
-    // TODO: 実際のAI API呼び出しに置き換える
-    await new Promise((resolve) => setTimeout(resolve, 2000)) // 2秒の遅延をシミュレート
-
-    return `${data.occurred_at}に${data.location}で起きた出来事について、怒りレベル${data.anger_level}ということですね。
-
-今回の状況を客観視できているのは素晴らしいウホ！感情を${Object.keys(data.emotions_felt || {}).join('、')}と具体的に言葉にできたことで、自分の気持ちと向き合えた証拠ウホ。
-
-次回似たようなことがあったら：
-• まず深呼吸を3回してみるウホ
-• 「これは事実？それとも解釈？」と自分に問いかけてみるウホ
-• 怒りの背後にある本当の気持ち（悲しみ、不安など）に注目してみるウホ
-
-君の気持ちを大切にしながら、少しずつ成長していけばいいウホ。今日もよく頑張ったウホ！🦍💚`
-  }
-
-  // アンガーログ保存（仮実装）
-  const saveAngerLog = async (
-    data: Record<string, unknown>
-  ): Promise<Record<string, unknown>> => {
-    // TODO: 実際のAPI呼び出しに置き換える
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return { id: Date.now(), ...data }
+  // AngerLogFormDataをCreateAngerLogDataに変換
+  const convertToCreateData = (
+    formData: AngerLogFormData
+  ): CreateAngerLogData => {
+    return {
+      anger_level: formData.anger_level,
+      occurred_at: formData.occurred_at,
+      situation_description: formData.situation_description,
+      location: formData.location || '',
+      trigger_words: formData.trigger_words || '',
+      perception: formData.perception,
+      emotions_felt: formData.emotions_felt || {},
+      reflection: formData.reflection || '',
+    }
   }
 
   // メッセージ送信処理
@@ -130,29 +123,38 @@ export const CounselingLayout = () => {
         }
         addMessage(finalMessage)
 
-        // 1. AIアドバイス取得
-        const advice = await getAIAdvice(angerLogData)
-        setAiAdvice(advice)
+        // AngerLog保存（AIアドバイス自動生成）
+        const createData = convertToCreateData(angerLogData)
+        const result = await createAngerLog(createData)
 
-        // 2. アンガーログ保存（AIアドバイス含む）
-        const createData = getCreateAngerLogData()
-        await saveAngerLog({
-          ...createData,
-          ai_advice: advice,
-        })
+        if (result.errors.length > 0) {
+          // エラーメッセージを表示
+          const errorMessage: Message = {
+            id: `error_${Date.now()}`,
+            content: `エラーが発生したウホ: ${result.errors.join(', ')}。もう一度試してみてほしいウホ。`,
+            sender: 'gorilla',
+            timestamp: new Date(),
+          }
+          addMessage(errorMessage)
+        } else if (result.angerLog) {
+          // 成功時の処理
+          setSavedAngerLogId(result.angerLog.id)
+          setAiAdvice(
+            result.angerLog.ai_advice || 'AIアドバイスの生成に失敗しました。'
+          )
 
-        // 3. 成功メッセージとModal表示
-        const successMessage: Message = {
-          id: `success_${Date.now()}`,
-          content:
-            'アドバイスが完成したウホ！記録も保存したから、詳細を確認してみてほしいウホ！🎉',
-          sender: 'gorilla',
-          timestamp: new Date(),
+          const successMessage: Message = {
+            id: `success_${Date.now()}`,
+            content:
+              'アドバイスが完成したウホ！記録も保存したから、詳細を確認してみてほしいウホ！🎉',
+            sender: 'gorilla',
+            timestamp: new Date(),
+          }
+          addMessage(successMessage)
+
+          // Modal表示
+          setShowCompletionModal(true)
         }
-        addMessage(successMessage)
-
-        // Modal表示
-        setShowCompletionModal(true)
       } catch {
         const errorMessage: Message = {
           id: `error_${Date.now()}`,
@@ -171,6 +173,7 @@ export const CounselingLayout = () => {
   // Modal閉じる処理
   const handleCloseModal = () => {
     setShowCompletionModal(false)
+    resetChat()
   }
 
   // 現在の質問タイプを取得
@@ -187,7 +190,7 @@ export const CounselingLayout = () => {
   return (
     <Box
       sx={{
-        height: '100vh',
+        height: '88vh',
         display: 'flex',
         flexDirection: 'column',
         maxWidth: 'md',
@@ -211,10 +214,17 @@ export const CounselingLayout = () => {
       {!showCompletionModal && (
         <Box
           sx={{
-            borderTop: '1px solid #e0e0e0',
+            position: 'fixed',
+            bottom: { xs: '56px', md: 0 },
+            left: { xs: 0, md: '240px' },
+            right: 0,
+            zIndex: 1000,
             bgcolor: 'white',
+            borderTop: '1px solid #e0e0e0',
             pt: 2,
-            pb: 1,
+            pb: { xs: 2, md: 1 },
+            px: 2,
+            maxWidth: { xs: '100%', md: 'calc(100vw - 240px)' },
           }}
         >
           <MessageInput
@@ -235,7 +245,7 @@ export const CounselingLayout = () => {
       />
 
       {/* デバッグ情報（開発時のみ） */}
-      {process.env.NODE_ENV === 'development' && (
+      {/* {process.env.NODE_ENV === 'development' && (
         <Paper elevation={1} sx={{ p: 2, mt: 2, bgcolor: '#f5f5f5' }}>
           <Typography variant="caption" component="div">
             <strong>デバッグ情報:</strong>
@@ -245,10 +255,10 @@ export const CounselingLayout = () => {
             component="pre"
             sx={{ fontSize: '10px', overflow: 'auto' }}
           >
-            {JSON.stringify(angerLogData, null, 2)}
+            {JSON.stringify({ ...angerLogData, savedAngerLogId }, null, 2)}
           </Typography>
         </Paper>
-      )}
+      )} */}
     </Box>
   )
 }

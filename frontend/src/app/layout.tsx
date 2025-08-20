@@ -1,13 +1,12 @@
 import { Metadata } from 'next'
 import React from 'react'
-// import Loading from "./components/feedback//Loading/Loading";
 import Footer from '../components/layouts/Footer/Footer'
-// import Header from "../components/layouts/Header/Header";
 import { ClientThemeProvider } from './components/layouts/ClientThemeProvider'
 import Header from '@/components/layouts/Header/Header'
 import FlashMessage from '@/components/feedback/Alert/FlashMessage'
 import { MessageProvider } from '../../context/MessageContext'
 import Loading from '@/components/feedback/Loading/Loading'
+import { Sidebar } from '@/components/layouts/Sidebar/Sidebar'
 
 export const metadata: Metadata = {
   title: 'アンガーアプリ | TOP',
@@ -17,6 +16,7 @@ export const metadata: Metadata = {
   },
 }
 
+// layout.tsx を修正
 export default function RootLayout({
   children,
 }: {
@@ -29,17 +29,20 @@ export default function RootLayout({
           <MessageProvider>
             <Header />
             <FlashMessage />
-            {/* メインコンテンツをラップして、ヘッダーの高さ分のパディングを追加 */}
+            <Sidebar />
+
             <main
               style={{
-                paddingTop: 'var(--header-height, 64px)', // デフォルト値として64pxを設定
-                minHeight: 'calc(100vh - var(--footer-height, 56px))', // フッターの高さを考慮
+                paddingTop: 'var(--header-height, 64px)',
+                paddingLeft: 'var(--sidebar-width, 0px)',
+                minHeight: 'calc(100vh - var(--footer-height, 56px))',
                 display: 'flex',
                 flexDirection: 'column',
+                justifyContent: 'flex-start', // 上詰め
+                alignItems: 'center', // 水平中央
               }}
             >
               <React.Suspense fallback={<Loading />}>{children}</React.Suspense>
-              {/* <React.Suspense>{children}</React.Suspense> */}
             </main>
             <Footer />
           </MessageProvider>

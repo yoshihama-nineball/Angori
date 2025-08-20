@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { Message, AngerLogFormData } from '@/types/counseling'
-import type { CreateAngerLogData } from '@/schemas/anger_log'
+import { CreateAngerLogData } from '@/schemas/anger_log'
 
 interface CounselingState {
   messages: Message[]
@@ -61,6 +61,7 @@ export const useCounselingStore = create<CounselingState>((set, get) => ({
       const updatedData = { ...state.angerLogData }
 
       if (field === 'emotions_felt' && typeof value === 'string') {
+        // 感情の処理
         const emotions = value.split(', ').filter((e) => e.trim())
         updatedData.emotions_felt = emotions.reduce(
           (acc, emotion) => {
@@ -70,11 +71,10 @@ export const useCounselingStore = create<CounselingState>((set, get) => ({
           {} as Record<string, boolean>
         )
       } else if (field === 'anger_level') {
+        // 怒りレベルの処理
         updatedData.anger_level = parseInt(value as string) || 1
-      } else if (field === 'perception') {
-        updatedData.situation_description =
-          `${updatedData.situation_description}\n\n【認知・解釈】\n${value}`.trim()
       } else {
+        // その他のフィールド（perception含む）の通常処理
         ;(updatedData as Record<string, unknown>)[field] = value
       }
 
@@ -88,9 +88,11 @@ export const useCounselingStore = create<CounselingState>((set, get) => ({
       occurred_at: data.occurred_at,
       location: data.location || '',
       situation_description: data.situation_description,
+      perception: data.perception,
       trigger_words: data.trigger_words || '',
       emotions_felt: data.emotions_felt,
       anger_level: data.anger_level,
+      reflection: data.reflection || '',
     }
   },
 

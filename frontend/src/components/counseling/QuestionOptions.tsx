@@ -20,6 +20,7 @@ interface QuestionOptionsProps {
   selectedValue: string
   onSelect: (value: string) => void
   onSendMessage?: (message: string) => void
+  onClear?: () => void
 }
 
 export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
@@ -28,6 +29,7 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
   selectedValue,
   onSelect,
   onSendMessage,
+  onClear,
 }) => {
   const theme = useTheme()
   const [selectedEmotions, setSelectedEmotions] = useState<string[]>([])
@@ -38,7 +40,6 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
       : [...selectedEmotions, emotion]
 
     setSelectedEmotions(newSelectedEmotions)
-    // onSelect(newSelectedEmotions.join(', '))
   }
 
   const handleRatingSelect = (rating: string) => {
@@ -77,9 +78,8 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
             </Grid>
           ))}
         </Grid>
-
         {/* 決定ボタンを追加 */}
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
           <Button
             variant="contained"
             color="primary"
@@ -118,29 +118,86 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
   if (questionType === 'rating') {
     return (
       <Box sx={{ p: 2, borderTop: '1px solid #e0e0e0' }}>
-        <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+        <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
           怒りのレベルを選んでください:
         </Typography>
-        <Grid container spacing={1}>
-          {options.map((rating) => (
-            <Grid item key={rating}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 1,
+            justifyContent: 'center',
+            mb: 1,
+          }}
+        >
+          {['1', '2', '3', '4', '5'].map((rating) => (
+            <Chip
+              key={rating}
+              label={rating}
+              onClick={() => handleRatingSelect(rating)}
+              color={selectedValue === rating ? 'primary' : 'default'}
+              variant={selectedValue === rating ? 'filled' : 'outlined'}
+              sx={{
+                cursor: 'pointer',
+                minWidth: '48px',
+                height: '32px',
+                fontSize: '14px',
+                bgcolor:
+                  selectedValue === rating
+                    ? theme.palette.gorilla.banana
+                    : 'transparent',
+              }}
+            />
+          ))}
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 1,
+            justifyContent: 'center',
+            mb: 3, // 決定ボタンとの距離を空ける
+          }}
+        >
+          {['6', '7', '8', '9', '10'].map(
+            (
+              rating // 正しい配列に修正
+            ) => (
               <Chip
+                key={rating}
                 label={rating}
                 onClick={() => handleRatingSelect(rating)}
                 color={selectedValue === rating ? 'primary' : 'default'}
                 variant={selectedValue === rating ? 'filled' : 'outlined'}
                 sx={{
                   cursor: 'pointer',
-                  minWidth: 40,
+                  minWidth: '48px',
+                  height: '32px',
+                  fontSize: '14px',
                   bgcolor:
                     selectedValue === rating
                       ? theme.palette.gorilla.banana
-                      : 'transparent', // 追加
+                      : 'transparent',
                 }}
               />
-            </Grid>
-          ))}
-        </Grid>
+            )
+          )}
+        </Box>
+
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              onSendMessage?.(selectedValue)
+              onClear?.()
+            }}
+            disabled={!selectedValue}
+            sx={{ borderRadius: '20px', px: 3, mb: 1 }}
+          >
+            決定
+          </Button>
+        </Box>
       </Box>
     )
   }
