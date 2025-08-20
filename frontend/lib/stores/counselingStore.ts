@@ -88,7 +88,7 @@ export const useCounselingStore = create<CounselingState>((set, get) => ({
       occurred_at: data.occurred_at,
       location: data.location || '',
       situation_description: data.situation_description,
-      perception: data.perception, // ここが重要！
+      perception: data.perception,
       trigger_words: data.trigger_words || '',
       emotions_felt: data.emotions_felt,
       anger_level: data.anger_level,
