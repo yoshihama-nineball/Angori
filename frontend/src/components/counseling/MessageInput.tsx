@@ -30,6 +30,10 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   const theme = useTheme()
   const [inputValue, setInputValue] = useState('')
 
+  const clearInput = () => {
+    setInputValue('')
+  }
+
   const handleSendMessage = () => {
     if (!inputValue.trim()) return
     onSendMessage(inputValue)
@@ -58,6 +62,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
             selectedValue={inputValue}
             onSelect={handleOptionSelect}
             onSendMessage={onSendMessage}
+            onClear={clearInput}
           />
         </Box>
       )}
