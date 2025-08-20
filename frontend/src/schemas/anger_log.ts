@@ -38,14 +38,25 @@ export const AngerLogsAPIResponseSchema = z.object({
 // 作成用データの型
 export const CreateAngerLogSchema = z.object({
   occurred_at: z.string(),
-  location: z.string().optional(),
-  situation_description: z.string().min(1),
-  trigger_words: z.string().optional(),
+  location: z.string().max(30, '場所は30文字以内で入力してください').optional(),
+  situation_description: z
+    .string()
+    .min(1)
+    .max(200, '状況説明は200文字以内で入力してください'),
+  trigger_words: z
+    .string()
+    .max(30, 'トリガーは30文字以内で入力してください')
+    .optional(),
   emotions_felt: z.record(z.string(), z.boolean()).optional(),
   anger_level: z.number().min(1).max(10),
-  perception: z.string().min(1),
-  reflection: z.string().optional(),
+  perception: z
+    .string()
+    .min(1)
+    .max(200, '出来事の捉え方は200文字以内で入力してください'),
+  reflection: z
+    .string()
+    .max(200, '振り返りは200文字以内で入力してください')
+    .optional(),
 })
-
 export type CreateAngerLogData = z.infer<typeof CreateAngerLogSchema>
 export type AngerLogsResponse = z.infer<typeof AngerLogsAPIResponseSchema>

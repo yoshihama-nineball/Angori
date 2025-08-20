@@ -13,6 +13,8 @@ import { Send as SendIcon } from '@mui/icons-material'
 import { QuestionOptions } from './QuestionOptions'
 import { QuestionType } from '@/types/counseling'
 import dayjs from 'dayjs'
+import { questionFlow } from '@/data/questionFlow'
+import { useCounselingStore } from '../../../lib/stores/counselingStore'
 
 interface MessageInputProps {
   onSendMessage: (message: string) => void
@@ -29,6 +31,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
 }) => {
   const theme = useTheme()
   const [inputValue, setInputValue] = useState('')
+  const { currentQuestionIndex } = useCounselingStore()
 
   const clearInput = () => {
     setInputValue('')
@@ -49,6 +52,23 @@ export const MessageInput: React.FC<MessageInputProps> = ({
 
   const handleOptionSelect = (value: string) => {
     setInputValue(value)
+  }
+
+  const getMaxLength = () => {
+    const currentQuestion = questionFlow[currentQuestionIndex]
+    if (!currentQuestion) return undefined
+
+    switch (currentQuestion.field) {
+      case 'location':
+      case 'trigger_words':
+        return 30
+      case 'situation_description':
+      case 'perception':
+      case 'reflection':
+        return 200
+      default:
+        return undefined
+    }
   }
 
   return (
@@ -175,7 +195,21 @@ export const MessageInput: React.FC<MessageInputProps> = ({
                   multiline
                   maxRows={4}
                   value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
+                  onChange={(e) => {
+                    const maxLength = getMaxLength()
+                    if (maxLength && e.target.value.length > maxLength) {
+                      return // 制限を超えたら入力を無効化
+                    }
+                    setInputValue(e.target.value)
+                  }}
+                  inputProps={{
+                    maxLength: getMaxLength(), // HTML属性でも制限
+                  }}
+                  helperText={
+                    getMaxLength()
+                      ? `${inputValue.length}/${getMaxLength()}文字`
+                      : undefined
+                  }
                   onKeyPress={handleKeyPress}
                   placeholder="メッセージを入力してください..."
                   variant="outlined"
