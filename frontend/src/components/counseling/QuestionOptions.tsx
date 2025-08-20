@@ -20,6 +20,7 @@ interface QuestionOptionsProps {
   selectedValue: string
   onSelect: (value: string) => void
   onSendMessage?: (message: string) => void
+  onClear?: () => void
 }
 
 export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
@@ -28,6 +29,7 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
   selectedValue,
   onSelect,
   onSendMessage,
+  onClear,
 }) => {
   const theme = useTheme()
   const [selectedEmotions, setSelectedEmotions] = useState<string[]>([])
@@ -38,7 +40,6 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
       : [...selectedEmotions, emotion]
 
     setSelectedEmotions(newSelectedEmotions)
-    // onSelect(newSelectedEmotions.join(', '))
   }
 
   const handleRatingSelect = (rating: string) => {
@@ -147,7 +148,10 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
           <Button
             variant="contained"
             color="primary"
-            onClick={() => onSendMessage?.(selectedValue)}
+            onClick={() => {
+              onSendMessage?.(selectedValue)
+              onClear?.()
+            }}
             disabled={!selectedValue}
             sx={{ borderRadius: '20px', px: 3 }}
           >
