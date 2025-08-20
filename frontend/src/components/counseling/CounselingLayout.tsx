@@ -29,12 +29,12 @@ export const CounselingLayout = () => {
   const [aiAdvice, setAiAdvice] = useState('')
   const [, setSavedAngerLogId] = useState<number | null>(null)
 
-  useEffect(() => {
-    if (currentQuestionIndex >= questionFlow.length && !showCompletionModal) {
-      // 相談が完了しているがモーダルが表示されていない場合はリセット
-      resetChat()
-    }
-  }, [currentQuestionIndex, showCompletionModal, resetChat])
+  // useEffect(() => {
+  //   if (currentQuestionIndex >= questionFlow.length && !showCompletionModal) {
+  //     // 相談が完了しているがモーダルが表示されていない場合はリセット
+  //     resetChat()
+  //   }
+  // }, [currentQuestionIndex, showCompletionModal, resetChat])
 
   // 初期メッセージの設定
   useEffect(() => {
@@ -180,6 +180,7 @@ export const CounselingLayout = () => {
   // Modal閉じる処理
   const handleCloseModal = () => {
     setShowCompletionModal(false)
+    resetChat()
   }
 
   // 現在の質問タイプを取得
