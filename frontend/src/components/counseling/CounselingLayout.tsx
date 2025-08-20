@@ -29,13 +29,6 @@ export const CounselingLayout = () => {
   const [aiAdvice, setAiAdvice] = useState('')
   const [, setSavedAngerLogId] = useState<number | null>(null)
 
-  // useEffect(() => {
-  //   if (currentQuestionIndex >= questionFlow.length && !showCompletionModal) {
-  //     // 相談が完了しているがモーダルが表示されていない場合はリセット
-  //     resetChat()
-  //   }
-  // }, [currentQuestionIndex, showCompletionModal, resetChat])
-
   // 初期メッセージの設定
   useEffect(() => {
     if (messages.length === 0) {
@@ -221,10 +214,17 @@ export const CounselingLayout = () => {
       {!showCompletionModal && (
         <Box
           sx={{
-            borderTop: '1px solid #e0e0e0',
+            position: 'fixed',
+            bottom: { xs: '56px', md: 0 },
+            left: { xs: 0, md: '240px' },
+            right: 0,
+            zIndex: 1000,
             bgcolor: 'white',
+            borderTop: '1px solid #e0e0e0',
             pt: 2,
-            pb: 1,
+            pb: { xs: 2, md: 1 },
+            px: 2,
+            maxWidth: { xs: '100%', md: 'calc(100vw - 240px)' },
           }}
         >
           <MessageInput
