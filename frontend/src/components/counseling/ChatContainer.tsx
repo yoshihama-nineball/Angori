@@ -25,19 +25,17 @@ export const ChatContainer = () => {
   return (
     <Box
       sx={{
-        height: '100%', // 親の高さを100%使用
+        height: '100%',
         overflowY: 'auto',
         p: 2,
+        paddingBottom: '200px',
+        // スクロールバーを右端に
+        width: '100%',
+        maxWidth: '100%',
         '&::-webkit-scrollbar': {
           width: '8px',
         },
-        '&::-webkit-scrollbar-track': {
-          background: '#f1f1f1',
-        },
-        '&::-webkit-scrollbar-thumb': {
-          background: '#c1c1c1',
-          borderRadius: '4px',
-        },
+        // 以下は既存のまま
       }}
     >
       {/* メッセージ内容 */}
