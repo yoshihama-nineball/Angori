@@ -16,7 +16,7 @@ import { usePathname } from 'next/navigation'
 
 export default function Footer() {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const router = useRouter()
   const pathname = usePathname()
 
@@ -35,19 +35,32 @@ export default function Footer() {
     <Box
       data-testid="footer-nav"
       sx={{
-        width: '100%',
+        width: '100vw !important',
         position: 'fixed',
         bottom: 0,
+        left: 0,
         zIndex: 9999,
         boxShadow: 3,
-        // bgcolor: 'background.paper',
-        height: '56px',
+        height: { xs: '56px', sm: '64px' },
+        display: { xs: 'flex', md: 'none' },
       }}
     >
       <BottomNavigation
         showLabels={false}
         value={value}
         onChange={handleChange}
+        sx={{
+          width: '100%',
+          height: '100%',
+          '& .MuiBottomNavigationAction-root': {
+            minWidth: { xs: 'auto', sm: '80px' },
+            padding: { xs: '6px', sm: '12px' },
+            flex: 1,
+          },
+          '& .MuiSvgIcon-root': {
+            fontSize: { xs: '24px', sm: '28px' },
+          },
+        }}
       >
         <BottomNavigationAction value="dashboard" icon={<HomeIcon />} />
         <BottomNavigationAction value="logs" icon={<ListIcon />} />
