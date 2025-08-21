@@ -92,7 +92,7 @@ const AngerLogCard: React.FC<AngerLogCardProps> = ({ angerLog, onClick }) => {
         flexDirection: 'column',
         '&:hover': {
           boxShadow: 2,
-          borderColor: '#1976d2',
+          borderColor: theme.palette.gorilla.soil,
         },
       }}
       onClick={() => onClick(angerLog.id)}
