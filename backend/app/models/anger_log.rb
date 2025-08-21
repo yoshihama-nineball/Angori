@@ -16,6 +16,19 @@ class AngerLog < ApplicationRecord
   scope :by_date_range, ->(start_date, end_date) { where(occurred_at: start_date..end_date) }
   scope :high_anger, -> { where(anger_level: 7..) }
   scope :with_ai_advice, -> { where.not(ai_advice: [nil, '']) }
+  scope :search_by_keyword, lambda { |keyword|
+    return all if keyword.blank?
+
+    search_term = "%#{keyword.strip}%"
+    where(
+      "situation_description ILIKE ? OR
+       trigger_words ILIKE ? OR
+       reflection ILIKE ? OR
+       perception ILIKE ? OR
+       emotions_felt::text ILIKE ?",
+      search_term, search_term, search_term, search_term, search_term
+    )
+  }
 
   after_create :update_calming_points
 

@@ -1,9 +1,8 @@
-// app/home/layout.tsx
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'アンゴリ | Home',
-  description: 'Homeのページです',
+  title: 'アンゴリ | アンガーログ一覧',
+  description: '過去のアンガーログの一覧を閲覧できるページです',
 }
 
 export default function HomeLayout({

@@ -8,9 +8,17 @@ export const AngerLogSchema = z.object({
   location: z.string().optional(),
   situation_description: z.string(),
   trigger_words: z.string().optional(),
-  emotions_felt: z.record(z.string(), z.boolean()).optional(),
+  // emotions_felt は record か array かを柔軟に対応
+  emotions_felt: z
+    .union([
+      z.record(z.string(), z.boolean()), // オブジェクト形式
+      z.array(z.string()), // 配列形式
+      z.null(),
+    ])
+    .optional(),
   anger_level: z.number().min(1).max(10),
-  perception: z.string(),
+  // perception は null を許可
+  perception: z.string().nullable(),
   ai_advice: z.string().optional(),
   reflection: z.string().optional().nullable(),
   created_at: z.string(),
@@ -58,5 +66,6 @@ export const CreateAngerLogSchema = z.object({
     .max(200, '振り返りは200文字以内で入力してください')
     .optional(),
 })
+
 export type CreateAngerLogData = z.infer<typeof CreateAngerLogSchema>
 export type AngerLogsResponse = z.infer<typeof AngerLogsAPIResponseSchema>

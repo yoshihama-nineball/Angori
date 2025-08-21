@@ -2,6 +2,7 @@ import {
   AngerLog,
   AngerLogAPIResponseSchema,
   AngerLogsAPIResponseSchema,
+  AngerLogSchema,
   AngerLogsResponse,
   CreateAngerLogData,
   CreateAngerLogSchema,
@@ -27,7 +28,12 @@ const getAuthToken = (): string | null => {
 
   if (authCookie) {
     const token = authCookie.split('=')[1]
-    return token
+
+    if (token && token.startsWith('Bearer ')) {
+      return token
+    } else {
+      return `Bearer ${token}`
+    }
   }
   return null
 }
@@ -57,15 +63,17 @@ export async function createAngerLog(
 
     const apiUrl = `${API_BASE}/api/v1/anger_logs`
 
+    const requestBody = {
+      anger_log: validatedFields.data,
+    }
+
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: authToken,
+        Authorization: authToken, // プレフィックスは getAuthToken() で処理済み
       },
-      body: JSON.stringify({
-        anger_log: validatedFields.data,
-      }),
+      body: JSON.stringify(requestBody),
     })
 
     const responseText = await response.text()
@@ -83,7 +91,6 @@ export async function createAngerLog(
     }
 
     if (response.ok) {
-      // レスポンスデータの検証
       const validatedResponse = AngerLogAPIResponseSchema.safeParse(apiData)
       if (!validatedResponse.success) {
         return {
@@ -134,9 +141,9 @@ export async function createAngerLog(
 }
 
 // AngerLog一覧取得
-export async function getAngerLogs(): Promise<
-  AngerLogsResponse & { errors?: string[] }
-> {
+export async function getAngerLogs(
+  searchKeyword?: string
+): Promise<AngerLogsResponse & { errors?: string[] }> {
   try {
     const authToken = getAuthToken()
     if (!authToken) {
@@ -146,23 +153,52 @@ export async function getAngerLogs(): Promise<
       }
     }
 
-    const apiUrl = `${API_BASE}/api/v1/anger_logs`
+    const params = new URLSearchParams()
+    if (searchKeyword) {
+      params.append('search', searchKeyword)
+    }
+
+    const apiUrl = `${API_BASE}/api/v1/anger_logs?${params.toString()}`
 
     const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
-        Authorization: authToken,
+        Authorization: authToken, // プレフィックスは getAuthToken() で処理済み
+        'Content-Type': 'application/json',
       },
     })
 
     const responseText = await response.text()
+
+    // 401エラーの場合は認証エラーとして処理
+    if (response.status === 401) {
+      return {
+        anger_logs: [],
+        errors: ['認証に失敗しました。再ログインしてください。', responseText],
+      }
+    }
+
     let apiData
     try {
       apiData = JSON.parse(responseText)
     } catch {
+      // HTMLエラーページかテキストレスポンスの可能性
+      if (
+        responseText.includes('<html') ||
+        responseText.includes('<!DOCTYPE')
+      ) {
+        return {
+          anger_logs: [],
+          errors: ['サーバーエラーが発生しました（HTMLページが返されました）'],
+        }
+      }
+
       return {
         anger_logs: [],
-        errors: ['サーバーからの応答が正しくありません'],
+        errors: [
+          'サーバーからの応答が正しくありません（JSON解析エラー）',
+          responseText.substring(0, 200),
+        ],
       }
     }
 
@@ -209,11 +245,13 @@ export async function getAngerLog(
     const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
-        Authorization: authToken,
+        Authorization: authToken, // プレフィックスは getAuthToken() で処理済み
+        'Content-Type': 'application/json',
       },
     })
 
     const responseText = await response.text()
+
     let apiData
     try {
       apiData = JSON.parse(responseText)
@@ -224,18 +262,16 @@ export async function getAngerLog(
     }
 
     if (response.ok) {
-      const validatedResponse = AngerLogAPIResponseSchema.safeParse(apiData)
+      const validatedResponse = AngerLogSchema.safeParse(apiData)
       if (!validatedResponse.success) {
         return {
           errors: ['サーバーからのデータ形式が正しくありません'],
         }
       }
-
       return {
         angerLog: validatedResponse.data,
       }
     }
-
     return {
       errors: [apiData.error || '記録の取得に失敗しました'],
     }

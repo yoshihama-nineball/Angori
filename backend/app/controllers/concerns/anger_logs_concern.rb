@@ -3,15 +3,22 @@ module AngerLogsConcern
 
   private
 
+  def search_params
+    params.permit(:search)
+  end
+
+  def fetch_paginated_anger_logs(search_keyword = nil)
+    anger_logs = current_user.anger_logs
+                             .search_by_keyword(search_keyword)
+                             .recent
+                             .includes(:user)
+    anger_logs.page(params[:page]).per(params[:per_page] || 20)
+  end
+
   def set_anger_log
     @anger_log = current_user.anger_logs.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Anger log not found' }, status: :not_found
-  end
-
-  def fetch_paginated_anger_logs
-    anger_logs = current_user.anger_logs.recent.includes(:user)
-    anger_logs.page(params[:page]).per(params[:per_page] || 20)
   end
 
   def anger_logs_index_response
