@@ -15,11 +15,7 @@ import {
   IconButton,
   useTheme,
 } from '@mui/material'
-import {
-  Close as CloseIcon,
-  Edit as EditIcon,
-  Share as ShareIcon,
-} from '@mui/icons-material'
+import { Close as CloseIcon, Share as ShareIcon } from '@mui/icons-material'
 import { AngerLog } from '@/schemas/anger_log'
 import dayjs from 'dayjs'
 
@@ -210,16 +206,16 @@ export const AngerLogDetailModal: React.FC<AngerLogDetailModalProps> = ({
                     </Typography>
                     <Box display="flex" flexWrap="wrap" gap={1}>
                       {selectedEmotions.length > 0 ? (
-                        selectedEmotions.map((emotion, index) => (
-                            <Chip
-                                                  key={emotion}
-                                                  label={emotion}
-                                                  size="small"
-                                                  sx={{
-                                                    bgcolor: theme.palette.gorilla.lightBanana,
-                                                    color: theme.palette.gorilla.fur,
-                                                  }}
-                                                />
+                        selectedEmotions.map((emotion) => (
+                          <Chip
+                            key={emotion}
+                            label={emotion}
+                            size="small"
+                            sx={{
+                              bgcolor: theme.palette.gorilla.lightBanana,
+                              color: theme.palette.gorilla.fur,
+                            }}
+                          />
                         ))
                       ) : (
                         <Typography variant="body2" color="textSecondary">
@@ -316,12 +312,12 @@ export const AngerLogDetailModal: React.FC<AngerLogDetailModalProps> = ({
                     🎯 Dr.ゴリからのアドバイス
                   </Typography>
                   <Box
-                      sx={{
-              p: { xs: 2, sm: 3 },
-              bgcolor: `${theme.palette.gorilla.lightBanana}20`,
-              border: `2px solid ${theme.palette.gorilla.lightBanana}`,
-              borderRadius: 3,
-              position: 'relative',
+                    sx={{
+                      p: { xs: 2, sm: 3 },
+                      bgcolor: `${theme.palette.gorilla.lightBanana}20`,
+                      border: `2px solid ${theme.palette.gorilla.lightBanana}`,
+                      borderRadius: 3,
+                      position: 'relative',
                     }}
                   >
                     <Typography
@@ -380,11 +376,7 @@ export const AngerLogDetailModal: React.FC<AngerLogDetailModalProps> = ({
         >
           Xでシェア
         </Button>
-        <Button
-          variant="contained"
-          color='primary'
-          onClick={onClose}
-        >
+        <Button variant="contained" color="primary" onClick={onClose}>
           閉じる
         </Button>
       </DialogActions>

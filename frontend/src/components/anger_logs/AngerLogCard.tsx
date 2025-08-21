@@ -6,7 +6,7 @@ import {
   Box,
   Chip,
   IconButton,
-  useTheme
+  useTheme,
 } from '@mui/material'
 import { ChevronRight as ChevronRightIcon } from '@mui/icons-material'
 import { AngerLog } from '@/schemas/anger_log'
@@ -54,8 +54,6 @@ const AngerLogCard: React.FC<AngerLogCardProps> = ({ angerLog, onClick }) => {
     if (level <= 6) return '#fff3e0' // 薄いオレンジ
     return '#ffebee' // 薄い赤
   }
-
-
 
   // 感情データの処理
   const getEmotions = () => {

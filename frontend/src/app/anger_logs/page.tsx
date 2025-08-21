@@ -23,9 +23,8 @@ const LogsPage: React.FC = () => {
           setAngerLogs(response.anger_logs || [])
           setError([])
         }
-      } catch (err) {
+      } catch {
         setError(['データの取得に失敗しました'])
-        console.error('Failed to fetch anger logs:', err)
       } finally {
         setLoading(false)
       }

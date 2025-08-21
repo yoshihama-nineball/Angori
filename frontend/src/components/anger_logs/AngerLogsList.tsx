@@ -1,11 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import {
-  Box,
-  Typography,
-  Pagination,
-  CircularProgress,
-  Alert,
-} from '@mui/material'
+import { Box, Typography, Pagination, Alert } from '@mui/material'
 import { AngerLog } from '@/schemas/anger_log'
 import AngerLogCard from './AngerLogCard'
 import SearchBar from './SearchBar'
@@ -61,33 +55,22 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
     setCurrentPage(1)
   }, [searchTerm])
 
-const handleCardClick = async (id: number) => {
-  console.log('Card clicked with ID:', id)
-  try {
-    console.log('Setting modal loading true and opening modal') // 追加
-    setModalLoading(true)
-    setModalOpen(true)
-    console.log('Modal state after opening:', {
-      modalOpen: true,
-      modalLoading: true,
-    }) // 追加
+  const handleCardClick = async (id: number) => {
+    try {
+      setModalLoading(true)
+      setModalOpen(true)
 
-    const response = await getAngerLog(id)
-    console.log('API response:', response) // 追加
+      const response = await getAngerLog(id)
 
-    if (response.errors && response.errors.length > 0) {
-      console.error('Failed to fetch anger log:', response.errors)
-    } else if (response.angerLog) {
-      console.log('Setting selected anger log:', response.angerLog) // 追加
-      setSelectedAngerLog(response.angerLog)
+      if (response.errors && response.errors.length > 0) {
+      } else if (response.angerLog) {
+        setSelectedAngerLog(response.angerLog)
+      }
+    } catch {
+    } finally {
+      setModalLoading(false)
     }
-  } catch (error) {
-    console.error('Error fetching anger log:', error)
-  } finally {
-    console.log('Setting modal loading false') // 追加
-    setModalLoading(false)
   }
-}
 
   const handleModalClose = () => {
     setModalOpen(false)
@@ -104,9 +87,7 @@ const handleCardClick = async (id: number) => {
   }
 
   if (loading) {
-    return (
-      <Loading />
-    )
+    return <Loading />
   }
 
   if (error.length > 0) {
