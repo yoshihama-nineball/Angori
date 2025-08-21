@@ -1,29 +1,49 @@
-import React from 'react'
-import { TextField, InputAdornment } from '@mui/material'
+import React, { useState } from 'react'
+import { TextField, InputAdornment, IconButton } from '@mui/material'
 import { Search as SearchIcon } from '@mui/icons-material'
 
 interface SearchBarProps {
   searchTerm: string
-  onSearchChange: (value: string) => void
+  onSearchSubmit: (value: string) => void
   placeholder?: string
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
   searchTerm,
-  onSearchChange,
+  onSearchSubmit,
   placeholder = '検索キーワードを入力',
 }) => {
+  const [inputValue, setInputValue] = useState(searchTerm)
+
+  const handleSubmit = () => {
+    onSearchSubmit(inputValue.trim())
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSubmit()
+    }
+  }
+
+  // 親からsearchTermが変更された時にinputValueも更新
+  React.useEffect(() => {
+    setInputValue(searchTerm)
+  }, [searchTerm])
+
   return (
     <TextField
       fullWidth
       variant="outlined"
-      value={searchTerm}
-      onChange={(e) => onSearchChange(e.target.value)}
+      value={inputValue}
+      onChange={(e) => setInputValue(e.target.value)}
+      onKeyPress={handleKeyPress}
       placeholder={placeholder}
       InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <SearchIcon color="action" />
+        endAdornment: (
+          <InputAdornment position="end">
+            <IconButton onClick={handleSubmit} size="small">
+              <SearchIcon />
+            </IconButton>
           </InputAdornment>
         ),
       }}
@@ -38,15 +58,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
           '&.Mui-focused': {
             backgroundColor: 'white',
           },
-        },
-        '& .MuiOutlinedInput-notchedOutline': {
-          borderColor: 'transparent',
-        },
-        '&:hover .MuiOutlinedInput-notchedOutline': {
-          borderColor: '#e0e0e0',
-        },
-        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-          borderColor: '#1976d2',
         },
       }}
     />

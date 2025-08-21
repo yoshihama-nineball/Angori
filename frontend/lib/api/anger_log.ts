@@ -141,9 +141,9 @@ export async function createAngerLog(
 }
 
 // AngerLog一覧取得
-export async function getAngerLogs(): Promise<
-  AngerLogsResponse & { errors?: string[] }
-> {
+export async function getAngerLogs(
+  searchKeyword?: string
+): Promise<AngerLogsResponse & { errors?: string[] }> {
   try {
     const authToken = getAuthToken()
     if (!authToken) {
@@ -153,7 +153,12 @@ export async function getAngerLogs(): Promise<
       }
     }
 
-    const apiUrl = `${API_BASE}/api/v1/anger_logs`
+    const params = new URLSearchParams()
+    if (searchKeyword) {
+      params.append('search', searchKeyword)
+    }
+
+    const apiUrl = `${API_BASE}/api/v1/anger_logs?${params.toString()}`
 
     const response = await fetch(apiUrl, {
       method: 'GET',

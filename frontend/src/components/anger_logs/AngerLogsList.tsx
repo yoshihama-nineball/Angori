@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { Box, Typography, Pagination, Alert } from '@mui/material'
 import { AngerLog } from '@/schemas/anger_log'
 import AngerLogCard from './AngerLogCard'
@@ -13,6 +13,8 @@ interface AngerLogsListProps {
   angerLogs: AngerLog[]
   loading?: boolean
   error?: string[]
+  searchKeyword?: string
+  onSearchChange?: (keyword: string) => void
 }
 
 const ITEMS_PER_PAGE = 10
@@ -21,13 +23,20 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
   angerLogs,
   loading = false,
   error = [],
+  searchKeyword,
+  onSearchChange,
 }) => {
-  const [searchTerm, setSearchTerm] = useState('')
+  // const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [, setSelectedAngerLog] = useState<AngerLog | null>(null)
   const [, setModalOpen] = useState(false)
   const [, setModalLoading] = useState(false)
   const [sortBy, setSortBy] = useState<SortOption>('recent')
+
+  const [localSearchTerm, setLocalSearchTerm] = useState('')
+
+  const searchTerm = searchKeyword || localSearchTerm
+  const handleSearchChange = onSearchChange || setLocalSearchTerm
 
   // 検索フィルタリング
   const filteredLogs = useMemo(() => {
@@ -82,7 +91,7 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
   }, [filteredLogs, currentPage])
 
   // 検索語・ソートが変更されたらページを1に戻す
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentPage(1)
   }, [searchTerm, sortBy])
 
@@ -139,13 +148,12 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
     <Box>
       <SearchBar
         searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        placeholder="記録を検索してみましょう..."
+        onSearchSubmit={handleSearchChange}
+        placeholder="記録を検索してみようウホ..."
       />
 
       <Box
         sx={{
-          mt: 2,
           mb: 3,
           display: 'flex',
           justifyContent: 'space-between',
@@ -154,14 +162,14 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
           gap: 2,
         }}
       >
-        {/* 検索結果数を左端に */}
+        {/* 検索結果数を左端に追加 */}
         <Box>
           {searchTerm ? (
-            <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+            <Typography variant="body2" color="text.secondary">
               「{searchTerm}」の検索結果: {filteredLogs.length}件
             </Typography>
           ) : (
-            <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+            <Typography variant="body2" color="text.secondary">
               全 {filteredLogs.length}件
             </Typography>
           )}
@@ -197,13 +205,6 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
         </Box>
       ) : (
         <>
-          {/* 検索結果表示 */}
-          {searchTerm && (
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              「{searchTerm}」の検索結果: {filteredLogs.length}件
-            </Typography>
-          )}
-
           {/* カード一覧 */}
           <Box
             sx={{
