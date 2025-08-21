@@ -5,6 +5,7 @@ import { Box, Container } from '@mui/material'
 import { AngerLog } from '@/schemas/anger_log'
 import AngerLogsList from '@/components/anger_logs/AngerLogsList'
 import { getAngerLogs } from '../../../lib/api/anger_log'
+import AuthGuard from '@/components/auth/AuthGuard'
 
 const LogsPage: React.FC = () => {
   const [angerLogs, setAngerLogs] = useState<AngerLog[]>([])
@@ -45,17 +46,19 @@ const LogsPage: React.FC = () => {
   }, [searchKeyword]) // searchKeyword の変更を監視
 
   return (
-    <Box sx={{ minHeight: '100vh', pb: 4 }}>
-      <Container maxWidth="xl" sx={{ pt: 3, px: { xs: 2, sm: 3 } }}>
-        <AngerLogsList
-          angerLogs={angerLogs}
-          loading={loading}
-          error={error}
-          searchKeyword={searchKeyword}
-          onSearchChange={setSearchKeyword} // 検索変更ハンドラを渡す
-        />
-      </Container>
-    </Box>
+    <AuthGuard>
+      <Box sx={{ minHeight: '100vh', pb: 4 }}>
+        <Container maxWidth="xl" sx={{ pt: 3, px: { xs: 2, sm: 3 } }}>
+          <AngerLogsList
+            angerLogs={angerLogs}
+            loading={loading}
+            error={error}
+            searchKeyword={searchKeyword}
+            onSearchChange={setSearchKeyword} // 検索変更ハンドラを渡す
+          />
+        </Container>
+      </Box>
+    </AuthGuard>
   )
 }
 
