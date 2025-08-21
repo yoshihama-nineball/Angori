@@ -6,7 +6,7 @@ module Api
 
       # GET /api/v1/anger_logs
       def index
-        @anger_logs = fetch_paginated_anger_logs
+        @anger_logs = fetch_paginated_anger_logs(search_params[:search])
         render json: anger_logs_index_response
       end
 
