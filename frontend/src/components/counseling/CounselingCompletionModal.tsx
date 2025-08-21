@@ -47,7 +47,7 @@ export const CounselingCompletionModal: React.FC<
 
   // シェア機能
   const handleShare = () => {
-    const shareText = `アンガーマネジメント相談室で気持ちを整理しました🦍💚\n怒りレベル: ${angerLogData.anger_level}/10\n感情: ${selectedEmotions.join('、')}\n今日も自分と向き合えました！\n\n#アンガーマネジメント #アンゴリ`
+    const shareText = `アンガーマネジメント相談室で気持ちを整理したウホ🦍💚\n怒りレベル: ${angerLogData.anger_level}/10\n感情: ${selectedEmotions.join('、')}\n今日も自分と向き合えました！\n\n#アンガーマネジメント #アンゴリ`
 
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`
     window.open(twitterUrl, '_blank')
