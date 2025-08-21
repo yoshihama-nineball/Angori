@@ -61,7 +61,7 @@ export const AngerLogDetailModal: React.FC<AngerLogDetailModalProps> = ({
   const handleShare = () => {
     if (!angerLog) return
 
-    const shareText = `アンガーマネジメント記録を振り返りました🦍💚\n怒りレベル: ${angerLog.anger_level}/10\n感情: ${selectedEmotions.join('、')}\n自分と向き合い続けています！\n\n#アンガーマネジメント #アンゴリ`
+    const shareText = `過去のアンガーマネジメント記録の振り返りをしたウホ！🦍\n怒りレベル: ${angerLog.anger_level}/10\n感情: ${selectedEmotions.join('、')}\n自分と向き合い続けています！\n\n#アンガーマネジメント #アンゴリ`
 
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`
     window.open(twitterUrl, '_blank')
