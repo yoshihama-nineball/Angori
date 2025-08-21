@@ -200,11 +200,7 @@ const handleCardClick = async (id: number) => {
                     height: 40,
                   },
                   '& .MuiPaginationItem-root.Mui-selected': {
-                    backgroundColor: '#1976d2',
                     color: 'white',
-                    '&:hover': {
-                      backgroundColor: '#1565c0',
-                    },
                   },
                 }}
               />
