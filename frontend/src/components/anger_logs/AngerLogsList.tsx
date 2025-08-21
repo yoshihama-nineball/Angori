@@ -3,9 +3,11 @@ import { Box, Typography, Pagination, Alert } from '@mui/material'
 import { AngerLog } from '@/schemas/anger_log'
 import AngerLogCard from './AngerLogCard'
 import SearchBar from './SearchBar'
-import { AngerLogDetailModal } from './AngerLogDetailModal'
 import { getAngerLog } from '../../../lib/api/anger_log'
+import SortDropdown from './SortDropDown'
 import Loading from '../feedback/Loading/Loading'
+
+type SortOption = 'recent' | 'oldest' | 'anger_high' | 'anger_low'
 
 interface AngerLogsListProps {
   angerLogs: AngerLog[]
@@ -22,25 +24,54 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [selectedAngerLog, setSelectedAngerLog] = useState<AngerLog | null>(
-    null
-  )
-  const [modalOpen, setModalOpen] = useState(false)
-  const [modalLoading, setModalLoading] = useState(false)
+  const [, setSelectedAngerLog] = useState<AngerLog | null>(null)
+  const [, setModalOpen] = useState(false)
+  const [, setModalLoading] = useState(false)
+  const [sortBy, setSortBy] = useState<SortOption>('recent')
 
   // 検索フィルタリング
   const filteredLogs = useMemo(() => {
-    if (!searchTerm.trim()) return angerLogs
+    let filtered = angerLogs
 
-    const searchLower = searchTerm.toLowerCase()
-    return angerLogs.filter(
-      (log) =>
-        log.situation_description.toLowerCase().includes(searchLower) ||
-        log.location?.toLowerCase().includes(searchLower) ||
-        log.trigger_words?.toLowerCase().includes(searchLower) ||
-        log.perception?.toLowerCase().includes(searchLower)
-    )
-  }, [angerLogs, searchTerm])
+    // 検索フィルタリング
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase()
+      filtered = angerLogs.filter(
+        (log) =>
+          log.situation_description.toLowerCase().includes(searchLower) ||
+          log.location?.toLowerCase().includes(searchLower) ||
+          log.trigger_words?.toLowerCase().includes(searchLower) ||
+          log.perception?.toLowerCase().includes(searchLower)
+      )
+    }
+
+    // ソート
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'recent':
+          return (
+            new Date(b.occurred_at).getTime() -
+            new Date(a.occurred_at).getTime()
+          )
+        case 'oldest':
+          return (
+            new Date(a.occurred_at).getTime() -
+            new Date(b.occurred_at).getTime()
+          )
+        case 'anger_high':
+          return b.anger_level - a.anger_level
+        case 'anger_low':
+          return a.anger_level - b.anger_level
+        default:
+          return (
+            new Date(b.occurred_at).getTime() -
+            new Date(a.occurred_at).getTime()
+          )
+      }
+    })
+
+    return sorted
+  }, [angerLogs, searchTerm, sortBy])
 
   // ページネーション
   const totalPages = Math.ceil(filteredLogs.length / ITEMS_PER_PAGE)
@@ -50,10 +81,10 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
     return filteredLogs.slice(startIndex, endIndex)
   }, [filteredLogs, currentPage])
 
-  // 検索語が変更されたらページを1に戻す
+  // 検索語・ソートが変更されたらページを1に戻す
   React.useEffect(() => {
     setCurrentPage(1)
-  }, [searchTerm])
+  }, [searchTerm, sortBy])
 
   const handleCardClick = async (id: number) => {
     try {
@@ -72,11 +103,6 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
     }
   }
 
-  const handleModalClose = () => {
-    setModalOpen(false)
-    setSelectedAngerLog(null)
-  }
-
   const handlePageChange = (
     _event: React.ChangeEvent<unknown>,
     value: number
@@ -87,7 +113,16 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
   }
 
   if (loading) {
-    return <Loading />
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="200px"
+      >
+        <Loading />
+      </Box>
+    )
   }
 
   if (error.length > 0) {
@@ -108,6 +143,38 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
         placeholder="記録を検索してみましょう..."
       />
 
+      <Box
+        sx={{
+          mt: 2,
+          mb: 3,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 2,
+        }}
+      >
+        {/* 検索結果数を左端に */}
+        <Box>
+          {searchTerm ? (
+            <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+              「{searchTerm}」の検索結果: {filteredLogs.length}件
+            </Typography>
+          ) : (
+            <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+              全 {filteredLogs.length}件
+            </Typography>
+          )}
+        </Box>
+
+        {/* ソートドロップダウンを右端に */}
+        <Box>
+          <SortDropdown
+            sortBy={sortBy}
+            onSortChange={(value: string) => setSortBy(value as SortOption)}
+          />
+        </Box>
+      </Box>
       {filteredLogs.length === 0 ? (
         <Box
           display="flex"
@@ -147,7 +214,7 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
                 sm: 'repeat(2, 1fr)', // タブレット: 2列
                 md: 'repeat(3, 1fr)', // PC小: 3列
                 lg: 'repeat(4, 1fr)', // PC大: 4列
-                xl: 'repeat(5, 1fr)', // 大画面: 5列
+                xl: 'repeat(4, 1fr)', // 大画面: 4列
               },
               gap: 2,
               mx: 'auto',
@@ -165,7 +232,7 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
 
           {/* ページネーション */}
           {totalPages > 1 && (
-            <Box display="flex" justifyContent="center" mt={4}>
+            <Box display="flex" justifyContent="center" mt={4} mb={6}>
               <Pagination
                 count={totalPages}
                 page={currentPage}
@@ -189,12 +256,6 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
           )}
         </>
       )}
-      <AngerLogDetailModal
-        open={modalOpen}
-        onClose={handleModalClose}
-        angerLog={selectedAngerLog}
-        loading={modalLoading}
-      />
     </Box>
   )
 }
