@@ -32,7 +32,7 @@ const sidebarItems = [
   },
   {
     title: '記録一覧',
-    path: '/logs',
+    path: '/anger_logs',
     icon: <HistoryIcon />,
   },
   {
