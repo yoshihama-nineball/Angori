@@ -36,6 +36,11 @@ export default function Header() {
     setAnchorEl(null)
   }
 
+  const handleAboutClick = () => {
+    handleClose()
+    router.push('/')
+  }
+
   const handleLogoutClick = () => {
     setLogoutDialogOpen(true)
     handleClose()
@@ -134,7 +139,7 @@ export default function Header() {
                 }}
               >
                 <MenuItem
-                  onClick={handleClose}
+                  onClick={handleAboutClick}
                   sx={{
                     color: 'text.primary',
                     '&:hover': {
