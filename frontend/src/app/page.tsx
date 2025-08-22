@@ -58,7 +58,7 @@ export default function TutorialPage() {
           data-animate
           sx={{
             textAlign: 'center',
-            mb: 6,
+            mb: 12,
             opacity: visibleElements.has('main-hero') ? 1 : 0,
             transform: visibleElements.has('main-hero')
               ? 'translateY(0px)'
@@ -193,7 +193,7 @@ export default function TutorialPage() {
           id="service-description"
           data-animate
           sx={{
-            mb: 6,
+            mb: 12,
             opacity: visibleElements.has('service-description') ? 1 : 0,
             transform: visibleElements.has('service-description')
               ? 'translateY(0px)'
@@ -213,6 +213,42 @@ export default function TutorialPage() {
           >
             従来のアプリとの違い
           </Typography>
+          <Box
+            sx={{
+              position: 'relative',
+              width: { xs: 200, md: 220 },
+              height: { xs: 200, md: 220 },
+              mx: 'auto',
+              mb: 3,
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'scale(1.05)', // 回転を削除してスケールのみに
+              },
+            }}
+          >
+            <Box
+              sx={{
+                position: 'relative',
+                width: { xs: 200, md: 220 },
+                height: { xs: 200, md: 220 },
+                borderRadius: '12px',
+                overflow: 'hidden',
+                boxShadow: 2, // 軽めのシャドウ
+                // border を削除
+              }}
+            >
+              <Image
+                src="/angori-image/chat-greeting.png"
+                alt="チャット画面"
+                fill
+                sizes="(max-width: 600px) 200px, 220px"
+                style={{
+                  objectFit: 'cover',
+                  backgroundColor: '#FFFFFF',
+                }}
+              />
+            </Box>
+          </Box>
           <Card
             elevation={2}
             sx={{
@@ -259,23 +295,11 @@ export default function TutorialPage() {
             transition: 'all 0.8s ease-out 0.4s',
           }}
         >
-          <Typography
-            variant="h5"
-            component="h2"
-            color="text.primary"
-            sx={{
-              fontWeight: 'bold',
-              mb: 4,
-              textAlign: 'center',
-            }}
-          >
-            アプリについて
-          </Typography>
           <Box
             id="consultation-feature"
             data-animate
             sx={{
-              mb: 4,
+              mb: 12,
               opacity: visibleElements.has('consultation-feature') ? 1 : 0,
               transform: visibleElements.has('consultation-feature')
                 ? 'translateY(0px)'
