@@ -87,7 +87,7 @@ const AngerLogCard: React.FC<AngerLogCardProps> = ({ angerLog, onClick }) => {
         backgroundColor: 'white',
         border: '1px solid #e0e0e0',
         cursor: 'pointer',
-        height: 180, // 固定の高さでカードを揃える
+        height: 170, // 固定の高さでカードを揃える
         display: 'flex',
         flexDirection: 'column',
         '&:hover': {
