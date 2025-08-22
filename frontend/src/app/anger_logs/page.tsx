@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Box, Container } from '@mui/material'
+import { Box } from '@mui/material'
 import { AngerLog } from '@/schemas/anger_log'
 import AngerLogsList from '@/components/anger_logs/AngerLogsList'
 import { getAngerLogs } from '../../../lib/api/anger_log'
@@ -47,16 +47,26 @@ const LogsPage: React.FC = () => {
 
   return (
     <AuthGuard>
-      <Box sx={{ minHeight: '100vh', pb: 4 }}>
-        <Container maxWidth="xl" sx={{ pt: 3, px: { xs: 2, sm: 3 } }}>
-          <AngerLogsList
-            angerLogs={angerLogs}
-            loading={loading}
-            error={error}
-            searchKeyword={searchKeyword}
-            onSearchChange={setSearchKeyword} // 検索変更ハンドラを渡す
-          />
-        </Container>
+      <Box
+        sx={{
+          minHeight: '100vh',
+          pb: 4,
+          ml: { xs: 0, md: '240px' }, // スマホは0、PC以上は240px
+          p: 3,
+          width: {
+            xs: '100%',
+            md: 'calc(100% - 240px)',
+          },
+          boxSizing: 'border-box',
+        }}
+      >
+        <AngerLogsList
+          angerLogs={angerLogs}
+          loading={loading}
+          error={error}
+          searchKeyword={searchKeyword}
+          onSearchChange={setSearchKeyword}
+        />
       </Box>
     </AuthGuard>
   )
