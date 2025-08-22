@@ -11,6 +11,7 @@ import {
   useTheme,
 } from '@mui/material'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 const useScrollAnimation = () => {
   const [visibleElements, setVisibleElements] = useState<Set<string>>(new Set())
 
@@ -37,16 +38,16 @@ const useScrollAnimation = () => {
 
 export default function TutorialPage() {
   const theme = useTheme()
-  // const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const visibleElements = useScrollAnimation()
+  const router = useRouter()
 
   const handleUserRegister = () => {
-    // console.log('ユーザ登録画面へ遷移')
+    router.push('/auth/register')
   }
 
-  const handleGuestLogin = () => {
-    // console.log('ゲストログイン')
-  }
+  // const handleGuestLogin = () => {
+  //   // console.log('ゲストログイン')
+  // }
 
   return (
     <Box sx={{ minHeight: '100vh', py: { xs: 2, md: 4 } }}>
@@ -168,7 +169,7 @@ export default function TutorialPage() {
               lineHeight: 1.3,
             }}
           >
-            ゴリラの力で怒りを笑いに
+            笑いの力で怒りを笑いに
           </Typography>
 
           <Card elevation={2} sx={{ p: 3, mb: 4 }}>
@@ -177,14 +178,14 @@ export default function TutorialPage() {
               color="text.secondary"
               sx={{ lineHeight: 1.8 }}
             >
-              負の感情で疲れているあなたを、正の感情で強いものは支えます。
+              ついイライラして衝動的な行動をして、後悔しまったことはありませんか？
             </Typography>
             <Typography
               variant="body1"
               color="text.secondary"
               sx={{ lineHeight: 1.8, mt: 1 }}
             >
-              やさしくユーモアあふれたゴリラと一緒に、怒りの感情を楽しくコントロールしませんか？
+              やさしくユーモアあふれたゴリラに相談することで、怒りの感情とうまく付き合っていくことを目指してみましょう！
             </Typography>
           </Card>
         </Box>
@@ -200,6 +201,18 @@ export default function TutorialPage() {
             transition: 'all 0.8s ease-out 0.2s',
           }}
         >
+          <Typography
+            variant="h5"
+            component="h2"
+            color="text.primary"
+            sx={{
+              fontWeight: 'bold',
+              mb: 4,
+              textAlign: 'center',
+            }}
+          >
+            従来のアプリとの違い
+          </Typography>
           <Card
             elevation={2}
             sx={{
@@ -216,21 +229,21 @@ export default function TutorialPage() {
               color="text.secondary"
               sx={{ lineHeight: 1.8, mb: 2 }}
             >
-              Angoriは、従来の真面目なアンガーマネジメントアプリとは違い、エンタメ性を重視しています。
+              アンゴリは従来の真面目なアンガーマネジメントアプリとは違い、従来の目的とともにエンタメ性を兼ね合わせています。
             </Typography>
             <Typography
               variant="body1"
               color="text.secondary"
               sx={{ lineHeight: 1.8, mb: 2 }}
             >
-              やさしくユーモアあふれたゴリラに相談することで、怒りの感情を客観視し、感情のコントロールスキルを楽しく身につけることができます。
+              「今回の怒りはバナナ何本分だ？...いや、10段階中いくつだ？」などと、やさしくユーモアあふれたゴリラに相談することで、怒りの感情を客観視し、感情のコントロールスキルを楽しく身につけることを目指せます。
             </Typography>
             <Typography
               variant="body1"
               color="text.secondary"
               sx={{ lineHeight: 1.8 }}
             >
-              ASDやHSPなど感情コントロールが難しい方にも使いやすいよう設計されています。
+              繊細さんや感覚過敏持ち、感情コントロールが難しい方にも使いやすいよう設計されています。
             </Typography>
           </Card>
         </Box>
@@ -298,6 +311,7 @@ export default function TutorialPage() {
                   src="/angori-image/angori-counseling.jpg"
                   alt="アンガーゴリラ"
                   fill
+                  sizes="(max-width: 600px) 200px, 220px"
                   style={{
                     objectFit: 'cover',
                     borderRadius: '50%',
@@ -330,26 +344,26 @@ export default function TutorialPage() {
                 },
               }}
             >
+              {/* <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{ lineHeight: 1.8, mb: 2 }}
+              >
+                ゴリラへの相談で悩みを解決
+              </Typography> */}
               <Typography
                 variant="body1"
                 color="text.secondary"
                 sx={{ lineHeight: 1.8, mb: 2 }}
               >
-                Dr.ゴリラとの相談で悩みを解決
-              </Typography>
-              <Typography
-                variant="body1"
-                color="text.secondary"
-                sx={{ lineHeight: 1.8, mb: 2 }}
-              >
-                「今回の怒りはバナナ何本分だ？...いや、10段階中いくつだ？」
+                相談室のキャラクターDr.ゴリからの質問に答えていくことで、自分の怒りの感情を客観視しやすくなります。
               </Typography>
               <Typography
                 variant="body1"
                 color="text.secondary"
                 sx={{ lineHeight: 1.8 }}
               >
-                このようなユーモアあふれる質問に答えることで、怒りの感情を客観視し、AIからのアドバイスを受けることができます。
+                またあなたに寄り添ったアドバイスを受けることで、心の平穏を取り戻し、日々をより穏やかに過ごせることができます。
               </Typography>
             </Card>
           </Box>
@@ -393,6 +407,7 @@ export default function TutorialPage() {
                   src="/angori-image/angori-counseling.jpg"
                   alt="アンガーゴリラ"
                   fill
+                  sizes="(max-width: 600px) 200px, 220px"
                   style={{
                     objectFit: 'cover',
                     borderRadius: '50%',
@@ -437,7 +452,7 @@ export default function TutorialPage() {
                 color="text.secondary"
                 sx={{ lineHeight: 1.8, mb: 2 }}
               >
-                怒りの傾向をグラフで可視化し、落ち着きポイントシステムで継続的なモチベーション向上をサポートします。
+                怒りの傾向をグラフで可視化(実装予定)し、落ち着きポイントシステムで継続的なモチベーション向上をサポートします。
               </Typography>
               <Typography
                 variant="body1"
@@ -480,7 +495,7 @@ export default function TutorialPage() {
             ユーザ登録
           </Button>
 
-          <Button
+          {/* <Button
             variant="contained"
             color="secondary"
             size="large"
@@ -496,7 +511,7 @@ export default function TutorialPage() {
             }}
           >
             ゲスト利用してみる
-          </Button>
+          </Button> */}
         </Box>
       </Container>
     </Box>
