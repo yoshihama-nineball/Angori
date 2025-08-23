@@ -251,7 +251,7 @@ const LoginForm = () => {
                 >
                   アカウントをお持ちでない方は{' '}
                   <a
-                    href="/auth/register"
+                    href="/register"
                     style={{
                       color: 'inherit',
                       textDecoration: 'underline',

@@ -38,7 +38,7 @@ export default function Header() {
 
   const handleAboutClick = () => {
     handleClose()
-    router.push('/')
+    router.push('/about')
   }
 
   const handleLogoutClick = () => {
