@@ -1,12 +1,8 @@
 import { Metadata } from 'next'
 import React from 'react'
-import Footer from '../components/layouts/Footer/Footer'
 import { ClientThemeProvider } from './components/layouts/ClientThemeProvider'
-import Header from '@/components/layouts/Header/Header'
-import FlashMessage from '@/components/feedback/Alert/FlashMessage'
 import { MessageProvider } from '../../context/MessageContext'
 import Loading from '@/components/feedback/Loading/Loading'
-import { Sidebar } from '@/components/layouts/Sidebar/Sidebar'
 
 export const metadata: Metadata = {
   title: 'アンガーアプリ | TOP',
@@ -16,7 +12,6 @@ export const metadata: Metadata = {
   },
 }
 
-// layout.tsx を修正
 export default function RootLayout({
   children,
 }: {
@@ -27,25 +22,7 @@ export default function RootLayout({
       <body>
         <ClientThemeProvider>
           <MessageProvider>
-            <Header />
-            <FlashMessage />
-            <Sidebar />
-
-            <main
-              style={{
-                paddingTop: 'var(--header-height, 64px)',
-                marginLeft: 'var(--sidebar-width, 0px)', // CSS変数に戻す
-                minHeight: 'calc(100vh - var(--footer-height, 56px))',
-                width: 'calc(100vw - var(--sidebar-width, 0px))',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-start',
-                alignItems: 'stretch',
-              }}
-            >
-              <React.Suspense fallback={<Loading />}>{children}</React.Suspense>
-            </main>
-            <Footer />
+            <React.Suspense fallback={<Loading />}>{children}</React.Suspense>
           </MessageProvider>
         </ClientThemeProvider>
       </body>

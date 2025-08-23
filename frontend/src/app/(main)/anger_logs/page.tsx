@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react'
 import { Box } from '@mui/material'
 import { AngerLog } from '@/schemas/anger_log'
 import AngerLogsList from '@/components/anger_logs/AngerLogsList'
-import { getAngerLogs } from '../../../lib/api/anger_log'
 import AuthGuard from '@/components/auth/AuthGuard'
+import { getAngerLogs } from '../../../../lib/api/anger_log'
 
 const LogsPage: React.FC = () => {
   const [angerLogs, setAngerLogs] = useState<AngerLog[]>([])
