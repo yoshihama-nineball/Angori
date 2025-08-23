@@ -157,6 +157,7 @@ export async function getAngerLogs(
     if (searchKeyword) {
       params.append('search', searchKeyword)
     }
+    params.append('per_page', '100') // この行を追加
 
     const apiUrl = `${API_BASE}/api/v1/anger_logs?${params.toString()}`
 

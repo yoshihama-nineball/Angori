@@ -12,7 +12,7 @@ module AngerLogsConcern
                              .search_by_keyword(search_keyword)
                              .recent
                              .includes(:user)
-    anger_logs.page(params[:page]).per(params[:per_page] || 20)
+    anger_logs.page(params[:page]).per(params[:per_page] || 100)
   end
 
   def set_anger_log
