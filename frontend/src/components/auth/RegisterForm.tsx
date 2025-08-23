@@ -76,8 +76,7 @@ const RegisterForm = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            py: 0,
-            mt: '-64px',
+            py: { xs: 2, sm: 4 },
           }}
         >
           <Paper

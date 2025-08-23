@@ -6,6 +6,7 @@ import SearchBar from './SearchBar'
 import { getAngerLog } from '../../../lib/api/anger_log'
 import SortDropdown from './SortDropDown'
 import Loading from '../feedback/Loading/Loading'
+import { AngerLogDetailModal } from './AngerLogDetailModal'
 
 type SortOption = 'recent' | 'oldest' | 'anger_high' | 'anger_low'
 
@@ -28,9 +29,11 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
 }) => {
   // const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [, setSelectedAngerLog] = useState<AngerLog | null>(null)
-  const [, setModalOpen] = useState(false)
-  const [, setModalLoading] = useState(false)
+  const [selectedAngerLog, setSelectedAngerLog] = useState<AngerLog | null>(
+    null
+  )
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalLoading, setModalLoading] = useState(false)
   const [sortBy, setSortBy] = useState<SortOption>('recent')
 
   const [localSearchTerm, setLocalSearchTerm] = useState('')
@@ -119,6 +122,11 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
     setCurrentPage(value)
     // ページ変更時に上部にスクロール
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleModalClose = () => {
+    setModalOpen(false)
+    setSelectedAngerLog(null)
   }
 
   if (loading) {
@@ -257,6 +265,12 @@ const AngerLogsList: React.FC<AngerLogsListProps> = ({
           )}
         </>
       )}
+      <AngerLogDetailModal
+        open={modalOpen}
+        onClose={handleModalClose}
+        angerLog={selectedAngerLog}
+        loading={modalLoading}
+      />
     </Box>
   )
 }

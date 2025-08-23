@@ -41,8 +41,8 @@ export default function TutorialPage() {
   const visibleElements = useScrollAnimation()
   const router = useRouter()
 
-  const handleUserRegister = () => {
-    router.push('/register')
+  const handleTopPage = () => {
+    router.push('/dashboard')
   }
 
   // const handleGuestLogin = () => {
@@ -505,7 +505,7 @@ export default function TutorialPage() {
             color="primary"
             size="large"
             fullWidth
-            onClick={handleUserRegister}
+            onClick={handleTopPage}
             sx={{
               mb: 2,
               py: 2,
@@ -516,7 +516,7 @@ export default function TutorialPage() {
               },
             }}
           >
-            ユーザ登録
+            トップに戻る
           </Button>
 
           {/* <Button

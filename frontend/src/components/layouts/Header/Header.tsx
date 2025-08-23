@@ -36,6 +36,11 @@ export default function Header() {
     setAnchorEl(null)
   }
 
+  const handleAboutClick = () => {
+    handleClose()
+    router.push('/about')
+  }
+
   const handleLogoutClick = () => {
     setLogoutDialogOpen(true)
     handleClose()
@@ -47,9 +52,9 @@ export default function Header() {
 
     if (result.success) {
       setAuthenticated(false)
-      router.push('/auth/login')
+      router.push('/login')
     } else {
-      router.push('/auth/login')
+      router.push('/login')
     }
   }
 
@@ -134,7 +139,7 @@ export default function Header() {
                 }}
               >
                 <MenuItem
-                  onClick={handleClose}
+                  onClick={handleAboutClick}
                   sx={{
                     color: 'text.primary',
                     '&:hover': {
@@ -163,7 +168,7 @@ export default function Header() {
           ) : (
             <Button
               component={Link}
-              href="/auth/login"
+              href="/login"
               variant="contained"
               size="small"
             >
