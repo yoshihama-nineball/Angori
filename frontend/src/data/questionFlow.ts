@@ -49,7 +49,7 @@ export const questionFlow: QuestionData[] = [
     id: 'anger_level',
     content:
       '今回の怒りはバナナ何本分...じゃなくて10段階中いくつだウホ？🍌 1が全然怒ってない、10が超激怒している状態ウホ！',
-    type: 'select',
+    type: 'rating',
     options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
     field: 'anger_level',
   },
