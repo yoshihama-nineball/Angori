@@ -25,7 +25,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
 
   useEffect(() => {
     if (isInitialized && !isAuthenticated) {
-      router.push('/auth/login')
+      router.push('/login')
     }
   }, [isAuthenticated, isInitialized, router])
 

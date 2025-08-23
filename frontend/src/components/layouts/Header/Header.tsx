@@ -52,9 +52,9 @@ export default function Header() {
 
     if (result.success) {
       setAuthenticated(false)
-      router.push('/auth/login')
+      router.push('/login')
     } else {
-      router.push('/auth/login')
+      router.push('/login')
     }
   }
 
@@ -168,7 +168,7 @@ export default function Header() {
           ) : (
             <Button
               component={Link}
-              href="/auth/login"
+              href="/login"
               variant="contained"
               size="small"
             >
