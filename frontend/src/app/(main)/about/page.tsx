@@ -222,7 +222,7 @@ export default function TutorialPage() {
               mb: 3,
               transition: 'transform 0.3s ease',
               '&:hover': {
-                transform: 'scale(1.05)', // 回転を削除してスケールのみに
+                transform: 'scale(1.05)',
               },
             }}
           >
@@ -233,8 +233,7 @@ export default function TutorialPage() {
                 height: { xs: 200, md: 220 },
                 borderRadius: '12px',
                 overflow: 'hidden',
-                boxShadow: 2, // 軽めのシャドウ
-                // border を削除
+                boxShadow: 2,
               }}
             >
               <Image
