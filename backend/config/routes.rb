@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       get '/auth/me', to: 'users#me'
 
       resources :anger_logs, only: %i[index show create update destroy]
+      resource :calming_points, only: [:show]
     end
   end
 end
