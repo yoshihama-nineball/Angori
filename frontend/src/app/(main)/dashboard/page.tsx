@@ -3,33 +3,44 @@
 import React, { useState, useEffect } from 'react'
 import { Box } from '@mui/material'
 import { AngerLog } from '@/schemas/anger_log'
-import AuthGuard from '@/components/auth/AuthGuard'
 import { getAngerLogs } from '../../../../lib/api/anger_log'
 import WelcomeSection from '@/components/dashboard/WelcomeSection'
 import PointsDisplay from '@/components/dashboard/PointsDisplay'
 import RecentAngerLogsSection from '@/components/dashboard/RecentAngerLogsSection'
 import OnePointAdviceSection from '@/components/dashboard/OnePointAdviceSection'
+import { CalmingPoint } from '@/schemas/calming_point'
+import { getCalmingPoints } from '../../../../lib/api/calming_points'
+import AuthGuard from '@/components/auth/AuthGuard'
 
 const TopPage: React.FC = () => {
   const [recentAngerLogs, setRecentAngerLogs] = useState<AngerLog[]>([])
+  const [calmingPoints, setCalmingPoints] = useState<CalmingPoint | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string[]>([])
 
-  // ユーザーのポイント（仮データ）
-  const userPoints = 1250
-
   useEffect(() => {
-    const fetchRecentLogs = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true)
-        const response = await getAngerLogs(undefined)
-
-        if (response.errors && response.errors.length > 0) {
-          setError(response.errors)
+        // 並列でデータ取得
+        const [logsResponse, pointsResponse] = await Promise.all([
+          getAngerLogs(undefined),
+          getCalmingPoints(),
+        ])
+        // アンガーログの処理
+        if (logsResponse.errors?.length) {
+          setError(logsResponse.errors)
           setRecentAngerLogs([])
         } else {
-          setRecentAngerLogs((response.anger_logs || []).slice(0, 3))
+          setRecentAngerLogs((logsResponse.anger_logs || []).slice(0, 3))
           setError([])
+        }
+
+        // ポイントの処理
+        if (pointsResponse.errors?.length) {
+          // ポイントエラーはアンガーログ表示に影響させない
+        } else if (pointsResponse.calming_points) {
+          setCalmingPoints(pointsResponse.calming_points)
         }
       } catch {
         setError(['データの取得に失敗しました'])
@@ -38,7 +49,7 @@ const TopPage: React.FC = () => {
       }
     }
 
-    fetchRecentLogs()
+    fetchData()
   }, [])
 
   return (
@@ -77,11 +88,18 @@ const TopPage: React.FC = () => {
             {/* 落ち着きポイント（ポイント数表示） */}
             <Box
               sx={{
-                flex: { lg: '0 0 400px' },
-                width: { xs: '100%', lg: '400px' },
+                flex: { lg: '0 0 350px' }, // PC版での幅を350pxに制限
+                width: { xs: '100%', lg: '350px' }, // スマホは100%、PCは350px
               }}
             >
-              <PointsDisplay points={userPoints} />
+              <PointsDisplay
+                points={calmingPoints?.total_points || 0}
+                level={calmingPoints?.current_level || 1}
+                levelName="修行中ゴリラ 🦍🧘" // 一時的に固定値
+                streakDays={calmingPoints?.streak_days || 0}
+                pointsToNextLevel={25} // 一時的に固定値
+                nextLevelPoints={400} // 一時的に固定値
+              />
             </Box>
 
             {/* 最近のアンガーログ（3件） */}
