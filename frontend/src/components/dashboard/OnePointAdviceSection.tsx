@@ -15,7 +15,7 @@ const OnePointAdviceSection: React.FC = () => {
       icon={<TipsAndUpdates />}
       severity="info"
       sx={{
-        mt: 4,
+        my: 4,
         backgroundColor: '#e3f2fd',
         border: '1px solid #2196f3',
         borderRadius: 3,
