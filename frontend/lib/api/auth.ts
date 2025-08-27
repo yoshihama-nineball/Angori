@@ -20,6 +20,27 @@ export type LoginData = {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
+export const getAuthToken = (): string | null => {
+  if (typeof document === 'undefined') return null
+
+  const cookies = document.cookie.split(';')
+
+  const authCookie = cookies.find((cookie) =>
+    cookie.trim().startsWith('auth_token=')
+  )
+
+  if (authCookie) {
+    const token = authCookie.split('=')[1]
+
+    if (token && token.startsWith('Bearer ')) {
+      return token
+    } else {
+      return `Bearer ${token}`
+    }
+  }
+  return null
+}
+
 export async function registerUser(data: RegisterData): Promise<ApiResponse> {
   try {
     // バリデーション

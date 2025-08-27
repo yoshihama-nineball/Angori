@@ -14,6 +14,13 @@ Rails.application.routes.draw do
       get '/auth/me', to: 'users#me'
 
       resources :anger_logs, only: %i[index show create update destroy]
+      resource :calming_points, only: [:show]
+      resources :wise_sayings, only: [] do
+        collection do
+          get :daily_wisdom
+          get :recommend_for_user
+        end
+      end
     end
   end
 end

@@ -1,7 +1,7 @@
 class WiseSaying < ApplicationRecord
   include WiseSayingDisplay
   include WiseSayingEffectiveness
-  include WiseSayingRecommendations
+  include WiseSayingRecommendationLogic
   include WiseSayingSearch
 
   validates :content, presence: true, length: { maximum: 500 }

@@ -17,7 +17,7 @@ export type AngerLogApiResponse = {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
-const getAuthToken = (): string | null => {
+export const getAuthToken = (): string | null => {
   if (typeof document === 'undefined') return null
 
   const cookies = document.cookie.split(';')

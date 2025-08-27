@@ -7,8 +7,17 @@ export const CalmingPointAPIResponseSchema = z.object({
   current_level: z.number().min(1),
   streak_days: z.number().min(0),
   last_action_date: z.string().nullable(),
-  level_achievements: z.record(z.string(), z.string()).nullable(), // JSONB: key: string, value: string
-  milestone_flags: z.record(z.string(), z.boolean()).nullable(), // JSONB: key: string, value: boolean
+  level_achievements: z
+    .array(
+      z.object({
+        level: z.number(),
+        achieved_at: z.string(),
+        milestone_type: z.string(),
+        points_required: z.number(),
+      })
+    )
+    .nullable(),
+  milestone_flags: z.record(z.string(), z.boolean()).nullable(),
   created_at: z.string(),
   updated_at: z.string(),
 })
