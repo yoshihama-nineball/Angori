@@ -1,11 +1,11 @@
-# backend/config/initializers/cors.rb
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins ENV.fetch('FRONTEND_URL', 'http://localhost:3000')
+    origins '*' # シンプルに戻す
 
     resource '*',
              headers: :any,
              methods: %i[get post put patch delete options head],
-             credentials: true
+             expose: ['Authorization'], # 追加！
+             credentials: false
   end
 end

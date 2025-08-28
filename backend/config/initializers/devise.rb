@@ -14,7 +14,7 @@ Devise.setup do |config|
   # confirmation, reset password and unlock tokens in the database.
   # Devise will use the `secret_key_base` as its `secret_key`
   # by default. You can change it below and use your own secret key.
-  # config.secret_key = '98f84a359d9c060076aff1c019f22e5e448eda871e2e50c005ac7a814e9488dbbee23f94274c6c481938d1b69a3095b927b5c5d548b7b97f5e7b30e917b69aa9'
+  # config.secret_key = '8cecb947c2a57be5ea3547adfd085a5c33bfb0fc729e62f5009c852a824bd1cc593deca97c3fe6da4e08d6a555cf6260b59eb8e1873db1f4f72956fc073fea67'
 
   # ==> Controller configuration
   # Configure the parent class to the devise controllers.
@@ -97,7 +97,7 @@ Devise.setup do |config|
   # Notice that if you are skipping storage for all authentication paths, you
   # may want to disable generating routes to Devise's sessions controller by
   # passing skip: :sessions to `devise_for` in your config/routes.rb
-  config.skip_session_storage = [:http_auth]
+  config.skip_session_storage = %i[http_auth token_auth]
 
   # By default, Devise cleans up the CSRF token on authentication to
   # avoid CSRF token fixation attacks. This means that, when using AJAX
@@ -126,7 +126,7 @@ Devise.setup do |config|
   config.stretches = Rails.env.test? ? 1 : 12
 
   # Set up a pepper to generate the hashed password.
-  # config.pepper = '693cd2d95fbf55eb32042e935b574634575aa6a073fce840e303cbe603fe2f8bda9254215283c46be6261ac873a197901d9d8dfd6abbdfe21252d0a5c9284024'
+  # config.pepper = '5cdb3b1c771354106fcc7d9d993487594c99198a50c89ecc879c530200846278fac97fc54f1b3f0637ae3240114396ee33baffd90bc4c94b49f665caea663b07'
 
   # Send a notification to the original email when the user's email is changed.
   # config.send_email_changed_notification = false
@@ -263,7 +263,19 @@ Devise.setup do |config|
   # should add them to the navigational formats lists.
   #
   # The "*/*" below is required to match Internet Explorer requests.
-  # config.navigational_formats = ['*/*', :html, :turbo_stream]
+  config.navigational_formats = []
+
+  config.jwt do |jwt|
+    jwt.secret = Rails.application.credentials.devise_jwt_secret_key || ENV.fetch('DEVISE_JWT_SECRET_KEY', nil)
+    jwt.dispatch_requests = [
+      ['POST', %r{^/api/v1/users/sign_in$}],
+      ['POST', %r{^/api/v1/users$}]
+    ]
+    jwt.revocation_requests = [
+      ['DELETE', %r{^/api/v1/users/sign_out$}]
+    ]
+    jwt.expiration_time = 1.day.to_i
+  end
 
   # The default HTTP method used to sign out a resource. Default is :delete.
   config.sign_out_via = :delete
@@ -310,39 +322,4 @@ Devise.setup do |config|
   # When set to false, does not sign a user in automatically after their password is
   # changed. Defaults to true, so a user is signed in automatically after changing a password.
   # config.sign_in_after_change_password = true
-
-  config.jwt do |jwt|
-    jwt.secret = Rails.application.credentials.jwt&.dig(:secret_key) ||
-                 ENV['JWT_SECRET_KEY'] ||
-                 'test_jwt_secret_for_ci'
-    jwt.dispatch_requests = [
-      ['POST', %r{^/api/v1/auth/login$}],
-      ['POST', %r{^/api/v1/auth/register$}]
-    ]
-    jwt.revocation_requests = [
-      ['DELETE', %r{^/api/v1/auth/logout$}]
-    ]
-    jwt.expiration_time = 1.day.to_i
-  end
-
-  # API-only configuration
-  config.navigational_formats = []
-  config.skip_session_storage = [:http_auth]
 end
-
-# ==> JWT Configuration
-# config.jwt do |jwt|
-#   jwt.secret = Rails.application.credentials.jwt[:secret_key]
-#   jwt.dispatch_requests = [
-#     ['POST', %r{^/api/v1/auth/login$}],
-#     ['POST', %r{^/api/v1/auth/register$}]
-#   ]
-#   jwt.revocation_requests = [
-#     ['DELETE', %r{^/api/v1/auth/logout$}]
-#   ]
-#   jwt.expiration_time = 1.day.to_i
-# end
-
-# # API-only configuration
-# config.navigational_formats = []
-# config.skip_session_storage = [:http_auth]

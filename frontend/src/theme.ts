@@ -44,24 +44,24 @@ declare module '@mui/material/styles' {
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#5D4037', // ブラウン（メインカラー）
+      main: '#FFD700', // バナナイエロー
+      light: '#FFFF57',
+      dark: '#C8A415',
+      contrastText: '#5D4037', // ブラウンテキスト
+    },
+    secondary: {
+      main: '#5D4037', // ブラウン（現在これが効いていない）
       light: '#8D6E63',
       dark: '#3E2723',
       contrastText: '#FFFFFF',
     },
-    secondary: {
-      main: '#FFD700', // 濃いバナナイエロー（アクセント）
-      light: '#FFFF57',
-      dark: '#C8A415',
-      contrastText: '#3E2723',
-    },
     background: {
-      default: '#FFF8DC', // 淡いバナナクリーム（ベースカラー）
-      paper: '#FFFACD', // レモンクリーム
+      default: '#FFFEF7', // 薄いグレー
+      paper: '#FFFFFF', // 極薄いクリーム
     },
     text: {
-      primary: '#8B4513', // ログと同じダークブラウン
-      secondary: '#A0522D', // ログと同じミディアムブラウン
+      primary: '#5D4037', // メインブラウン（現在の#8B4513から変更）
+      secondary: '#8D6E63', // ライトブラウン（現在の#A0522Dから変更）
     },
     error: {
       main: '#D32F2F', // 怒りの赤
@@ -93,7 +93,7 @@ const theme = createTheme({
 
       // バナナ系
       banana: '#FFD700', // 濃いバナナイエロー
-      lightBanana: '#FFFF57', // ライトバナナ
+      lightBanana: '#FFF9C4', // ライトバナナ
       bananaAccent: '#FFA000', // バナナオレンジ
 
       // ジャングル要素
@@ -112,13 +112,7 @@ const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: `
         body {
-          background: linear-gradient(135deg, 
-            #FFF8DC 0%,     /* 淡いバナナクリーム */
-            #FFFACD 25%,    /* レモンクリーム */
-            #FFFFE0 50%,    /* ライトイエロー */
-            #F5F5DC 75%,    /* ベージュ */
-            #FAF0E6 100%    /* リネン */
-          );
+          background: #FFFEF7;
           background-attachment: fixed;
           font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
         }
@@ -206,28 +200,23 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 30,
           fontWeight: 600,
           textTransform: 'none',
           fontSize: '1rem',
         },
-        contained: {
-          background: 'linear-gradient(45deg, #5D4037 30%, #8D6E63 70%)',
-          boxShadow: '0 4px 15px rgba(94, 64, 55, 0.3)',
-          color: '#FFD700',
-          border: '1px solid #FFD700',
+        containedPrimary: {
+          backgroundColor: '#FFD700',
+          color: '#5D4037',
           '&:hover': {
-            background: 'linear-gradient(45deg, #3E2723 30%, #5D4037 70%)',
-            boxShadow: '0 6px 20px rgba(94, 64, 55, 0.4)',
-            transform: 'translateY(-2px)',
+            backgroundColor: '#C8A415',
           },
         },
-        outlined: {
-          borderColor: '#5D4037',
-          color: '#3E2723',
+        containedSecondary: {
+          backgroundColor: '#5D4037',
+          color: '#FFFFFF',
           '&:hover': {
-            borderColor: '#3E2723',
-            backgroundColor: 'rgba(94, 64, 55, 0.1)',
+            backgroundColor: '#3E2723',
           },
         },
       },
@@ -246,18 +235,59 @@ const theme = createTheme({
         },
       },
     },
+    // theme.ts の components に追加
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#FFFFFF',
+          borderRadius: 16,
+          border: '1px solid #E0E0E0',
+          padding: '8px',
+          boxShadow: '0 8px 32px rgba(94, 64, 55, 0.2)',
+        },
+      },
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          color: '#3E2723', // ダークブラウン
+          fontWeight: 600,
+          textAlign: 'center',
+          paddingBottom: '8px',
+          fontSize: '1.25rem',
+        },
+      },
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: {
+          color: '#5D4037', // ミディアムブラウン
+          textAlign: 'center',
+          paddingTop: '16px',
+          paddingBottom: '16px',
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          justifyContent: 'center',
+          gap: '16px',
+          paddingBottom: '16px',
+          paddingTop: '8px',
+        },
+      },
+    },
     MuiTextField: {
       styleOverrides: {
         root: {
           '& .MuiOutlinedInput-root': {
-            backgroundColor: '#FFFFFF', // 白背景に変更
-            color: '#3E2723', // ダークブラウンテキスト
+            backgroundColor: '#FFFFFF', // 白背景
             '& fieldset': {
               borderColor: '#D7CCC8',
             },
             '&:hover fieldset': {
               borderColor: '#8D6E63',
-              backgroundColor: '#FFFFFF', // ホバー時も白背景
             },
             '&.Mui-focused': {
               backgroundColor: '#FFFFFF', // フォーカス時も白背景
@@ -266,22 +296,34 @@ const theme = createTheme({
                 borderWidth: '2px',
               },
             },
-            // 入力文字の色を明示的に指定
+            // 入力文字の色を強制的に指定（重要！）
             '& input': {
-              color: '#3E2723 !important', // ダークブラウン（重要度高）
+              color: '#3E2723 !important',
               fontSize: '1rem',
               fontWeight: 500,
+              '&:focus': {
+                color: '#3E2723 !important', // フォーカス時も確実に
+                backgroundColor: 'transparent !important',
+              },
+            },
+            // textarea の場合も同様
+            '& textarea': {
+              color: '#3E2723 !important',
+              fontSize: '1rem',
+              fontWeight: 500,
+              '&:focus': {
+                color: '#3E2723 !important',
+                backgroundColor: 'transparent !important',
+              },
             },
             // プレースホルダーの色
             '& input::placeholder': {
               color: '#8D6E63',
               opacity: 0.7,
             },
-            // textarea（複数行）の場合
-            '& textarea': {
-              color: '#3E2723 !important',
-              fontSize: '1rem',
-              fontWeight: 500,
+            '& textarea::placeholder': {
+              color: '#8D6E63',
+              opacity: 0.7,
             },
           },
           // ラベルの色
@@ -306,7 +348,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
-          backgroundColor: '#FFFACD',
+          backgroundColor: '#FFFFFF',
           border: '1px solid #E0E0E0',
           '&.MuiPaper-elevation1': {
             boxShadow: '0 2px 8px rgba(94, 64, 55, 0.1)',
@@ -320,16 +362,17 @@ const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          background:
-            'linear-gradient(45deg, #5D4037 0%, #8D6E63 50%, #FFD700 100%)',
-          color: '#FFFFFF',
+          backgroundColor: '#FFF8DC',
+          color: '#5D4037',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+          borderBottom: '1px solid #E0E0E0',
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          backgroundColor: '#FFFACD',
+          backgroundColor: '#FFFFFF',
           border: '1px solid #E0E0E0',
           borderRadius: 16,
           '&:hover': {

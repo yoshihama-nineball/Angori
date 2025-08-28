@@ -4,6 +4,30 @@
 
 Angoriは、健康的な感情管理をサポートするWebアプリケーションです。感情記録、怒りの傾向分析、AIアドバイス機能を通じて、アンガーマネジメントを支援します。
 
+## サービス概要
+Angoriは、ゴリラをモチーフにしたエンタメ性のあるアンガーマネジメントアプリです。<br>
+感情コントロールの難しさや繊細さを持つユーザに対しても使いやすく、怒りの感情の持続時間や怒りの強度を小さくすることを目指します。<br>
+ユーザが自身の成長過程を楽しく追跡し、持続的な感情制御スキルを上げることをサポートします。
+
+## このサービスへの思い・作りたい理由
+自身が就労移行支援に昨年１１月から通っており、そこで学んだことを活かしたアプリをPFとして作りたいと通所序盤から考えていました。<br>
+感情のコントロールの手法をいくつか学び、自身の１番の課題であるアンガーマネジメントに関するアプリを作りたいと思い作成に至りました。<br>
+PF作成を通じて、自身の課題解決とエンジニアスキルを学ぶことを目指しています。<br>
+
+アンガーマネジメントについて学んだ際、「負の感情で最も強いものは怒りだが、正の感情で強いものは笑いだ」と知り、<br>
+「思わずくすっと笑えるアンガーマネジメントの相談アプリを作ったら面白いのでは？」と考えました。<br>
+ゴリラをモチーフにした理由としては、ゴリラは見るだけで、まして相談相手として存在してくれたら面白いのではないかと考えたためです。<br>
+強さと繊細さを兼ね備えたゴリラを面白い存在として認知している人は少なくないと思います<br>
+
+## ユーザー層について
+ASDやHSPなどの感情のコントロールや繊細な人にも効果的なアプリを作ることで、
+自身の怒りの傾向を知ったり怒りを鎮めたい全ての人に使いやすいサービスを目指します。
+
+## サービスの利用イメージ
+
+他の感情と違い中々すぐには消えてくれない怒りの感情を、ゴリラに相談することで楽しく自分がどのように怒るのか傾向を知ったり、<br>
+怒りの感情を小さくすることで、アンガーマネジメントの本来の目的である「怒ることで後悔しない」ことを目指します。
+
 ## 🚀 クイックスタート
 
 ### 前提条件
@@ -164,7 +188,40 @@ docker compose exec backend bundle exec rspec           # テスト実行
 docker compose logs -f                                  # ログ確認
 docker compose down                                     # 停止
 ./docker/scripts/cleanup.sh                            # 完全リセット
+
 ```
+
+## 🗄️ データベース
+
+### セットアップ
+
+```bash
+# データベース初期化（初回のみ）
+docker compose exec backend rails db:create
+docker compose exec backend rails db:migrate
+docker compose exec backend rails db:seed
+```
+
+### サンプルデータ
+
+Seedsで以下のデータが作成されます：
+- **管理者**: admin@angori.com / Password123!
+- **テストユーザー**: test@example.com / Password123!
+- **ASD特性ユーザー**: asd.user@example.com / Password123!
+- **HSP特性ユーザー**: hsp.user@example.com / Password123!
+
+### データベース構成
+
+| テーブル | 件数 | 説明 |
+|---------|------|------|
+| **Users** | 4 | ユーザー（管理者+テスト） |
+| **AngerLogs** | 8+ | 怒りログ（多様なパターン） |
+| **CalmingPoints** | 4 | ゲーミフィケーション |
+| **TriggerWords** | 30+ | トリガーワード自動分析 |
+| **Badges** | 8 | 達成バッジシステム |
+| **WiseSayings** | 14 | レベル別格言 |
+| **Reminders** | 5+ | スマートリマインダー |
+| **ContactMessages** | 3 | 問い合わせ管理 |
 
 ## 🧪 開発状況
 
@@ -206,25 +263,6 @@ MIT License - 詳細は [LICENSE](./LICENSE) を参照
 ---
 
 🦍 Let's manage anger like a wise gorilla! 🍌
-
-## 🔧 開発コマンド
-
-```bash
-# フロントエンド開発
-docker compose exec frontend yarn add package-name      # パッケージ追加
-docker compose exec frontend yarn lint:fix              # コード修正
-docker compose exec frontend yarn test                  # テスト実行
-
-# バックエンド開発  
-docker compose exec backend rails console               # Railsコンソール
-docker compose exec backend rails db:migrate            # DB更新
-docker compose exec backend bundle exec rspec           # テスト実行
-
-# 環境管理
-docker compose logs -f                                  # ログ確認
-docker compose down                                     # 停止
-./docker/scripts/cleanup.sh                            # 完全リセット
-```
 
 ## 🧪 開発状況
 

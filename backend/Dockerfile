@@ -45,4 +45,6 @@ RUN chown -R 1000:1000 /rails
 EXPOSE 5000
 
 # 開発サーバー起動
-CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "5000"]
+# CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "5000"]
+CMD ["bash", "-c", "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0 -p 5000"]
+
