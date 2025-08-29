@@ -43,7 +43,6 @@ export const getAuthToken = (): string | null => {
 
 export async function registerUser(data: RegisterData): Promise<ApiResponse> {
   try {
-    // バリデーション
     const validatedFields = RegisterSchema.safeParse(data)
     if (!validatedFields.success) {
       const errors = validatedFields.error.issues.map((issue) => issue.message)
@@ -65,29 +64,54 @@ export async function registerUser(data: RegisterData): Promise<ApiResponse> {
       }),
     })
 
-    // レスポンステキストを先に取得
     const responseText = await response.text()
 
     let apiData
     try {
       apiData = JSON.parse(responseText)
     } catch {
+      // プレーンテキストのエラーメッセージを処理
+      if (!response.ok && responseText.trim()) {
+        if (response.status === 422) {
+          return {
+            errors: ['入力内容に問題があります。各項目をご確認ください。'],
+            success: '',
+          }
+        }
+
+        return {
+          errors: [
+            '登録処理中にエラーが発生しました。しばらく時間をおいて再度お試しください。',
+          ],
+          success: '',
+        }
+      }
+
+      if (
+        responseText.includes('<html') ||
+        responseText.includes('<!DOCTYPE')
+      ) {
+        return {
+          errors: [
+            'サーバーエラーが発生しました。管理者にお問い合わせください。',
+          ],
+          success: '',
+        }
+      }
+
       return {
         errors: [
-          'サーバーからの応答が正しくありません（HTML エラーページが返されました）',
+          'サーバーエラーが発生しました。しばらく時間をおいて再度お試しください。',
         ],
         success: '',
       }
     }
 
     if (response.ok) {
-      // JWTトークンを確認・保存
       const authToken = response.headers.get('Authorization')
 
       if (authToken) {
-        // HttpOnlyクッキーとして保存（セキュア）
         document.cookie = `auth_token=${authToken}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=strict`
-      } else {
       }
 
       return {
@@ -96,8 +120,8 @@ export async function registerUser(data: RegisterData): Promise<ApiResponse> {
       }
     }
 
-    // エラーレスポンスの処理
-    const errorMessages = []
+    // エラーレスポンスの処理を改善
+    const errorMessages: string[] = []
 
     if (apiData.message) {
       errorMessages.push(apiData.message)
@@ -107,16 +131,39 @@ export async function registerUser(data: RegisterData): Promise<ApiResponse> {
       if (Array.isArray(apiData.errors)) {
         errorMessages.push(...apiData.errors)
       } else if (typeof apiData.errors === 'object') {
-        Object.values(apiData.errors).forEach((errorArray: unknown) => {
-          if (Array.isArray(errorArray)) {
-            errorMessages.push(...errorArray)
+        Object.entries(apiData.errors).forEach(([field, fieldErrors]) => {
+          if (Array.isArray(fieldErrors)) {
+            const fieldName = getFieldNameInJapanese(field)
+            fieldErrors.forEach((error: string) => {
+              errorMessages.push(`${fieldName}: ${error}`)
+            })
           }
         })
       }
     }
 
+    if (response.status === 422) {
+      return {
+        errors:
+          errorMessages.length > 0
+            ? errorMessages
+            : ['入力内容に問題があります。各項目をご確認ください。'],
+        success: '',
+      }
+    }
+
+    if (response.status === 409) {
+      return {
+        errors: ['このメールアドレスは既に登録されています。'],
+        success: '',
+      }
+    }
+
     return {
-      errors: errorMessages.length > 0 ? errorMessages : ['登録に失敗しました'],
+      errors:
+        errorMessages.length > 0
+          ? errorMessages
+          : ['登録に失敗しました。しばらく時間をおいて再度お試しください。'],
       success: '',
     }
   } catch (error: unknown) {
@@ -153,23 +200,51 @@ export async function loginUser(data: LoginData): Promise<ApiResponse> {
     })
 
     const responseText = await response.text()
+
     let apiData
     try {
       apiData = JSON.parse(responseText)
     } catch {
+      // プレーンテキストのエラーメッセージを処理
+      if (response.status === 401 && responseText.trim()) {
+        let errorMessage = responseText.trim()
+
+        // 英語のメッセージを日本語に変換
+        if (errorMessage === 'Invalid Email or password.') {
+          errorMessage = 'メールアドレスまたはパスワードが正しくありません'
+        }
+
+        return {
+          errors: [errorMessage],
+          success: '',
+        }
+      }
+
+      if (
+        responseText.includes('<html') ||
+        responseText.includes('<!DOCTYPE')
+      ) {
+        return {
+          errors: [
+            'サーバーエラーが発生しました。管理者にお問い合わせください。',
+          ],
+          success: '',
+        }
+      }
+
       return {
-        errors: ['サーバーからの応答が正しくありません'],
+        errors: [
+          'サーバーエラーが発生しました。しばらく時間をおいて再度お試しください。',
+        ],
         success: '',
       }
     }
 
     if (response.ok) {
-      // まずAuthorizationヘッダーを試す
       let authToken = response.headers.get('Authorization')
 
       if (!authToken) {
         try {
-          // 同じリクエストをもう一度実行してheadersを確認
           const directResponse = await fetch(apiUrl, {
             method: 'POST',
             headers: {
@@ -180,7 +255,6 @@ export async function loginUser(data: LoginData): Promise<ApiResponse> {
             }),
           })
 
-          // 直接ヘッダーアクセスを試す
           const directToken =
             directResponse.headers.get('authorization') ||
             directResponse.headers.get('Authorization')
@@ -200,8 +274,20 @@ export async function loginUser(data: LoginData): Promise<ApiResponse> {
       }
     }
 
+    if (response.status === 401) {
+      return {
+        errors: [
+          apiData.message || 'メールアドレスまたはパスワードが正しくありません',
+        ],
+        success: '',
+      }
+    }
+
     return {
-      errors: [apiData.message || 'ログインに失敗しました'],
+      errors: [
+        apiData.message ||
+          'ログイン情報が正しくありません。入力内容をご確認ください。',
+      ],
       success: '',
     }
   } catch (error: unknown) {
@@ -212,6 +298,18 @@ export async function loginUser(data: LoginData): Promise<ApiResponse> {
       success: '',
     }
   }
+}
+
+// フィールド名を日本語に変換するヘルパー関数
+function getFieldNameInJapanese(field: string): string {
+  const fieldMap: { [key: string]: string } = {
+    email: 'メールアドレス',
+    password: 'パスワード',
+    password_confirmation: 'パスワード(確認)',
+    name: 'ユーザー名',
+  }
+
+  return fieldMap[field] || field
 }
 
 export async function logoutUser(): Promise<ApiResponse> {
