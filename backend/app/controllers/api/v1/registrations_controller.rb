@@ -6,6 +6,7 @@ module Api
 
 
       def create
+
         build_resource(sign_up_params)
 
         if resource.save
