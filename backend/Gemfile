@@ -12,6 +12,9 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 # 認証・API基盤
 gem 'devise'
+gem 'omniauth'
+gem 'omniauth-rails_csrf_protection'
+gem 'omniauth-google-oauth2'
 gem 'devise-jwt'
 gem 'jsonapi-serializer'
 gem 'omniauth'
