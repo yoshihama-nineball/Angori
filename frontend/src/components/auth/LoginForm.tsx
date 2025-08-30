@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Box,
   TextField,
@@ -17,6 +19,7 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { loginUser, type ApiResponse } from '../../../lib/api/auth'
 import { useAuthStore } from '../../../lib/stores/authStore'
+import { LoginFormValues, LoginSchema } from '@/schemas/user'
 
 const LoginForm = () => {
   const router = useRouter()
@@ -26,33 +29,49 @@ const LoginForm = () => {
     success: '',
   })
   const [showPassword, setShowPassword] = useState(false)
-  // const [rememberMe, setRememberMe] = useState(false)
   const { setAuthenticated } = useAuthStore()
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  // React Hook Form setup
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    mode: 'onChange', // リアルタイムバリデーション
+  })
+
+  const onSubmit = async (data: LoginFormValues) => {
     setLoading(true)
     setResponse({ errors: [], success: '' })
 
-    const formData = new FormData(e.currentTarget)
-    const data = {
-      email: formData.get('email') as string,
-      password: formData.get('password') as string,
-    }
+    try {
+      const result = await loginUser(data)
+      setResponse(result)
 
-    const result = await loginUser(data)
-    setResponse(result)
-    setLoading(false)
-
-    if (result.success) {
-      setAuthenticated(true) // 即座に認証状態更新
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 2000) // リダイレクトのみ2秒後
+      if (result.success) {
+        setAuthenticated(true)
+        reset() // フォームをリセット
+        setTimeout(() => {
+          router.push('/dashboard')
+        }, 2000)
+      }
+    } catch {
+      setResponse({
+        errors: ['ログイン処理中にエラーが発生しました'],
+        success: '',
+      })
+    } finally {
+      setLoading(false)
     }
   }
 
-  const hasErrors = response.errors && response.errors.length > 0
+  const hasServerErrors = response.errors && response.errors.length > 0
   const hasSuccess = response.success && response.success.length > 0
 
   return (
@@ -104,7 +123,7 @@ const LoginForm = () => {
             </Typography>
           </Box>
 
-          <form onSubmit={handleSubmit} autoComplete="off">
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
             <Box
               sx={{
                 display: 'flex',
@@ -112,8 +131,8 @@ const LoginForm = () => {
                 gap: { xs: 4, sm: 6 },
               }}
             >
+              {/* メールアドレスフィールド */}
               <TextField
-                name="email"
                 label="メールアドレス"
                 type="email"
                 fullWidth
@@ -121,19 +140,25 @@ const LoginForm = () => {
                 placeholder="example@example.com"
                 size="medium"
                 autoComplete="email"
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                {...register('email')}
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
 
+              {/* パスワードフィールド */}
               <TextField
-                name="password"
                 label="パスワード"
                 type={showPassword ? 'text' : 'password'}
                 fullWidth
                 required
                 size="medium"
                 autoComplete="current-password"
+                error={!!errors.password}
+                helperText={errors.password?.message}
+                {...register('password')}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -150,6 +175,7 @@ const LoginForm = () => {
                         onClick={() => setShowPassword(!showPassword)}
                         edge="end"
                         size="small"
+                        aria-label="パスワードの表示切替"
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
@@ -158,28 +184,8 @@ const LoginForm = () => {
                 }}
               />
 
-              {/* ログイン状態を保持する */}
-              {/* <Box>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                      size="small"
-                      sx={{ mt: -1 }}
-                    />
-                  }
-                  label={
-                    <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
-                      ログイン状態を保持する
-                    </Typography>
-                  }
-                  sx={{ alignItems: 'flex-start', ml: 0, mt: -1 }}
-                />
-              </Box> */}
-
-              {/* エラーメッセージ表示 */}
-              {hasErrors && (
+              {/* サーバーエラーメッセージ表示 */}
+              {hasServerErrors && (
                 <Box>
                   {response.errors.map((error, index) => (
                     <Alert severity="error" key={index} sx={{ mb: 1 }}>
@@ -203,20 +209,24 @@ const LoginForm = () => {
                 type="submit"
                 variant="contained"
                 size="large"
-                disabled={loading}
+                disabled={loading || isSubmitting}
                 sx={{
                   py: { xs: 1.2, sm: 1.5 },
                   mt: { xs: -1, sm: -2 },
                   fontSize: { xs: '1rem', sm: '1.1rem' },
-                  backgroundColor: !loading ? 'primary.main' : 'grey.300',
+                  backgroundColor: !(loading || isSubmitting)
+                    ? 'primary.main'
+                    : 'grey.300',
                   '&:hover': {
-                    backgroundColor: !loading ? 'primary.dark' : 'grey.400',
+                    backgroundColor: !(loading || isSubmitting)
+                      ? 'primary.dark'
+                      : 'grey.400',
                   },
                 }}
               >
-                {loading ? (
+                {loading || isSubmitting ? (
                   <>
-                    <CircularProgress size={16} />
+                    <CircularProgress size={16} sx={{ mr: 1 }} />
                     ログイン中...
                   </>
                 ) : (
@@ -226,22 +236,6 @@ const LoginForm = () => {
 
               {/* パスワードを忘れた場合のリンク */}
               <Box sx={{ textAlign: 'center' }}>
-                {/* <Link
-                  href="/auth/forgot-password"
-                  sx={{
-                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                    textDecoration: 'underline',
-                    color: 'text.secondary',
-                    display: 'block',
-                    mb: 1,
-                    '&:hover': {
-                      color: 'primary.main',
-                    },
-                  }}
-                >
-                  パスワードを忘れた場合
-                </Link> */}
-
                 <Typography
                   variant="body2"
                   color="text.secondary"
@@ -263,7 +257,7 @@ const LoginForm = () => {
                 </Typography>
               </Box>
             </Box>
-          </form>
+          </Box>
         </Paper>
       </Box>
     </Container>
