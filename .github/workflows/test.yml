@@ -57,6 +57,8 @@ jobs:
         bundler-cache: false
         working-directory: backend
 
+    - run: bundle install
+
     - name: Setup database
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/angori_test
