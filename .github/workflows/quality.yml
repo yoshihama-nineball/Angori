@@ -42,6 +42,7 @@ jobs:
       with:
         ruby-version: '3.2.3'
         bundler-cache: true
+        cache-version: 2
         working-directory: backend
 
     - run: bundle exec rubocop
