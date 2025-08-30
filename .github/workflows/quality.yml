@@ -41,8 +41,7 @@ jobs:
     - uses: ruby/setup-ruby@v1.203.0  # 最新版に更新
       with:
         ruby-version: '3.2.3'
-        bundler-cache: false
+        bundler-cache: true
         working-directory: backend
 
-    - run: bundle install
     - run: bundle exec rubocop
