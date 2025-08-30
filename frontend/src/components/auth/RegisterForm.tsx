@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Box,
   TextField,
@@ -21,6 +23,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { registerUser, type ApiResponse } from '../../../lib/api/auth'
 import TermsModal from './TermsModal'
 import PrivacyModal from './PrivacyModal'
+import { RegisterFormValues, RegisterSchema } from '@/schemas/user'
 
 const RegisterForm = () => {
   const router = useRouter()
@@ -36,6 +39,26 @@ const RegisterForm = () => {
   const [termsModalOpen, setTermsModalOpen] = useState(false)
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false)
 
+  // React Hook Form setup
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(RegisterSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      password_confirmation: '',
+    },
+    mode: 'onChange', // リアルタイムバリデーション
+  })
+
+  // パスワードの値を監視（確認用パスワードのバリデーションで使用）
+  // const watchedPassword = watch('password')
+
   // 成功時のリダイレクト処理
   React.useEffect(() => {
     if (response.success) {
@@ -46,25 +69,36 @@ const RegisterForm = () => {
     }
   }, [response.success, router])
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const onSubmit = async (data: RegisterFormValues) => {
+    if (!agreeToTerms) {
+      setResponse({
+        errors: ['利用規約とプライバシーポリシーに同意する必要があります'],
+        success: '',
+      })
+      return
+    }
+
     setLoading(true)
     setResponse({ errors: [], success: '' })
 
-    const formData = new FormData(e.currentTarget)
-    const data = {
-      name: formData.get('name') as string,
-      email: formData.get('email') as string,
-      password: formData.get('password') as string,
-      password_confirmation: formData.get('password_confirmation') as string,
-    }
+    try {
+      const result = await registerUser(data)
+      setResponse(result)
 
-    const result = await registerUser(data)
-    setResponse(result)
-    setLoading(false)
+      if (result.success) {
+        reset() // フォームをリセット
+      }
+    } catch {
+      setResponse({
+        errors: ['登録処理中にエラーが発生しました'],
+        success: '',
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const hasErrors = response.errors && response.errors.length > 0
+  const hasServerErrors = response.errors && response.errors.length > 0
   const hasSuccess = response.success && response.success.length > 0
 
   return (
@@ -116,7 +150,7 @@ const RegisterForm = () => {
               </Typography>
             </Box>
 
-            <form onSubmit={handleSubmit} autoComplete="off">
+            <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
               <Box
                 sx={{
                   display: 'flex',
@@ -124,42 +158,53 @@ const RegisterForm = () => {
                   gap: { xs: 4, sm: 6 },
                 }}
               >
+                {/* ユーザー名フィールド */}
                 <TextField
-                  name="name"
                   label="ユーザー名"
                   fullWidth
                   required
                   placeholder="ニックネームでOK"
                   size="medium"
-                  autoComplete="off"
+                  autoComplete="username"
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                  {...register('name')}
                   InputLabelProps={{
                     shrink: true,
                   }}
                 />
 
+                {/* メールアドレスフィールド */}
                 <TextField
-                  name="email"
                   label="メールアドレス"
                   type="email"
                   fullWidth
                   required
                   placeholder="example@example.com"
                   size="medium"
-                  autoComplete="off"
+                  autoComplete="email"
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
+                  {...register('email')}
                   InputLabelProps={{
                     shrink: true,
                   }}
                 />
 
+                {/* パスワードフィールド */}
                 <TextField
-                  name="password"
                   label="パスワード"
                   type={showPassword ? 'text' : 'password'}
                   fullWidth
                   required
-                  helperText="8文字以上、大文字・小文字・数字を含む"
                   size="medium"
                   autoComplete="new-password"
+                  error={!!errors.password}
+                  helperText={
+                    errors.password?.message ||
+                    '8文字以上、大文字・小文字・数字を含む'
+                  }
+                  {...register('password')}
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -176,6 +221,7 @@ const RegisterForm = () => {
                           onClick={() => setShowPassword(!showPassword)}
                           edge="end"
                           size="small"
+                          aria-label="パスワードの表示切替"
                         >
                           {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
@@ -184,14 +230,17 @@ const RegisterForm = () => {
                   }}
                 />
 
+                {/* パスワード確認フィールド */}
                 <TextField
-                  name="password_confirmation"
                   label="パスワード（確認）"
                   type={showPasswordConfirmation ? 'text' : 'password'}
                   fullWidth
                   required
                   size="medium"
                   autoComplete="new-password"
+                  error={!!errors.password_confirmation}
+                  helperText={errors.password_confirmation?.message}
+                  {...register('password_confirmation')}
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -212,6 +261,7 @@ const RegisterForm = () => {
                           }
                           edge="end"
                           size="small"
+                          aria-label="確認パスワードの表示切替"
                         >
                           {showPasswordConfirmation ? (
                             <VisibilityOff />
@@ -224,8 +274,8 @@ const RegisterForm = () => {
                   }}
                 />
 
-                {/* エラーメッセージ表示 */}
-                {hasErrors && (
+                {/* サーバーエラーメッセージ表示 */}
+                {hasServerErrors && (
                   <Box>
                     {response.errors.map((error, index) => (
                       <Alert severity="error" key={index} sx={{ mb: 1 }}>
@@ -286,22 +336,26 @@ const RegisterForm = () => {
                   type="submit"
                   variant="contained"
                   size="large"
-                  disabled={!agreeToTerms || loading}
+                  disabled={!agreeToTerms || loading || isSubmitting}
                   sx={{
                     py: { xs: 1.2, sm: 1.5 },
                     mt: { xs: -1, sm: -2 },
                     fontSize: { xs: '1rem', sm: '1.1rem' },
                     backgroundColor:
-                      agreeToTerms && !loading ? 'primary.main' : 'grey.300',
+                      agreeToTerms && !(loading || isSubmitting)
+                        ? 'primary.main'
+                        : 'grey.300',
                     '&:hover': {
                       backgroundColor:
-                        agreeToTerms && !loading ? 'primary.dark' : 'grey.400',
+                        agreeToTerms && !(loading || isSubmitting)
+                          ? 'primary.dark'
+                          : 'grey.400',
                     },
                   }}
                 >
-                  {loading ? (
+                  {loading || isSubmitting ? (
                     <>
-                      <CircularProgress size={16} />
+                      <CircularProgress size={16} sx={{ mr: 1 }} />
                       登録中...
                     </>
                   ) : (
@@ -331,7 +385,7 @@ const RegisterForm = () => {
                   </a>
                 </Typography>
               </Box>
-            </form>
+            </Box>
           </Paper>
         </Box>
       </Container>
