@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
-  # ヘルスチェック用のルートパス
-  root to: proc { [200, {}, ['OK']] }
+  devise_for :users
 
   get 'up' => 'rails/health#show', as: :rails_health_check
   get 'service-worker' => 'rails/pwa#service_worker', as: :pwa_service_worker
