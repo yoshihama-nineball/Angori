@@ -33,11 +33,18 @@ module Api
       end
 
       def render_error_response
-        render json: {
-          status: 'error',
-          message: '登録に失敗しました',
-          errors: resource.errors.full_messages
-        }, status: :unprocessable_entity
+        if resource.errors[:email].any? { |error| error.include?('taken') }
+          render json: {
+            status: 'error',
+            message: 'メールアドレスが重複しています'
+          }, status: :conflict
+        else
+          render json: {
+            status: 'error',
+            message: '登録に失敗しました',
+            errors: resource.errors.full_messages
+          }, status: :unprocessable_entity
+        end
       end
     end
   end
