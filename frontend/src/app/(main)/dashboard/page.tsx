@@ -118,7 +118,9 @@ const TopPage: React.FC = () => {
           </Box>
 
           {/* 今日のアドバイス（青い1件のみ） */}
-          <OnePointAdviceSection />
+          <Box sx={{ mb: 3 }}>
+            <OnePointAdviceSection />
+          </Box>
         </Box>
       </Box>
     </AuthGuard>
