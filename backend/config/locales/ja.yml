@@ -1,8 +1,15 @@
-
-  activerecord:
-    errors:
-      messages:
-        reminder_category_inclusion: "カテゴリが無効です"
-        time_format: "時刻の形式が無効です"
-        contact_category_inclusion: "カテゴリが無効です"
-        email_format: "メールアドレスの形式が無効です"
+activerecord:
+  attributes:
+    user:
+      email: "メールアドレス"
+  errors:
+    messages:
+      reminder_category_inclusion: "カテゴリが無効です"
+      time_format: "時刻の形式が無効です"
+      contact_category_inclusion: "カテゴリが無効です"
+      email_format: "メールアドレスの形式が無効です"
+    models:
+      user:
+        attributes:
+          email:
+            taken: "は既に使用されています"
