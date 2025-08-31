@@ -58,7 +58,6 @@ export const Sidebar = () => {
 
   return (
     <Box
-      // Sidebar.tsx の Box sx を修正
       sx={{
         width: 240,
         height: '100%',
@@ -69,6 +68,16 @@ export const Sidebar = () => {
         top: 'var(--header-height, 64px)',
         zIndex: 1000,
         display: { xs: 'none', md: 'block' },
+        // CSS変数を設定
+        '--sidebar-width': { xs: '0px', md: '240px' },
+      }}
+      ref={(el) => {
+        if (el) {
+          document.documentElement.style.setProperty(
+            '--sidebar-width',
+            window.innerWidth >= 900 ? '240px' : '0px'
+          )
+        }
       }}
     >
       <List sx={{ pt: 2 }}>
