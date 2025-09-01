@@ -15,9 +15,9 @@ module CalmingPointDisplay
     '禅マスターゴリラ 🦍✨'
   end
 
-def next_level_points
-  (current_level + 1) * 100
-end
+  def next_level_points
+    current_level * 100
+  end
 
   def points_to_next_level
     next_level_points - total_points
