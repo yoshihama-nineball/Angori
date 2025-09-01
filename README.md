@@ -81,6 +81,37 @@ open http://localhost:3001  # バックエンドAPI
 - **ホットリロード対応**
 - **ワンコマンドセットアップ**
 
+# Google Analytics 4 設定
+
+## 📊 Google Analytics 4 設定
+
+### 概要
+ユーザー行動分析のためにGoogle Analytics 4 (GA4)を導入しています。
+
+### 環境変数設定
+
+#### 必須環境変数
+```bash
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-ZE70CVCRW5
+```
+
+#### 設定方法
+```bash
+# ローカル開発環境（.env.localに追加）
+echo "NEXT_PUBLIC_GA_MEASUREMENT_ID=G-ZE70CVCRW5" >> frontend/.env.local
+
+# Docker環境は設定済み
+# Vercel本番環境は環境変数で設定済み
+```
+
+### トラッキング対象
+- ページビュー（全ページ自動）
+- スクロール率・離脱クリック
+- ファイルダウンロード
+
+### データ確認
+[Google Analytics](https://analytics.google.com) → 「アンゴリ」プロパティ → リアルタイムレポート
+
 ## 📱 デモ・アクセス先
 
 | サービス | URL | 説明 |
