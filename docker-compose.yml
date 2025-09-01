@@ -12,6 +12,7 @@ services:
       - /app/node_modules  # node_modules除外
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:5000
+      - NEXT_PUBLIC_GA_MEASUREMENT_ID=G-ZE70CVCRW5
       - CHOKIDAR_USEPOLLING=true  # ホットリロード用
       - WATCHPACK_POLLING=true    # ホットリロード用
     depends_on:
