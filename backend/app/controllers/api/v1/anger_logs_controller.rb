@@ -13,6 +13,7 @@ module Api
 
       # GET /api/v1/anger_logs/:id
       def show
+        current_user.calming_point&.add_reflection_points!
         render json: anger_log_json(@anger_log)
       end
 

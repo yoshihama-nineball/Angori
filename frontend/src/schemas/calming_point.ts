@@ -20,8 +20,11 @@ export const CalmingPointAPIResponseSchema = z.object({
   milestone_flags: z.record(z.string(), z.boolean()).nullable(),
   created_at: z.string(),
   updated_at: z.string(),
+  // 追加する新しいプロパティ
+  points_to_next_level: z.number().optional(),
+  next_level_points: z.number().optional(),
+  level_name: z.string().optional(),
 })
-
 export const LevelInfoSchema = z.object({
   level: z.number(),
   name: z.string(),
