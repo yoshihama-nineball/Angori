@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_16_024311) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_01_074352) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -56,6 +56,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_16_024311) do
     t.jsonb "milestone_flags"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "last_calculated_base_points", default: 0
+    t.date "last_reflection_date"
+    t.date "last_improvement_check_date"
+    t.jsonb "awarded_bonuses", default: {}
     t.index ["current_level"], name: "index_calming_points_on_current_level"
     t.index ["total_points"], name: "index_calming_points_on_total_points"
     t.index ["user_id"], name: "index_calming_points_on_user_id", unique: true
