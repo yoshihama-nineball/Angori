@@ -95,10 +95,10 @@ const TopPage: React.FC = () => {
               <PointsDisplay
                 points={calmingPoints?.total_points || 0}
                 level={calmingPoints?.current_level || 1}
-                levelName="修行中ゴリラ 🦍🧘" // 一時的に固定値
+                levelName={calmingPoints?.level_name || '修行中ゴリラ 🦍🧘'}
                 streakDays={calmingPoints?.streak_days || 0}
-                pointsToNextLevel={25} // 一時的に固定値
-                nextLevelPoints={400} // 一時的に固定値
+                pointsToNextLevel={calmingPoints?.points_to_next_level || 100}
+                nextLevelPoints={calmingPoints?.next_level_points || 100}
               />
             </Box>
 

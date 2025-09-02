@@ -1,30 +1,19 @@
 import { z } from 'zod'
-
-// AngerLog型の定義
 export const AngerLogSchema = z.object({
   id: z.number(),
-  user_id: z.number().optional(), // 任意にする
+  user_id: z.number().optional(),
   occurred_at: z.string(),
-  location: z.string().optional(),
+  location: z.string().nullable(),
   situation_description: z.string(),
-  trigger_words: z.string().optional(),
-  // emotions_felt は record か array かを柔軟に対応
-  emotions_felt: z
-    .union([
-      z.record(z.string(), z.boolean()), // オブジェクト形式
-      z.array(z.string()), // 配列形式
-      z.null(),
-    ])
-    .optional(),
+  trigger_words: z.string().nullable(),
+  emotions_felt: z.record(z.string(), z.boolean()).nullable(), // record形式、null許可
   anger_level: z.number().min(1).max(10),
-  // perception は null を許可
   perception: z.string().nullable(),
-  ai_advice: z.string().optional(),
-  reflection: z.string().optional().nullable(),
+  ai_advice: z.string().nullable(),
+  reflection: z.string().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
 })
-
 export type AngerLog = z.infer<typeof AngerLogSchema>
 
 // API レスポンス用のスキーマ
