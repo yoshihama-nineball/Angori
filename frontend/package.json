@@ -24,7 +24,7 @@
     "@hookform/resolvers": "^5.2.1",
     "@mui/icons-material": "^6.0.0",
     "@mui/material": "^6.0.0",
-    "@mui/x-data-grid": "^6.0.0",
+    "@mui/x-data-grid": "^8.11.0",
     "@mui/x-date-pickers": "^8.10.0",
     "@next/third-parties": "^15.5.2",
     "@types/d3": "^7.4.3",
