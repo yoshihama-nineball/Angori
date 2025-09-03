@@ -1,4 +1,7 @@
 class ApplicationController < ActionController::API
+  # OmniAuth用にCSRF保護を条件付きで無効化
+  protect_from_forgery with: :null_session, if: -> { request.format.json? }
+  
   before_action :authenticate_user!, unless: :devise_controller?
   before_action :configure_permitted_parameters, if: :devise_controller?
 

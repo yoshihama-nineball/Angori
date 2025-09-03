@@ -26,18 +26,23 @@ Devise.setup do |config|
   # with default "from" parameter.
   config.mailer_sender = 'please-change-me-at-config-initializers-devise@example.com'
 
-  config.omniauth :google_oauth2,
-                  Rails.application.credentials.google[:client_id],
-                  Rails.application.credentials.google[:client_secret],
-                  {
-                    scope: %w[email profile],
-                    prompt: 'select_account',
-                    image_aspect_ratio: 'square',
-                    image_size: 50,
-                    access_type: 'online',
-                    name: 'google_oauth2'
-                  }
-
+  # OmniAuth設定（環境変数が設定されている場合のみ有効化）
+  if ENV['GOOGLE_CLIENT_ID'].present? && ENV['GOOGLE_CLIENT_SECRET'].present?
+    config.omniauth :google_oauth2, 
+      ENV['GOOGLE_CLIENT_ID'],
+      ENV['GOOGLE_CLIENT_SECRET'],
+      {
+        scope: ['email', 'profile'],
+        prompt: 'select_account',
+        image_aspect_ratio: 'square',
+        image_size: 50,
+        access_type: 'online',
+        name: 'google_oauth2'
+      }
+  else
+    # Google OAuth環境変数が未設定の場合はスキップ
+    Rails.logger.info "Google OAuth環境変数が未設定のため、Google認証を無効化しています"
+  end
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'
 
