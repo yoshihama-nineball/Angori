@@ -18,23 +18,14 @@ export type AngerLogApiResponse = {
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
 export const getAuthToken = (): string | null => {
-  if (typeof document === 'undefined') return null
+  if (typeof window === 'undefined') return null
 
-  const cookies = document.cookie.split(';')
-
-  const authCookie = cookies.find((cookie) =>
-    cookie.trim().startsWith('auth_token=')
-  )
-
-  if (authCookie) {
-    const token = authCookie.split('=')[1]
-
-    if (token && token.startsWith('Bearer ')) {
-      return token
-    } else {
-      return `Bearer ${token}`
-    }
+  // localStorageからトークンを取得（統一方式）
+  const token = localStorage.getItem('token')
+  if (token) {
+    return token.startsWith('Bearer ') ? token : `Bearer ${token}`
   }
+
   return null
 }
 

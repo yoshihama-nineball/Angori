@@ -3,6 +3,7 @@ module Api
     class AngerLogsController < ApplicationController
       include AngerLogsConcern
 
+      before_action :authenticate_user!
       before_action :set_anger_log, only: %i[show update destroy]
 
       # GET /api/v1/anger_logs
