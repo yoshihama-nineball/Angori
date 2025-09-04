@@ -18,6 +18,12 @@ const nextConfig: NextConfig = {
       return config
     },
   }),
+  images: {
+    domains: [
+      'lh3.googleusercontent.com', // Google画像用
+      'googleusercontent.com'      // 念のため追加
+    ],
+  },
 }
 
 export default nextConfig
