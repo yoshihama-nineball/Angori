@@ -21,7 +21,7 @@ const nextConfig: NextConfig = {
   images: {
     domains: [
       'lh3.googleusercontent.com', // Google画像用
-      'googleusercontent.com'      // 念のため追加
+      'googleusercontent.com', // 念のため追加
     ],
   },
 }

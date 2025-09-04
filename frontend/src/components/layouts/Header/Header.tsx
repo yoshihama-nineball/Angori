@@ -17,10 +17,11 @@ import Button from '@mui/material/Button'
 import { logoutUser } from '../../../../lib/api/auth'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '../../../../lib/stores/authStore'
+import Image from 'next/image'
 
 export default function Header() {
   const router = useRouter()
-  const { isAuthenticated, setAuthenticated, initialize } = useAuthStore()
+  const { isAuthenticated, setAuthenticated, initialize, user } = useAuthStore()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [logoutDialogOpen, setLogoutDialogOpen] = React.useState(false)
 
@@ -112,7 +113,22 @@ export default function Header() {
                   height: { xs: 40, md: 48 },
                 }}
               >
-                <AccountCircle />
+                {user?.google_image_url ? (
+                  <Image
+                    src={user.google_image_url}
+                    alt="プロフィール画像"
+                    width={35} // 必須プロパティを追加
+                    height={35} //
+                    style={{
+                      // width: '100%',
+                      // height: '100%',
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                    }}
+                  />
+                ) : (
+                  <AccountCircle />
+                )}
               </IconButton>
               <Menu
                 id="menu-appbar"

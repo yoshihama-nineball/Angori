@@ -21,23 +21,14 @@ export type LoginData = {
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
 export const getAuthToken = (): string | null => {
-  if (typeof document === 'undefined') return null
+  if (typeof window === 'undefined') return null
 
-  const cookies = document.cookie.split(';')
-
-  const authCookie = cookies.find((cookie) =>
-    cookie.trim().startsWith('auth_token=')
-  )
-
-  if (authCookie) {
-    const token = authCookie.split('=')[1]
-
-    if (token && token.startsWith('Bearer ')) {
-      return token
-    } else {
-      return `Bearer ${token}`
-    }
+  // localStorageからトークンを取得（統一方式）
+  const token = localStorage.getItem('token')
+  if (token) {
+    return token.startsWith('Bearer ') ? token : `Bearer ${token}`
   }
+
   return null
 }
 
@@ -111,7 +102,8 @@ export async function registerUser(data: RegisterData): Promise<ApiResponse> {
       const authToken = response.headers.get('Authorization')
 
       if (authToken) {
-        document.cookie = `auth_token=${authToken}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=strict`
+        // localStorage に保存（Google認証と統一）
+        localStorage.setItem('token', authToken)
       }
 
       return {
@@ -205,15 +197,11 @@ export async function loginUser(data: LoginData): Promise<ApiResponse> {
     try {
       apiData = JSON.parse(responseText)
     } catch {
-      // プレーンテキストのエラーメッセージを処理
       if (response.status === 401 && responseText.trim()) {
         let errorMessage = responseText.trim()
-
-        // 英語のメッセージを日本語に変換
         if (errorMessage === 'Invalid Email or password.') {
           errorMessage = 'メールアドレスまたはパスワードが正しくありません'
         }
-
         return {
           errors: [errorMessage],
           success: '',
@@ -266,11 +254,12 @@ export async function loginUser(data: LoginData): Promise<ApiResponse> {
       }
 
       if (authToken) {
-        document.cookie = `auth_token=${authToken}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=strict`
+        // localStorage に保存（Google認証と統一）
+        localStorage.setItem('token', authToken)
       }
       return {
         errors: [],
-        success: '🎉 ログインしました！ダッシュボードにリダイレクトします...',
+        success: 'ログインしました！ダッシュボードにリダイレクトします...',
       }
     }
 
@@ -314,6 +303,8 @@ function getFieldNameInJapanese(field: string): string {
 
 export async function logoutUser(): Promise<ApiResponse> {
   try {
+    // localStorage と Cookie の両方をクリア
+    localStorage.removeItem('token')
     document.cookie = 'auth_token=; path=/; max-age=0; samesite=strict'
 
     return {
@@ -328,113 +319,22 @@ export async function logoutUser(): Promise<ApiResponse> {
   }
 }
 
-// Googleログイン用の関数
 export async function googleLogin(): Promise<ApiResponse> {
-  return new Promise((resolve) => {
+  try {
     const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-    
-    // ポップアップウィンドウを開く
-    const popup = window.open(
-      `${API_BASE}/api/v1/users/auth/google_oauth2`,
-      'google-oauth',
-      'width=500,height=600,scrollbars=yes,resizable=yes'
-    )
 
-    if (!popup) {
-      resolve({
-        errors: ['ポップアップがブロックされました。ポップアップを許可してください。'],
-        success: '',
-      })
-      return
+    // 直接リダイレクトする方式
+    window.location.href = `${API_BASE}/users/auth/google_oauth2`
+
+    // この関数は実際には完了しない（リダイレクトするため）
+    return {
+      errors: [],
+      success: '',
     }
-
-    // ポップアップの監視
-    const checkClosed = setInterval(() => {
-      if (popup.closed) {
-        clearInterval(checkClosed)
-        
-        // ポップアップが閉じられた場合の処理
-        const urlParams = new URLSearchParams(window.location.search)
-        const token = urlParams.get('token')
-        const success = urlParams.get('success')
-        const error = urlParams.get('error')
-
-        if (success === 'true' && token) {
-          // トークンをクッキーに保存
-          document.cookie = `auth_token=Bearer ${token}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=strict`
-          
-          resolve({
-            errors: [],
-            success: 'Googleログインが完了しました！ダッシュボードにリダイレクトします...',
-          })
-        } else {
-          let errorMessage = 'Googleログインに失敗しました。'
-          
-          switch (error) {
-            case 'login_failed':
-              errorMessage = 'ログインに失敗しました。再度お試しください。'
-              break
-            case 'oauth_failed':
-              errorMessage = 'Google認証に失敗しました。'
-              break
-            case 'server_error':
-              errorMessage = 'サーバーエラーが発生しました。しばらく時間をおいて再度お試しください。'
-              break
-          }
-          
-          resolve({
-            errors: [errorMessage],
-            success: '',
-          })
-        }
-      }
-    }, 1000)
-
-    // メッセージ受信の監視
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin && 
-          event.origin !== API_BASE) {
-        return
-      }
-
-      if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
-        clearInterval(checkClosed)
-        popup.close()
-        window.removeEventListener('message', handleMessage)
-        
-        if (event.data.token) {
-          document.cookie = `auth_token=Bearer ${event.data.token}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=strict`
-        }
-        
-        resolve({
-          errors: [],
-          success: 'Googleログインが完了しました！ダッシュボードにリダイレクトします...',
-        })
-      } else if (event.data.type === 'GOOGLE_AUTH_ERROR') {
-        clearInterval(checkClosed)
-        popup.close()
-        window.removeEventListener('message', handleMessage)
-        
-        resolve({
-          errors: [event.data.error || 'Googleログインに失敗しました。'],
-          success: '',
-        })
-      }
+  } catch {
+    return {
+      errors: ['Googleログインの開始に失敗しました'],
+      success: '',
     }
-
-    window.addEventListener('message', handleMessage)
-
-    // タイムアウト処理
-    setTimeout(() => {
-      if (!popup.closed) {
-        popup.close()
-        clearInterval(checkClosed)
-        window.removeEventListener('message', handleMessage)
-        resolve({
-          errors: ['ログインがタイムアウトしました。再度お試しください。'],
-          success: '',
-        })
-      }
-    }, 30000)
-  })
+  }
 }

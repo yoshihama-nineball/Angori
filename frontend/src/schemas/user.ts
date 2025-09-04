@@ -38,6 +38,7 @@ export const UserAPIResponseSchema = z.object({
   name: z.string(),
   created_at: z.string(),
   updated_at: z.string(),
+  google_image_url: z.string().optional(),
 })
 
 // 型エクスポート
