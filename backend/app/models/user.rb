@@ -28,6 +28,15 @@ class User < ApplicationRecord
     find_or_create_oauth_user(auth)
   end
 
+  def self.from_google_info(google_info)
+    where(provider: 'google_oauth2', uid: google_info['id']).first_or_create do |user|
+      user.email = google_info['email']
+      user.name = google_info['name']
+      user.google_image_url = google_info['picture']
+      user.password = Devise.friendly_token[0, 20]
+    end
+  end
+
   # Googleログインユーザーかどうかを判定
   def google_user?
     provider == 'google_oauth2'

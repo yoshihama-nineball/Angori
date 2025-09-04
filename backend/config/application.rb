@@ -43,7 +43,7 @@ module Backend
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
-    
+
     # OmniAuth用にセッション機能を追加（APIモードのまま）
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use ActionDispatch::Session::CookieStore, {
@@ -53,9 +53,16 @@ module Backend
       same_site: :lax
     }
     config.session_store :cookie_store, key: '_backend_session'
-    
+
     # CSRF保護を無効化（API用）
     config.force_ssl = false
     config.middleware.delete ActionDispatch::ContentSecurityPolicy::Middleware
+
+    config.middleware.use Warden::Manager do |manager|
+      manager.default_strategies :jwt_authenticatable
+      manager.failure_app = lambda { |_env|
+        [401, { 'Content-Type' => 'application/json' }, [{ error: 'Unauthorized' }.to_json]]
+      }
+    end
   end
 end
