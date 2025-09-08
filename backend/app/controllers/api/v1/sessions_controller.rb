@@ -1,45 +1,63 @@
 module Api
   module V1
-    class SessionsController < Devise::SessionsController
-      respond_to :json
-
+    class SessionsController < ApplicationController
       def create
-        self.resource = warden.authenticate!(auth_options)
+        user_params = params.require(:user).permit(:email, :password)
+        user = User.find_by(email: user_params[:email])
 
-        return unless resource
-
-        render json: {
-          status: 'success',
-          message: 'ログインしました',
-          user: UserSerializer.new(resource).serializable_hash[:data][:attributes]
-        }, status: :ok
+        if user&.valid_password?(user_params[:password])
+          handle_successful_login(user)
+        else
+          handle_failed_login
+        end
       end
 
       def destroy
-        if current_user
-          render json: {
-            status: 'success',
-            message: 'ログアウトしました'
-          }, status: :ok
-        else
-          render json: {
-            status: 'error',
-            message: 'ログインしていません'
-          }, status: :unauthorized
-        end
+        render json: {
+          status: 'success',
+          message: 'ログアウトしました'
+        }, status: :ok
       end
 
       private
 
-      def auth_options
-        { scope: :user, recall: "#{controller_path}#failure" }
+      def handle_successful_login(user)
+        token = generate_jwt_token(user)
+        response.headers['Authorization'] = "Bearer #{token}"
+
+        render json: {
+          status: 'success',
+          message: 'ログインしました'
+        }, status: :ok
       end
 
-      def failure
+      def handle_failed_login
         render json: {
           status: 'error',
           message: 'メールアドレスまたはパスワードが正しくありません'
         }, status: :unauthorized
+      end
+
+      def generate_jwt_token(user)
+        payload = build_jwt_payload(user)
+        secret_key = jwt_secret_key
+
+        JWT.encode(payload, secret_key, 'HS256')
+      end
+
+      def build_jwt_payload(user)
+        {
+          sub: user.id,
+          scp: 'user',
+          aud: nil,
+          iat: Time.current.to_i,
+          exp: 24.hours.from_now.to_i,
+          jti: SecureRandom.uuid
+        }
+      end
+
+      def jwt_secret_key
+        ENV['DEVISE_JWT_SECRET_KEY'] || Rails.application.credentials.devise_jwt_secret_key
       end
     end
   end

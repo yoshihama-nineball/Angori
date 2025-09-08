@@ -21,23 +21,14 @@ export type LoginData = {
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
 export const getAuthToken = (): string | null => {
-  if (typeof document === 'undefined') return null
+  if (typeof window === 'undefined') return null
 
-  const cookies = document.cookie.split(';')
-
-  const authCookie = cookies.find((cookie) =>
-    cookie.trim().startsWith('auth_token=')
-  )
-
-  if (authCookie) {
-    const token = authCookie.split('=')[1]
-
-    if (token && token.startsWith('Bearer ')) {
-      return token
-    } else {
-      return `Bearer ${token}`
-    }
+  // localStorageからトークンを取得（統一方式）
+  const token = localStorage.getItem('token')
+  if (token) {
+    return token.startsWith('Bearer ') ? token : `Bearer ${token}`
   }
+
   return null
 }
 
@@ -111,7 +102,8 @@ export async function registerUser(data: RegisterData): Promise<ApiResponse> {
       const authToken = response.headers.get('Authorization')
 
       if (authToken) {
-        document.cookie = `auth_token=${authToken}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=strict`
+        // localStorage に保存（Google認証と統一）
+        localStorage.setItem('token', authToken)
       }
 
       return {
@@ -205,15 +197,11 @@ export async function loginUser(data: LoginData): Promise<ApiResponse> {
     try {
       apiData = JSON.parse(responseText)
     } catch {
-      // プレーンテキストのエラーメッセージを処理
       if (response.status === 401 && responseText.trim()) {
         let errorMessage = responseText.trim()
-
-        // 英語のメッセージを日本語に変換
         if (errorMessage === 'Invalid Email or password.') {
           errorMessage = 'メールアドレスまたはパスワードが正しくありません'
         }
-
         return {
           errors: [errorMessage],
           success: '',
@@ -266,11 +254,12 @@ export async function loginUser(data: LoginData): Promise<ApiResponse> {
       }
 
       if (authToken) {
-        document.cookie = `auth_token=${authToken}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=strict`
+        // localStorage に保存（Google認証と統一）
+        localStorage.setItem('token', authToken)
       }
       return {
         errors: [],
-        success: '🎉 ログインしました！ダッシュボードにリダイレクトします...',
+        success: 'ログインしました！ダッシュボードにリダイレクトします...',
       }
     }
 
@@ -314,6 +303,8 @@ function getFieldNameInJapanese(field: string): string {
 
 export async function logoutUser(): Promise<ApiResponse> {
   try {
+    // localStorage と Cookie の両方をクリア
+    localStorage.removeItem('token')
     document.cookie = 'auth_token=; path=/; max-age=0; samesite=strict'
 
     return {
@@ -324,6 +315,26 @@ export async function logoutUser(): Promise<ApiResponse> {
     return {
       errors: [],
       success: 'ログアウトしました',
+    }
+  }
+}
+
+export async function googleLogin(): Promise<ApiResponse> {
+  try {
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+
+    // 直接リダイレクトする方式
+    window.location.href = `${API_BASE}/users/auth/google_oauth2`
+
+    // この関数は実際には完了しない（リダイレクトするため）
+    return {
+      errors: [],
+      success: '',
+    }
+  } catch {
+    return {
+      errors: ['Googleログインの開始に失敗しました'],
+      success: '',
     }
   }
 }
