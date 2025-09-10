@@ -146,29 +146,25 @@ module Api
       end
 
       def build_frontend_redirect_url(success, token = nil, error_type = nil)
-        # 詳細なデバッグログ
-        Rails.logger.info '=== OAUTH REDIRECT DEBUG ==='
-        Rails.logger.info "Rails.env: #{Rails.env}"
-        Rails.logger.info "ENV['FRONTEND_URL']: #{ENV['FRONTEND_URL'].inspect}"
-        Rails.logger.info "ENV['RAILS_ENV']: #{ENV['RAILS_ENV'].inspect}"
-        Rails.logger.info "request.base_url: #{request.base_url}"
-        Rails.logger.info "request.referer: #{request.referer}"
-        Rails.logger.info "request.headers['Origin']: #{request.headers['Origin']}"
+        # シンプルなデバッグログ
+        Rails.logger.info '=== OAUTH DEBUG ==='
+        Rails.logger.info "ENV FRONTEND_URL: #{ENV.fetch('FRONTEND_URL', nil)}"
 
         frontend_url = ENV['FRONTEND_URL'] || 'http://localhost:3000'
-        Rails.logger.info "Final frontend_url: #{frontend_url}"
+        Rails.logger.info "Using: #{frontend_url}"
 
         if success && token
           redirect_url = "#{frontend_url}/dashboard?token=#{token}"
-          Rails.logger.info "SUCCESS: Redirecting to: #{redirect_url}"
-          Rails.logger.info '================================'
+          Rails.logger.info "Redirect: #{redirect_url}"
           redirect_url
         else
-          error_url = build_error_redirect_url(error_type)
-          Rails.logger.info "ERROR: Redirecting to: #{error_url}"
-          Rails.logger.info '================================'
-          error_url
+          build_error_redirect_url(error_type)
         end
+      rescue StandardError => e
+        Rails.logger.error "OAUTH ERROR: #{e.message}"
+        Rails.logger.error e.backtrace.join("\n")
+        # フォールバック
+        "#{ENV['FRONTEND_URL'] || 'http://localhost:3000'}/auth/callback?success=false&error=server_error"
       end
 
       def build_error_redirect_url(error_type)
