@@ -12,6 +12,7 @@ import {
 } from '@mui/material'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+
 const useScrollAnimation = () => {
   const [visibleElements, setVisibleElements] = useState<Set<string>>(new Set())
 
@@ -36,47 +37,14 @@ const useScrollAnimation = () => {
   return visibleElements
 }
 
-export default function TutorialPageClient() {
+export default function LandingPageContent() {
   const theme = useTheme()
   const visibleElements = useScrollAnimation()
   const router = useRouter()
-  const [isChecking, setIsChecking] = useState(true)
 
-  // 認証チェック機能を追加
-  useEffect(() => {
-    const checkAuth = () => {
-      try {
-        const token = localStorage.getItem('token')
-        if (token && token.trim() !== '') {
-          // 既存ユーザー → ダッシュボードへリダイレクト
-          router.push('/dashboard')
-          return
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error)
-      }
-      // 新規ユーザー → このページを表示
-      setIsChecking(false)
-    }
-
-    // 少し遅延を入れてlocalStorageを確実に読み込む
-    const timer = setTimeout(checkAuth, 100)
-    return () => clearTimeout(timer)
-  }, [router])
-
-  // 認証チェック中は何も表示しない（または軽量なローディング）
-  if (isChecking) {
-    return null // または <Loading /> コンポーネント
-  }
-
-  // 既存のコンポーネント内容はそのまま...
   const handleUserRegister = () => {
     router.push('/register')
   }
-
-  // const handleGuestLogin = () => {
-  //   // console.log('ゲストログイン')
-  // }
 
   return (
     <Box sx={{ minHeight: '100vh', py: { xs: 2, md: 4 } }}>
