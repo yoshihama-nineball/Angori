@@ -176,9 +176,16 @@ module Api
       end
 
       def google_oauth_params
+        # 現在のアプリケーションURLを動的に取得
+        backend_url = request.base_url
+
+        Rails.logger.info '=== OAUTH PARAMS DEBUG ==='
+        Rails.logger.info "Backend URL: #{backend_url}"
+        Rails.logger.info '=========================='
+
         {
           client_id: ENV.fetch('GOOGLE_CLIENT_ID', nil),
-          redirect_uri: "#{request.base_url}/users/auth/google_oauth2/callback",
+          redirect_uri: "#{backend_url}/users/auth/google_oauth2/callback",
           scope: 'email profile',
           response_type: 'code',
           prompt: 'select_account'
