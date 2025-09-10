@@ -1,4 +1,5 @@
 import { z } from 'zod'
+
 export const AngerLogSchema = z.object({
   id: z.number(),
   user_id: z.number().optional(),
@@ -6,7 +7,9 @@ export const AngerLogSchema = z.object({
   location: z.string().nullable(),
   situation_description: z.string(),
   trigger_words: z.string().nullable(),
-  emotions_felt: z.record(z.string(), z.boolean()).nullable(), // record形式、null許可
+  emotions_felt: z
+    .union([z.record(z.string(), z.boolean()), z.array(z.string())])
+    .nullable(),
   anger_level: z.number().min(1).max(10),
   perception: z.string().nullable(),
   ai_advice: z.string().nullable(),
