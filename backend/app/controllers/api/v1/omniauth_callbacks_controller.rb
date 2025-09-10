@@ -146,25 +146,54 @@ module Api
       end
 
       def build_frontend_redirect_url(success, token = nil, error_type = nil)
-        # シンプルなデバッグログ
         Rails.logger.info '=== OAUTH DEBUG ==='
-        Rails.logger.info "ENV FRONTEND_URL: #{ENV.fetch('FRONTEND_URL', nil)}"
 
-        frontend_url = ENV['FRONTEND_URL'] || 'http://localhost:3000'
-        Rails.logger.info "Using: #{frontend_url}"
+        # OriginヘッダーまたはRefererから動的に判定
+        origin = request.headers['Origin']
+        if origin.blank? && request.referer.present?
+          origin = URI.parse(request.referer).then { |uri| "#{uri.scheme}://#{uri.host}" }
+        end
+
+        Rails.logger.info "Request Origin: #{origin}"
+        Rails.logger.info "Request Referer: #{request.referer}"
+
+        # 許可されたドメインパターン
+        allowed_patterns = [
+          %r{\Ahttps://angori\.vercel\.app\z},
+          %r{\Ahttps://angori-git-develop\.vercel\.app\z},
+          %r{\Ahttps://.*-yoshihamas-projects\.vercel\.app\z},
+          %r{\Ahttp://localhost:\d+\z}
+        ]
+
+        # Originが許可されたパターンにマッチするかチェック
+        if origin.present? && allowed_patterns.any? { |pattern| origin.match?(pattern) }
+          frontend_url = origin
+          Rails.logger.info "Using dynamic origin: #{frontend_url}"
+        else
+          frontend_url = ENV['FRONTEND_URL'] || 'http://localhost:3000'
+          Rails.logger.info "Using ENV FRONTEND_URL: #{frontend_url}"
+        end
 
         if success && token
           redirect_url = "#{frontend_url}/dashboard?token=#{token}"
           Rails.logger.info "Redirect: #{redirect_url}"
           redirect_url
         else
-          build_error_redirect_url(error_type)
+          build_error_redirect_url(error_type, frontend_url)
         end
       rescue StandardError => e
         Rails.logger.error "OAUTH ERROR: #{e.message}"
         Rails.logger.error e.backtrace.join("\n")
         # フォールバック
         "#{ENV['FRONTEND_URL'] || 'http://localhost:3000'}/auth/callback?success=false&error=server_error"
+      end
+
+      def build_error_redirect_url(error_type, frontend_url = nil)
+        frontend_url ||= ENV['FRONTEND_URL'] || 'http://localhost:3000'
+        base_url = "#{frontend_url}/auth/callback"
+        params = ['success=false']
+        params << "error=#{error_type}" if error_type
+        "#{base_url}?#{params.join('&')}"
       end
 
       def build_error_redirect_url(error_type)
