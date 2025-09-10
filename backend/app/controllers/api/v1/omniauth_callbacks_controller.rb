@@ -166,7 +166,7 @@ module Api
       def google_oauth_params
         {
           client_id: ENV.fetch('GOOGLE_CLIENT_ID', nil),
-          redirect_uri: 'http://localhost:5000/users/auth/google_oauth2/callback',
+          redirect_uri: "#{request.base_url}/users/auth/google_oauth2/callback",
           scope: 'email profile',
           response_type: 'code',
           prompt: 'select_account'
