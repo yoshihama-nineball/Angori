@@ -66,7 +66,7 @@ export default function Footer() {
         <BottomNavigationAction value="anger_logs" icon={<ListIcon />} />
         <BottomNavigationAction value="counseling" icon={<ChatBubbleIcon />} />
         <BottomNavigationAction value="calendar" icon={<CalendarMonthIcon />} />
-        <BottomNavigationAction value="analysis" icon={<BubbleChartIcon />} />
+        <BottomNavigationAction value="analyze" icon={<BubbleChartIcon />} />
       </BottomNavigation>
     </Box>
   )
