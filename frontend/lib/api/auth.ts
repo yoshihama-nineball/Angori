@@ -104,6 +104,7 @@ export async function registerUser(data: RegisterData): Promise<ApiResponse> {
       if (authToken) {
         // localStorage に保存（Google認証と統一）
         localStorage.setItem('token', authToken)
+        document.cookie = `token=${authToken.replace('Bearer ', '')}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=strict`
       }
 
       return {
@@ -256,6 +257,7 @@ export async function loginUser(data: LoginData): Promise<ApiResponse> {
       if (authToken) {
         // localStorage に保存（Google認証と統一）
         localStorage.setItem('token', authToken)
+        document.cookie = `token=${authToken.replace('Bearer ', '')}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=strict`
       }
       return {
         errors: [],
@@ -305,7 +307,8 @@ export async function logoutUser(): Promise<ApiResponse> {
   try {
     // localStorage と Cookie の両方をクリア
     localStorage.removeItem('token')
-    document.cookie = 'auth_token=; path=/; max-age=0; samesite=strict'
+    // document.cookie = 'auth_token=; path=/; max-age=0; samesite=strict'
+    document.cookie = 'token=; path=/; max-age=0; samesite=strict'
 
     return {
       errors: [],
