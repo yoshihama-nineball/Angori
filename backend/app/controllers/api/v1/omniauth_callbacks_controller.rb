@@ -196,14 +196,6 @@ module Api
         "#{base_url}?#{params.join('&')}"
       end
 
-      def build_error_redirect_url(error_type)
-        frontend_url = ENV['FRONTEND_URL'] || 'http://localhost:3000'
-        base_url = "#{frontend_url}/auth/callback"
-        params = ['success=false']
-        params << "error=#{error_type}" if error_type
-        "#{base_url}?#{params.join('&')}"
-      end
-
       def google_oauth_params
         # 現在のアプリケーションURLを動的に取得
         backend_url = request.base_url
