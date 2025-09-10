@@ -20,7 +20,7 @@ module Api
 
       def failure
         Rails.logger.error "OAuth failure: #{params[:message]}"
-        redirect_to build_frontend_redirect_url(false, nil, 'oauth_failed')
+        redirect_to build_frontend_redirect_url(false, nil, 'oauth_failed'), allow_other_host: true
       end
 
       private
@@ -36,21 +36,21 @@ module Api
 
       def handle_token_generation(user, token)
         if token
-          redirect_to build_frontend_redirect_url(true, token)
+          redirect_to build_frontend_redirect_url(true, token), allow_other_host: true
         else
           Rails.logger.error "Failed to generate JWT token for user #{user.id}"
-          redirect_to build_frontend_redirect_url(false, nil, 'token_generation_failed')
+          redirect_to build_frontend_redirect_url(false, nil, 'token_generation_failed'), allow_other_host: true
         end
       end
 
       def handle_user_creation_failure(user)
         Rails.logger.error "OAuth user creation failed: #{user.errors.full_messages}"
-        redirect_to build_frontend_redirect_url(false, nil, 'user_creation_failed')
+        redirect_to build_frontend_redirect_url(false, nil, 'user_creation_failed'), allow_other_host: true
       end
 
       def handle_oauth_error(error)
         Rails.logger.error "OAuth error: #{error.message}"
-        redirect_to build_frontend_redirect_url(false, nil, 'server_error')
+        redirect_to build_frontend_redirect_url(false, nil, 'server_error'), allow_other_host: true
       end
 
       def fetch_google_user_info(auth_code)
