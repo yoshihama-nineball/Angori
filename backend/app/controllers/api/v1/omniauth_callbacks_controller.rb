@@ -146,15 +146,18 @@ module Api
       end
 
       def build_frontend_redirect_url(success, token = nil, error_type = nil)
+        frontend_url = ENV['FRONTEND_URL'] || 'http://localhost:3000'
+
         if success && token
-          "http://localhost:3000/dashboard?token=#{token}"
+          "#{frontend_url}/dashboard?token=#{token}"
         else
           build_error_redirect_url(error_type)
         end
       end
 
       def build_error_redirect_url(error_type)
-        base_url = 'http://localhost:3000/auth/callback'
+        frontend_url = ENV['FRONTEND_URL'] || 'http://localhost:3000'
+        base_url = "#{frontend_url}/auth/callback"
         params = ['success=false']
         params << "error=#{error_type}" if error_type
         "#{base_url}?#{params.join('&')}"
