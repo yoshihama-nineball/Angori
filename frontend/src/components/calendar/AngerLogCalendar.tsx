@@ -223,7 +223,11 @@ const AngerLogCalendar: React.FC = () => {
   }
 
   return (
-    <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+    <Box sx={{ 
+      width: '100%', 
+      display: 'flex', 
+      justifyContent: 'center',
+    }}>
       {/* カレンダーコンテナ */}
       <Paper
         elevation={8}
@@ -233,7 +237,7 @@ const AngerLogCalendar: React.FC = () => {
           background: '#ffffff',
           border: '1px solid rgba(0,0,0,0.06)',
           width: '100%',
-          maxWidth: '450px',
+          maxWidth: { xs: '450px', sm: '550px' }, // 適度なサイズ調整
         }}
       >
         {/* カレンダーヘッダー */}
@@ -241,25 +245,37 @@ const AngerLogCalendar: React.FC = () => {
           sx={{
             backgroundColor: 'white',
             color: '#424242',
-            p: { xs: 2, sm: 3 },
+            p: { xs: 1.5, sm: 3 },
             borderBottom: '1px solid rgba(0,0,0,0.1)',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
           }}
         >
-          <Box display="flex" alignItems="center" gap={2} sx={{ justifyContent: 'center', width: '100%' }}>
+          <Box display="flex" alignItems="center" gap={{ xs: 1, sm: 2 }} sx={{ justifyContent: 'center', width: '100%' }}>
             <IconButton 
               onClick={handlePreviousMonth} 
               sx={{ 
                 color: '#424242',
                 backgroundColor: 'rgba(0,0,0,0.05)',
-                '&:hover': { backgroundColor: 'rgba(0,0,0,0.1)' }
+                '&:hover': { backgroundColor: 'rgba(0,0,0,0.1)' },
+                minWidth: { xs: '32px', sm: '40px' },
+                height: { xs: '32px', sm: '40px' },
+              }}
+              size="small"
+            >
+              <ChevronLeft fontSize="small" />
+            </IconButton>
+            <Typography 
+              variant="h6" 
+              component="h1" 
+              sx={{ 
+                fontWeight: 600, 
+                textAlign: 'center',
+                fontSize: { xs: '1rem', sm: '1.25rem' },
+                minWidth: { xs: '120px', sm: '140px' },
               }}
             >
-              <ChevronLeft />
-            </IconButton>
-            <Typography variant="h6" component="h1" sx={{ fontWeight: 600, textAlign: 'center' }}>
               {format(currentDate, 'yyyy年MM月', { locale: ja })}
             </Typography>
             <IconButton 
@@ -267,21 +283,24 @@ const AngerLogCalendar: React.FC = () => {
               sx={{ 
                 color: '#424242',
                 backgroundColor: 'rgba(0,0,0,0.05)',
-                '&:hover': { backgroundColor: 'rgba(0,0,0,0.1)' }
+                '&:hover': { backgroundColor: 'rgba(0,0,0,0.1)' },
+                minWidth: { xs: '32px', sm: '40px' },
+                height: { xs: '32px', sm: '40px' },
               }}
+              size="small"
             >
-              <ChevronRight />
+              <ChevronRight fontSize="small" />
             </IconButton>
           </Box>
         </Box>
 
-        <Box sx={{ p: { xs: 1, sm: 2 } }}>
+        <Box sx={{ p: { xs: 1.5, sm: 2 } }}>
           {/* 曜日ヘッダー */}
           <Box
             sx={{
               display: 'grid',
               gridTemplateColumns: 'repeat(7, 1fr)',
-              gap: { xs: 0.25, sm: 0.5 },
+              gap: { xs: '2px', sm: '4px' }, // 適度なギャップ
               mb: { xs: 0.5, sm: 1 },
             }}
           >
@@ -289,11 +308,11 @@ const AngerLogCalendar: React.FC = () => {
               <Box
                 key={day}
                 sx={{
-                  py: 1,
+                  py: { xs: 0.75, sm: 1 },
                   textAlign: 'center',
                   fontWeight: 600,
                   color: index === 0 ? '#e53935' : index === 6 ? '#1e88e5' : '#424242',
-                  fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem', lg: '1.1rem' },
+                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
                   letterSpacing: '0.5px',
                 }}
               >
@@ -307,10 +326,11 @@ const AngerLogCalendar: React.FC = () => {
             sx={{
               display: 'grid',
               gridTemplateColumns: 'repeat(7, 1fr)',
-              gap: { xs: 0.25, sm: 0.5 },
+              gap: { xs: '2px', sm: '4px' }, // 適度なギャップ
               '& > *': {
                 aspectRatio: '1',
-                minHeight: { xs: '55px', sm: '65px' },
+                minHeight: { xs: '48px', sm: '65px' },
+                maxHeight: { xs: '52px', sm: '70px' },
               }
             }}
           >
@@ -322,7 +342,6 @@ const AngerLogCalendar: React.FC = () => {
                 dayData={dayAngerData[format(day, 'yyyy-MM-dd')]}
                 onClick={() => handleDateClick(day)}
                 isWeekend={day.getDay() === 0 || day.getDay() === 6}
-                // badgeSize={getBadgeSize()}
               />
             ))}
           </Box>

@@ -43,17 +43,18 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
     const baseStyle = {
       width: '100%',
       height: '100%',
-      borderRadius: 2,
+      borderRadius: { xs: 1.5, sm: 2 },
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'space-between',
-      p: 1,
+      p: { xs: 0.5, sm: 1 },
       position: 'relative',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       cursor: hasData ? 'pointer' : 'default',
       border: '2px solid transparent',
       background: 'white',
+      minHeight: { xs: '48px', sm: '65px' },
     }
 
     // 今日の日付の場合
@@ -62,7 +63,10 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
         ...baseStyle,
         background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
         border: '2px solid #1976d2',
-        boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
+        boxShadow: { 
+          xs: '0 2px 6px rgba(25, 118, 210, 0.2)', 
+          sm: '0 4px 12px rgba(25, 118, 210, 0.3)' 
+        },
       }
     }
 
@@ -80,8 +84,11 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
       return {
         ...baseStyle,
         '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+          transform: { xs: 'none', sm: 'translateY(-2px)' },
+          boxShadow: { 
+            xs: '0 2px 8px rgba(0,0,0,0.1)', 
+            sm: '0 8px 25px rgba(0,0,0,0.15)' 
+          },
           border: `2px solid ${dayData?.color}`,
         },
       }
@@ -91,7 +98,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
     return {
       ...baseStyle,
       '&:hover': {
-        background: '#f5f5f5',
+        background: { xs: 'white', sm: '#f5f5f5' },
       },
     }
   }
@@ -108,7 +115,8 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
         sx={{
           color: getDateColor(),
           fontWeight: today ? 700 : 500,
-          fontSize: { xs: '0.9rem', sm: '1rem' },
+          fontSize: { xs: '0.8rem', sm: '1rem' },
+          lineHeight: 1,
         }}
       >
         {dayNumber}
@@ -122,19 +130,23 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            mt: { xs: 0.5, sm: 0.5 },
           }}
         >
           <Box
             sx={{
-              width: '28px',
-              height: '28px',
+              width: { xs: '20px', sm: '28px' },
+              height: { xs: '20px', sm: '28px' },
               borderRadius: '50%',
               background: `linear-gradient(135deg, ${dayData.color} 0%, ${dayData.color}dd 100%)`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: `0 3px 8px ${dayData.color}40`,
-              border: '2px solid white',
+              boxShadow: { 
+                xs: `0 2px 4px ${dayData.color}40`, 
+                sm: `0 3px 8px ${dayData.color}40` 
+              },
+              border: '1px solid white',
             }}
           >
             <Typography
@@ -142,7 +154,8 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
               sx={{
                 color: 'white',
                 fontWeight: 700,
-                fontSize: '0.8rem',
+                fontSize: { xs: '0.65rem', sm: '0.8rem' },
+                lineHeight: 1,
               }}
             >
               {dayData.count}
@@ -152,7 +165,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
       )}
 
       {/* データがない場合の空スペース */}
-      {!hasData && <Box sx={{ height: '28px' }} />}
+      {!hasData && <Box sx={{ height: { xs: '20px', sm: '28px' } }} />}
     </ButtonBase>
   )
 }

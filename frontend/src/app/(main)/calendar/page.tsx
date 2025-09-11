@@ -9,7 +9,7 @@ import AngerLogCalendar from '@/components/calendar/AngerLogCalendar'
 export default function CalendarPage() {
   return (
     <AuthGuard>
-      <Box sx={{ width: '100%', px: { xs: 3, sm: 4, md: 5 }, py: { xs: 2, sm: 3 } }}>
+      <Box sx={{ py: { xs: 2, sm: 3 }, width: '100%' }}>
         {/* ページヘッダー */}
         <Box
           sx={{
@@ -18,10 +18,12 @@ export default function CalendarPage() {
             gap: { xs: 1, sm: 2 },
             mb: { xs: 2, sm: 3 },
             flexWrap: 'wrap',
+            justifyContent: 'center',
+            px: 2,
           }}
         >
           <CalendarMonth sx={{ fontSize: { xs: '1.5rem', sm: '2rem' }, color: 'primary.main' }} />
-          <Box>
+          <Box sx={{ textAlign: 'center' }}>
             <Typography variant={{ xs: 'h5', sm: 'h4' }} component="h1" gutterBottom>
               相談履歴カレンダー
             </Typography>
