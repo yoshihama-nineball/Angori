@@ -1,16 +1,39 @@
-import { Box, Typography } from '@mui/material'
+'use client'
+
+import React from 'react'
+import { Box, Typography, Container } from '@mui/material'
+import { CalendarMonth } from '@mui/icons-material'
+import AuthGuard from '@/components/auth/AuthGuard'
+import AngerLogCalendar from '@/components/calendar/AngerLogCalendar'
+
 export default function CalendarPage() {
   return (
-    <Box sx={{ textAlign: 'center', py: 8 }}>
-      <Typography variant="h4" gutterBottom>
-        📅 カレンダー機能
-      </Typography>
-      <Typography variant="h6" color="text.secondary" gutterBottom>
-        準備中です！もう少しお待ちください 🦍
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        怒りの記録をカレンダー形式で確認できるようになります
-      </Typography>
-    </Box>
+    <AuthGuard>
+      <Box sx={{ width: '100%', px: { xs: 3, sm: 4, md: 5 }, py: { xs: 2, sm: 3 } }}>
+        {/* ページヘッダー */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: { xs: 1, sm: 2 },
+            mb: { xs: 2, sm: 3 },
+            flexWrap: 'wrap',
+          }}
+        >
+          <CalendarMonth sx={{ fontSize: { xs: '1.5rem', sm: '2rem' }, color: 'primary.main' }} />
+          <Box>
+            <Typography variant={{ xs: 'h5', sm: 'h4' }} component="h1" gutterBottom>
+              相談履歴カレンダー
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
+              過去の相談記録をカレンダー形式で確認できます。日付をクリックして詳細を表示しましょう。
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* カレンダーコンポーネント */}
+        <AngerLogCalendar />
+      </Box>
+    </AuthGuard>
   )
 }
