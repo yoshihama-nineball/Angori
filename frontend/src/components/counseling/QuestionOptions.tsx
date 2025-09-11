@@ -48,11 +48,11 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
 
   if (questionType === 'emotion') {
     return (
-      <Box sx={{ p: 2, borderTop: '1px solid #e0e0e0' }}>
+      <Box sx={{ p: 1, borderTop: '1px solid #e0e0e0' }}>
         <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
           感情を選んでください（複数選択可）:
         </Typography>
-        <Grid container spacing={1} sx={{ mb: 2 }}>
+        <Grid container spacing={1} sx={{ mb: 1 }}>
           {options.map((emotion) => (
             <Grid item key={emotion}>
               <Chip
@@ -117,8 +117,8 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
 
   if (questionType === 'rating') {
     return (
-      <Box sx={{ p: 2, borderTop: '1px solid #e0e0e0' }}>
-        <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+      <Box sx={{ p: 1, borderTop: '1px solid #e0e0e0' }}>
+        <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
           怒りのレベルを選んでください:
         </Typography>
         <Box
@@ -127,7 +127,7 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
             flexWrap: 'wrap',
             gap: 1,
             justifyContent: 'center',
-            mb: 1,
+            mb: 0.5,
           }}
         >
           {['1', '2', '3', '4', '5'].map((rating) => (
@@ -156,7 +156,7 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
             flexWrap: 'wrap',
             gap: 1,
             justifyContent: 'center',
-            mb: 3, // 決定ボタンとの距離を空ける
+            mb: 1, // 決定ボタンとの距離を空ける
           }}
         >
           {['6', '7', '8', '9', '10'].map(
@@ -193,7 +193,7 @@ export const QuestionOptions: React.FC<QuestionOptionsProps> = ({
               onClear?.()
             }}
             disabled={!selectedValue}
-            sx={{ borderRadius: '20px', px: 3, mb: 1 }}
+            sx={{ borderRadius: '20px', px: 3 }}
           >
             決定
           </Button>
