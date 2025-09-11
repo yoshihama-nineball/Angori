@@ -75,7 +75,13 @@ export const MessageInput: React.FC<MessageInputProps> = ({
     <>
       {/* 選択肢表示エリア */}
       {(questionType === 'emotion' || questionType === 'rating') && options && (
-        <Box sx={{ maxHeight: '35vh', overflow: 'auto', mb: 4 }}>
+        <Box
+          sx={{
+            maxHeight: { xs: '25vh', md: '30vh' },
+            overflow: 'auto',
+            mb: 1,
+          }}
+        >
           <QuestionOptions
             questionType={questionType}
             options={options}
