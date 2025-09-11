@@ -237,7 +237,7 @@ const AngerLogCalendar: React.FC = () => {
           background: '#ffffff',
           border: '1px solid rgba(0,0,0,0.06)',
           width: '100%',
-          maxWidth: { xs: '450px', sm: '550px' }, // 適度なサイズ調整
+          maxWidth: { xs: '375px', sm: '550px' }, // スマホの幅を縮小して余白を作る
         }}
       >
         {/* カレンダーヘッダー */}
