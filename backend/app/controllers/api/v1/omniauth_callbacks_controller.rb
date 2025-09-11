@@ -2,7 +2,8 @@ module Api
   module V1
     class OmniauthCallbacksController < ApplicationController
       def passthru
-        redirect_to "https://accounts.google.com/o/oauth2/auth?#{google_oauth_params.to_query}",
+        oauth_service = GoogleOauthService.new(request)
+        redirect_to "https://accounts.google.com/o/oauth2/auth?#{oauth_service.build_oauth_params.to_query}",
                     allow_other_host: true
       end
 
@@ -10,7 +11,8 @@ module Api
         auth_code = params[:code]
         raise 'Authorization code not found' unless auth_code
 
-        user_info = fetch_google_user_info(auth_code)
+        oauth_service = GoogleOauthService.new(request)
+        user_info = oauth_service.fetch_user_info(auth_code)
         user = User.from_google_info(user_info)
 
         handle_user_authentication(user)
@@ -53,82 +55,6 @@ module Api
         redirect_to build_frontend_redirect_url(false, nil, 'server_error'), allow_other_host: true
       end
 
-      def fetch_google_user_info(auth_code)
-        access_token = fetch_access_token(auth_code)
-        fetch_user_details(access_token)
-      end
-
-      def fetch_access_token(auth_code)
-        response = request_access_token(auth_code)
-        validate_token_response(response)
-
-        token_data = parse_json_response(response.body, 'token response')
-        extract_access_token(token_data)
-      end
-
-      def request_access_token(auth_code)
-        require 'net/http'
-
-        token_uri = URI('https://oauth2.googleapis.com/token')
-        token_params = build_token_params(auth_code)
-
-        Net::HTTP.post_form(token_uri, token_params)
-      end
-
-      def build_token_params(auth_code)
-        {
-          code: auth_code,
-          client_id: ENV.fetch('GOOGLE_CLIENT_ID', nil),
-          client_secret: ENV.fetch('GOOGLE_CLIENT_SECRET', nil),
-          redirect_uri: "#{request.base_url}/users/auth/google_oauth2/callback",
-          grant_type: 'authorization_code'
-        }
-      end
-
-      def validate_token_response(response)
-        return if response.code == '200'
-
-        Rails.logger.error "Token request failed: Status #{response.code}, Body: #{response.body}"
-        raise "Token request failed with status #{response.code}"
-      end
-
-      def extract_access_token(token_data)
-        access_token = token_data['access_token']
-
-        if access_token.nil?
-          Rails.logger.error "No access token in response: #{token_data}"
-          raise 'No access token received from Google'
-        end
-
-        access_token
-      end
-
-      def fetch_user_details(access_token)
-        require 'net/http'
-
-        user_uri = URI("https://www.googleapis.com/oauth2/v2/userinfo?access_token=#{access_token}")
-        user_response = Net::HTTP.get_response(user_uri)
-
-        validate_user_response(user_response)
-        parse_json_response(user_response.body, 'user info response')
-      end
-
-      def validate_user_response(response)
-        return if response.code == '200'
-
-        Rails.logger.error "User info request failed: Status #{response.code}"
-        raise 'Failed to fetch user info from Google'
-      end
-
-      def parse_json_response(body, context)
-        require 'json'
-
-        JSON.parse(body)
-      rescue JSON::ParserError
-        Rails.logger.error "Invalid JSON #{context}: #{body[0..200]}"
-        raise "Invalid #{context} format from Google"
-      end
-
       def generate_jwt_for_user(user)
         secret_key = ENV['DEVISE_JWT_SECRET_KEY'] || Rails.application.credentials.devise_jwt_secret_key
         payload = build_jwt_payload(user)
@@ -148,44 +74,63 @@ module Api
       def build_frontend_redirect_url(success, token = nil, error_type = nil)
         Rails.logger.info '=== OAUTH DEBUG ==='
 
-        # OriginヘッダーまたはRefererから動的に判定
-        origin = request.headers['Origin']
-        if origin.blank? && request.referer.present?
-          origin = URI.parse(request.referer).then { |uri| "#{uri.scheme}://#{uri.host}" }
-        end
+        frontend_url = determine_frontend_url
 
+        if success && token
+          build_success_redirect_url(frontend_url, token)
+        else
+          build_error_redirect_url(error_type, frontend_url)
+        end
+      rescue StandardError => e
+        handle_redirect_error(e)
+      end
+
+      def determine_frontend_url
+        origin = extract_origin_from_request
+        log_oauth_debug_info(origin)
+
+        if origin_allowed?(origin)
+          Rails.logger.info "Using dynamic origin: #{origin}"
+          origin
+        else
+          fallback_frontend_url = ENV['FRONTEND_URL'] || 'http://localhost:3000'
+          Rails.logger.info "Using ENV FRONTEND_URL: #{fallback_frontend_url}"
+          fallback_frontend_url
+        end
+      end
+
+      def extract_origin_from_request
+        origin = request.headers['Origin']
+        return origin if origin.present?
+        return nil if request.referer.blank?
+
+        URI.parse(request.referer).then { |uri| "#{uri.scheme}://#{uri.host}" }
+      end
+
+      def log_oauth_debug_info(origin)
         Rails.logger.info "Request Origin: #{origin}"
         Rails.logger.info "Request Referer: #{request.referer}"
+      end
 
-        # 許可されたドメインパターン
-        allowed_patterns = [
+      def origin_allowed?(origin)
+        return false if origin.blank?
+
+        allowed_patterns.any? { |pattern| origin.match?(pattern) }
+      end
+
+      def allowed_patterns
+        [
           %r{\Ahttps://angori\.vercel\.app\z},
           %r{\Ahttps://angori-git-develop\.vercel\.app\z},
           %r{\Ahttps://.*-yoshihamas-projects\.vercel\.app\z},
           %r{\Ahttp://localhost:\d+\z}
         ]
+      end
 
-        # Originが許可されたパターンにマッチするかチェック
-        if origin.present? && allowed_patterns.any? { |pattern| origin.match?(pattern) }
-          frontend_url = origin
-          Rails.logger.info "Using dynamic origin: #{frontend_url}"
-        else
-          frontend_url = ENV['FRONTEND_URL'] || 'http://localhost:3000'
-          Rails.logger.info "Using ENV FRONTEND_URL: #{frontend_url}"
-        end
-
-        if success && token
-          redirect_url = "#{frontend_url}/dashboard?token=#{token}"
-          Rails.logger.info "Redirect: #{redirect_url}"
-          redirect_url
-        else
-          build_error_redirect_url(error_type, frontend_url)
-        end
-      rescue StandardError => e
-        Rails.logger.error "OAUTH ERROR: #{e.message}"
-        Rails.logger.error e.backtrace.join("\n")
-        # フォールバック
-        "#{ENV['FRONTEND_URL'] || 'http://localhost:3000'}/auth/callback?success=false&error=server_error"
+      def build_success_redirect_url(frontend_url, token)
+        redirect_url = "#{frontend_url}/dashboard?token=#{token}"
+        Rails.logger.info "Redirect: #{redirect_url}"
+        redirect_url
       end
 
       def build_error_redirect_url(error_type, frontend_url = nil)
@@ -196,21 +141,11 @@ module Api
         "#{base_url}?#{params.join('&')}"
       end
 
-      def google_oauth_params
-        # 現在のアプリケーションURLを動的に取得
-        backend_url = request.base_url
-
-        Rails.logger.info '=== OAUTH PARAMS DEBUG ==='
-        Rails.logger.info "Backend URL: #{backend_url}"
-        Rails.logger.info '=========================='
-
-        {
-          client_id: ENV.fetch('GOOGLE_CLIENT_ID', nil),
-          redirect_uri: "#{backend_url}/users/auth/google_oauth2/callback",
-          scope: 'email profile',
-          response_type: 'code',
-          prompt: 'select_account'
-        }
+      def handle_redirect_error(error)
+        Rails.logger.error "OAUTH ERROR: #{error.message}"
+        Rails.logger.error error.backtrace.join("\n")
+        # フォールバック
+        "#{ENV['FRONTEND_URL'] || 'http://localhost:3000'}/auth/callback?success=false&error=server_error"
       end
     end
   end
