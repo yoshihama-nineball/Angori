@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   Box,
   Typography,
@@ -8,20 +8,23 @@ import {
   Paper,
   CircularProgress,
   Alert,
-  Fade,
 } from '@mui/material'
+import { ChevronLeft, ChevronRight, Today } from '@mui/icons-material'
 import {
-  ChevronLeft,
-  ChevronRight,
-  Today,
-} from '@mui/icons-material'
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, addMonths, subMonths } from 'date-fns'
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  addMonths,
+  subMonths,
+} from 'date-fns'
 import { ja } from 'date-fns/locale'
 import { AngerLog } from '@/schemas/anger_log'
 import CalendarDayCell from './CalendarDayCell'
 import DayAngerLogsList from './DayAngerLogsList'
 import { getAngerLogs } from '../../../lib/api/anger_log'
-// import AngerLogDetailModal from '../AngerLogDetailModal' // 既存の詳細モーダル
+import AngerLogDetailModal from './AngerLogDetailModal'
 
 // 日別集約データの型定義
 export type DayAngerSummary = {
@@ -51,46 +54,49 @@ const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土']
 
 const AngerLogCalendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [angerLogs, setAngerLogs] = useState<AngerLog[]>([])
+  const [, setAngerLogs] = useState<AngerLog[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [dayAngerData, setDayAngerData] = useState<Record<string, DayAngerSummary>>({})
-  
+  const [dayAngerData, setDayAngerData] = useState<
+    Record<string, DayAngerSummary>
+  >({})
+
   // モーダル状態管理
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [showDayList, setShowDayList] = useState(false)
   const [showDetailModal, setShowDetailModal] = useState(false)
-  const [selectedAngerLog, setSelectedAngerLog] = useState<AngerLog | null>(null)
+  const [selectedAngerLog, setSelectedAngerLog] = useState<AngerLog | null>(
+    null
+  )
 
   // アンガーログデータ取得
-  const fetchAngerLogs = async () => {
+  const fetchAngerLogs = useCallback(async () => {
     setLoading(true)
     setError(null)
-    
+
     try {
       const response = await getAngerLogs()
       if (response.errors && response.errors.length > 0) {
         setError(response.errors[0])
         return
       }
-      
+
       setAngerLogs(response.anger_logs)
       processAngerLogsByDate(response.anger_logs)
-    } catch (err) {
+    } catch {
       setError('データの取得に失敗しました')
-      console.error('Error fetching anger logs:', err)
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   // 日付別にアンガーログを集約処理
   const processAngerLogsByDate = (logs: AngerLog[]) => {
     const dayData: Record<string, DayAngerSummary> = {}
-    
+
     logs.forEach((log) => {
       const dateKey = format(new Date(log.created_at), 'yyyy-MM-dd')
-      
+
       if (!dayData[dateKey]) {
         dayData[dateKey] = {
           date: dateKey,
@@ -101,7 +107,7 @@ const AngerLogCalendar: React.FC = () => {
           bgColor: '',
         }
       }
-      
+
       dayData[dateKey].angerLogs.push(log)
       dayData[dateKey].count += 1
       dayData[dateKey].maxAngerLevel = Math.max(
@@ -109,13 +115,13 @@ const AngerLogCalendar: React.FC = () => {
         log.anger_level
       )
     })
-    
+
     // 各日付の色を設定
     Object.values(dayData).forEach((day) => {
       day.color = getAngerLevelColor(day.maxAngerLevel)
       day.bgColor = getAngerLevelBgColor(day.maxAngerLevel)
     })
-    
+
     setDayAngerData(dayData)
   }
 
@@ -123,13 +129,13 @@ const AngerLogCalendar: React.FC = () => {
   const handleDateClick = (date: Date) => {
     const dateKey = format(date, 'yyyy-MM-dd')
     const dayData = dayAngerData[dateKey]
-    
+
     if (!dayData || dayData.count === 0) {
       return // 相談記録がない日はクリック無効
     }
-    
+
     setSelectedDate(dateKey)
-    
+
     if (dayData.count === 1) {
       // 単一記録の場合：直接詳細モーダル表示
       setSelectedAngerLog(dayData.angerLogs[0])
@@ -157,15 +163,11 @@ const AngerLogCalendar: React.FC = () => {
 
   // 月変更処理
   const handlePreviousMonth = () => {
-    setCurrentDate(prev => subMonths(prev, 1))
+    setCurrentDate((prev) => subMonths(prev, 1))
   }
 
   const handleNextMonth = () => {
-    setCurrentDate(prev => addMonths(prev, 1))
-  }
-
-  const handleToday = () => {
-    setCurrentDate(new Date())
+    setCurrentDate((prev) => addMonths(prev, 1))
   }
 
   // カレンダーの日付範囲を取得
@@ -173,7 +175,7 @@ const AngerLogCalendar: React.FC = () => {
   const monthEnd = endOfMonth(currentDate)
   const startDate = new Date(monthStart)
   startDate.setDate(startDate.getDate() - monthStart.getDay()) // 月の最初の週の日曜日から
-  
+
   const endDate = new Date(monthEnd)
   const remainingDays = 6 - monthEnd.getDay()
   endDate.setDate(endDate.getDate() + remainingDays) // 月の最後の週の土曜日まで
@@ -183,14 +185,14 @@ const AngerLogCalendar: React.FC = () => {
   // 初回データ取得
   useEffect(() => {
     fetchAngerLogs()
-  }, [])
+  }, [fetchAngerLogs])
 
   if (loading) {
     return (
-      <Box 
-        display="flex" 
-        justifyContent="center" 
-        alignItems="center" 
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
         minHeight="400px"
         sx={{
           borderRadius: 3,
@@ -207,8 +209,8 @@ const AngerLogCalendar: React.FC = () => {
   if (error) {
     return (
       <Box sx={{ p: 2 }}>
-        <Alert 
-          severity="error" 
+        <Alert
+          severity="error"
           sx={{ borderRadius: 2 }}
           action={
             <IconButton onClick={fetchAngerLogs} color="inherit" size="small">
@@ -223,11 +225,13 @@ const AngerLogCalendar: React.FC = () => {
   }
 
   return (
-    <Box sx={{ 
-      width: '100%', 
-      display: 'flex', 
-      justifyContent: 'center',
-    }}>
+    <Box
+      sx={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+      }}
+    >
       {/* カレンダーコンテナ */}
       <Paper
         elevation={8}
@@ -237,7 +241,7 @@ const AngerLogCalendar: React.FC = () => {
           background: '#ffffff',
           border: '1px solid rgba(0,0,0,0.06)',
           width: '100%',
-          maxWidth: { xs: '375px', sm: '550px' }, // スマホの幅を縮小して余白を作る
+          maxWidth: { xs: '380px', sm: '550px' }, // スマホの幅を縮小して余白を作る
         }}
       >
         {/* カレンダーヘッダー */}
@@ -252,10 +256,15 @@ const AngerLogCalendar: React.FC = () => {
             alignItems: 'center',
           }}
         >
-          <Box display="flex" alignItems="center" gap={{ xs: 1, sm: 2 }} sx={{ justifyContent: 'center', width: '100%' }}>
-            <IconButton 
-              onClick={handlePreviousMonth} 
-              sx={{ 
+          <Box
+            display="flex"
+            alignItems="center"
+            gap={{ xs: 1, sm: 2 }}
+            sx={{ justifyContent: 'center', width: '100%' }}
+          >
+            <IconButton
+              onClick={handlePreviousMonth}
+              sx={{
                 color: '#424242',
                 backgroundColor: 'rgba(0,0,0,0.05)',
                 '&:hover': { backgroundColor: 'rgba(0,0,0,0.1)' },
@@ -266,11 +275,11 @@ const AngerLogCalendar: React.FC = () => {
             >
               <ChevronLeft fontSize="small" />
             </IconButton>
-            <Typography 
-              variant="h6" 
-              component="h1" 
-              sx={{ 
-                fontWeight: 600, 
+            <Typography
+              variant="h6"
+              component="h1"
+              sx={{
+                fontWeight: 600,
                 textAlign: 'center',
                 fontSize: { xs: '1rem', sm: '1.25rem' },
                 minWidth: { xs: '120px', sm: '140px' },
@@ -278,9 +287,9 @@ const AngerLogCalendar: React.FC = () => {
             >
               {format(currentDate, 'yyyy年MM月', { locale: ja })}
             </Typography>
-            <IconButton 
-              onClick={handleNextMonth} 
-              sx={{ 
+            <IconButton
+              onClick={handleNextMonth}
+              sx={{
                 color: '#424242',
                 backgroundColor: 'rgba(0,0,0,0.05)',
                 '&:hover': { backgroundColor: 'rgba(0,0,0,0.1)' },
@@ -311,7 +320,12 @@ const AngerLogCalendar: React.FC = () => {
                   py: { xs: 0.75, sm: 1 },
                   textAlign: 'center',
                   fontWeight: 600,
-                  color: index === 0 ? '#e53935' : index === 6 ? '#1e88e5' : '#424242',
+                  color:
+                    index === 0
+                      ? '#e53935'
+                      : index === 6
+                        ? '#1e88e5'
+                        : '#424242',
                   fontSize: { xs: '0.75rem', sm: '0.875rem' },
                   letterSpacing: '0.5px',
                 }}
@@ -326,12 +340,12 @@ const AngerLogCalendar: React.FC = () => {
             sx={{
               display: 'grid',
               gridTemplateColumns: 'repeat(7, 1fr)',
-              gap: { xs: '2px', sm: '4px' }, // 適度なギャップ
+              gap: { xs: '2px', sm: '4px' },
               '& > *': {
                 aspectRatio: '1',
                 minHeight: { xs: '48px', sm: '65px' },
                 maxHeight: { xs: '52px', sm: '70px' },
-              }
+              },
             }}
           >
             {calendarDays.map((day) => (
@@ -361,12 +375,11 @@ const AngerLogCalendar: React.FC = () => {
 
       {/* 詳細モーダル */}
       {showDetailModal && selectedAngerLog && (
-        // <AngerLogDetailModal
-        //   open={showDetailModal}
-        //   onClose={handleCloseModals}
-        //   angerLog={selectedAngerLog}
-        // />
-        <h4>モーダル出現</h4>
+        <AngerLogDetailModal
+          open={showDetailModal}
+          onClose={handleCloseModals}
+          angerLog={selectedAngerLog}
+        />
       )}
     </Box>
   )

@@ -1,11 +1,7 @@
 'use client'
 
 import React from 'react'
-import {
-  Box,
-  Typography,
-  ButtonBase,
-} from '@mui/material'
+import { Box, Typography, ButtonBase } from '@mui/material'
 import { format, isToday } from 'date-fns'
 import { DayAngerSummary } from './AngerLogCalendar'
 
@@ -63,9 +59,9 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
         ...baseStyle,
         background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
         border: '2px solid #1976d2',
-        boxShadow: { 
-          xs: '0 2px 6px rgba(25, 118, 210, 0.2)', 
-          sm: '0 4px 12px rgba(25, 118, 210, 0.3)' 
+        boxShadow: {
+          xs: '0 2px 6px rgba(25, 118, 210, 0.2)',
+          sm: '0 4px 12px rgba(25, 118, 210, 0.3)',
         },
       }
     }
@@ -85,9 +81,9 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
         ...baseStyle,
         '&:hover': {
           transform: { xs: 'none', sm: 'translateY(-2px)' },
-          boxShadow: { 
-            xs: '0 2px 8px rgba(0,0,0,0.1)', 
-            sm: '0 8px 25px rgba(0,0,0,0.15)' 
+          boxShadow: {
+            xs: '0 2px 8px rgba(0,0,0,0.1)',
+            sm: '0 8px 25px rgba(0,0,0,0.15)',
           },
           border: `2px solid ${dayData?.color}`,
         },
@@ -138,21 +134,21 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
               width: { xs: '20px', sm: '28px' },
               height: { xs: '20px', sm: '28px' },
               borderRadius: '50%',
-              background: `linear-gradient(135deg, ${dayData.color} 0%, ${dayData.color}dd 100%)`,
+              background: `linear-gradient(135deg, ${dayData.bgColor} 0%, ${dayData.bgColor}dd 100%)`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: { 
-                xs: `0 2px 4px ${dayData.color}40`, 
-                sm: `0 3px 8px ${dayData.color}40` 
+              boxShadow: {
+                xs: `0 2px 4px ${dayData.color}40`,
+                sm: `0 3px 8px ${dayData.color}40`,
               },
-              border: '1px solid white',
+              // border: '1px solid white',
             }}
           >
             <Typography
               variant="caption"
               sx={{
-                color: 'white',
+                color: dayData.color,
                 fontWeight: 700,
                 fontSize: { xs: '0.65rem', sm: '0.8rem' },
                 lineHeight: 1,
