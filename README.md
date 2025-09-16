@@ -220,6 +220,13 @@ docker compose logs -f                                  # ログ確認
 docker compose down                                     # 停止
 ./docker/scripts/cleanup.sh                            # 完全リセット
 
+# バックエンド開発  
+docker compose exec backend rails console               # Railsコンソール
+docker compose exec backend rails db:migrate            # DB更新
+docker compose exec backend bundle exec rspec           # 全テスト実行
+docker compose exec -e COVERAGE=true backend bundle exec rspec  # カバレッジ付きテスト
+docker compose exec backend bundle exec rspec spec/models/user_spec.rb  # Userモデルテスト
+
 ```
 
 ## 🗄️ データベース
