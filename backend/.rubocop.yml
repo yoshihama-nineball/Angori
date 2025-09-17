@@ -49,6 +49,9 @@ Lint/EmptyBlock:
 RSpec/MultipleExpectations:
   Max: 6
 
+RSpec/MultipleMemoizedHelpers:
+  Max: 7
+
 RSpec/ExampleLength:
   Max: 10
 
