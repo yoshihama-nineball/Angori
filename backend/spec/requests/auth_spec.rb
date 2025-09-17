@@ -51,12 +51,12 @@ RSpec.describe 'Authentication API', type: :request do
 
   describe 'POST /api/v1/users/sign_in (ログイン)' do
     let(:login_url) { "#{api_base}/users/sign_in" }
-    let(:unique_email_2) { "login#{SecureRandom.hex(4)}@example.com" }
-    let!(:user) { create(:user, email: unique_email_2, password: 'Password123') }
+    let(:login_email) { "login#{SecureRandom.hex(4)}@example.com" }
+    let(:test_user) { create(:user, email: login_email, password: 'Password123') }
     let(:valid_login_params) do
       {
         user: {
-          email: unique_email_2,
+          email: login_email,
           password: 'Password123'
         }
       }
