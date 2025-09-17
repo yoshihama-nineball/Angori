@@ -29,4 +29,3 @@ class ApplicationController < ActionController::API
     devise_parameter_sanitizer.permit(:sign_in, keys: %i[email password])
   end
 end
-protect_from_forgery with: :null_session
