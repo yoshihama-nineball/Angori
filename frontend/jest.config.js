@@ -17,15 +17,6 @@ const customJestConfig = {
     '!src/app/**',
     '!src/**/*.config.{js,ts}',
   ],
-  //memo: カバレッジ要件はテスト書き終わるまで無効
-  // coverageThreshold: {
-  //   global: {
-  //     branches: 70,
-  //     functions: 70,
-  //     lines: 70,
-  //     statements: 70,
-  //   },
-  // },
   coverageDirectory: 'coverage',
   coverageReporters: ['html', 'text', 'lcov'],
   moduleNameMapper: {
@@ -35,6 +26,12 @@ const customJestConfig = {
     '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/src/**/*.{test,spec}.{js,jsx,ts,tsx}',
   ],
+  // ヘルパーファイルを除外（追加）
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/__tests__/utils/',
+    '/__tests__/mocks/',
+  ],
   globals: {
     'ts-jest': {
       tsconfig: {
@@ -42,6 +39,7 @@ const customJestConfig = {
       },
     },
   },
+  errorOnDeprecated: false,
 }
 
 module.exports = createJestConfig(customJestConfig)
