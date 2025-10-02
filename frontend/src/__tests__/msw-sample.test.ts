@@ -13,8 +13,6 @@ describe('MSW動作確認テスト', () => {
       password_confirmation: 'Password123',
     })
 
-    console.log('サインアップ結果:', result)
-
     expect(result.errors).toHaveLength(0)
     expect(localStorage.getItem('token')).toBeTruthy()
   })

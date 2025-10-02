@@ -42,5 +42,17 @@ jest.mock('next/navigation', () => ({
 
 // MSWサーバーの設定
 beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }))
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  server.resetHandlers()
+
+  // Zustand ストアのリセット（存在する場合のみ）
+  try {
+    const { useAuthStore } = require('./src/lib/stores/authStore')
+    if (useAuthStore?.setState) {
+      useAuthStore.setState({ isAuthenticated: false })
+    }
+  } catch (error) {
+    // authStoreが存在しない場合は無視
+  }
+})
 afterAll(() => server.close())
