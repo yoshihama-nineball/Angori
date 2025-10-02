@@ -9,12 +9,12 @@ describe('MSW動作確認テスト', () => {
     const result = await registerUser({
       name: 'Test User',
       email: 'test@example.com',
-      password: 'Password123',  // 大文字、小文字、数字を含む
+      password: 'Password123', // 大文字、小文字、数字を含む
       password_confirmation: 'Password123',
     })
 
     console.log('サインアップ結果:', result)
-    
+
     expect(result.errors).toHaveLength(0)
     expect(localStorage.getItem('token')).toBeTruthy()
   })
@@ -22,7 +22,7 @@ describe('MSW動作確認テスト', () => {
   it('ログインAPIがモックされている', async () => {
     const result = await loginUser({
       email: 'test@example.com',
-      password: 'Password123',  // こちらも統一
+      password: 'Password123', // こちらも統一
     })
 
     expect(result.success).toBeTruthy()

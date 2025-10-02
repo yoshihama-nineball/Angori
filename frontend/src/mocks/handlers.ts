@@ -9,7 +9,7 @@ export const handlers = [
       ctx.status(200),
       ctx.set('Authorization', 'Bearer mock-jwt-token-signup'),
       ctx.json({
-        message: 'User created successfully'
+        message: 'User created successfully',
       })
     )
   }),
