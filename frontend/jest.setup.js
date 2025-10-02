@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 import 'whatwg-fetch'
 
-const { server } = require('./src/mocks/server')
+const { server } = require('./src/__tests__/mocks/server')
 
 // MUI テストのためのモック
 Object.defineProperty(window, 'matchMedia', {
