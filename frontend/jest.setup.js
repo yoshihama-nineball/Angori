@@ -1,4 +1,7 @@
 import '@testing-library/jest-dom'
+import 'whatwg-fetch'
+
+const { server } = require('./src/mocks/server')
 
 // MUI テストのためのモック
 Object.defineProperty(window, 'matchMedia', {
@@ -36,3 +39,8 @@ jest.mock('next/navigation', () => ({
   }),
   usePathname: () => '/',
 }))
+
+// MSWサーバーの設定
+beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }))
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())
