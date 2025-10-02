@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@/__tests__/utils/test-utils'
 import userEvent from '@testing-library/user-event'
 import LoginForm from './LoginForm'
-import { server } from '@/__tests__/mocks/server'  // 追加
-import { rest } from 'msw'  // 追加
+import { server } from '@/__tests__/mocks/server' // 追加
+import { rest } from 'msw' // 追加
 
 const mockPush = jest.fn()
 

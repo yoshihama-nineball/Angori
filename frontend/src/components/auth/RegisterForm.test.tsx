@@ -1,8 +1,6 @@
 import { render, screen, waitFor } from '@/__tests__/utils/test-utils'
 import userEvent from '@testing-library/user-event'
 import RegisterForm from './RegisterForm'
-import { server } from '@/__tests__/mocks/server'
-import { rest } from 'msw'
 
 const mockPush = jest.fn()
 
@@ -201,47 +199,54 @@ describe('RegisterForm', () => {
     })
   })
 
-describe('エラーハンドリング', () => {
-  it.skip('ネットワークエラー時にエラーメッセージが表示される', async () => {
-    // このテストはMSWの制限によりスキップ
-  })
-
-  it('利用規約に同意せずに送信しようとするとボタンが無効', async () => {
-    const user = userEvent.setup()
-    render(<RegisterForm />)
-
-    await waitFor(() => {
-      expect(screen.getByLabelText(/ユーザー名/i)).toBeInTheDocument()
+  describe('エラーハンドリング', () => {
+    it.skip('ネットワークエラー時にエラーメッセージが表示される', async () => {
+      // このテストはMSWの制限によりスキップ
     })
 
-    const passwordFields = document.querySelectorAll('input[type="password"]') as NodeListOf<HTMLInputElement>
-    
-    await user.type(screen.getByLabelText(/ユーザー名/i), 'テストユーザー')
-    await user.type(screen.getByLabelText(/メールアドレス/i), 'test@example.com')
-    await user.type(passwordFields[0], 'Password123')
-    await user.type(passwordFields[1], 'Password123')
-    
-    const submitButton = document.querySelector('button[type="submit"]') as HTMLButtonElement
-    expect(submitButton).toBeDisabled()
-  })
+    it('利用規約に同意せずに送信しようとするとボタンが無効', async () => {
+      const user = userEvent.setup()
+      render(<RegisterForm />)
 
-  it.skip('名前が空の場合エラーが表示される', async () => {
-    const user = userEvent.setup()
-    render(<RegisterForm />)
+      await waitFor(() => {
+        expect(screen.getByLabelText(/ユーザー名/i)).toBeInTheDocument()
+      })
 
-    await waitFor(() => {
-      expect(screen.getByLabelText(/ユーザー名/i)).toBeInTheDocument()
+      const passwordFields = document.querySelectorAll(
+        'input[type="password"]'
+      ) as NodeListOf<HTMLInputElement>
+
+      await user.type(screen.getByLabelText(/ユーザー名/i), 'テストユーザー')
+      await user.type(
+        screen.getByLabelText(/メールアドレス/i),
+        'test@example.com'
+      )
+      await user.type(passwordFields[0], 'Password123')
+      await user.type(passwordFields[1], 'Password123')
+
+      const submitButton = document.querySelector(
+        'button[type="submit"]'
+      ) as HTMLButtonElement
+      expect(submitButton).toBeDisabled()
     })
 
-    const nameInput = screen.getByLabelText(/ユーザー名/i)
-    await user.click(nameInput)
-    await user.tab()
+    it.skip('名前が空の場合エラーが表示される', async () => {
+      const user = userEvent.setup()
+      render(<RegisterForm />)
 
-    await waitFor(() => {
-      expect(screen.getByText('ユーザー名は必須です')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByLabelText(/ユーザー名/i)).toBeInTheDocument()
+      })
+
+      const nameInput = screen.getByLabelText(/ユーザー名/i)
+      await user.click(nameInput)
+      await user.tab()
+
+      await waitFor(() => {
+        expect(screen.getByText('ユーザー名は必須です')).toBeInTheDocument()
+      })
     })
   })
-})
 
   describe('UI インタラクション', () => {
     it('パスワード確認フィールドの表示/非表示トグルが動作する', async () => {
