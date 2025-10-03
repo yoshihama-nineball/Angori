@@ -1,58 +1,144 @@
 require 'rails_helper'
 
 RSpec.describe CalmingPoint, type: :model do
-  let(:user) { create(:user) }
-  let(:calming_point) { user.calming_point }
-
-  describe 'validations' do
-    it '有効な属性を持つ場合有効である' do
-      expect(calming_point).to be_valid
+  describe 'Factory' do
+    it '有効なファクトリを持つ' do
+      expect(build(:calming_point)).to be_valid
     end
 
-    it 'total pointは正の整数である' do
-      calming_point.total_points = -1
-      expect(calming_point).not_to be_valid
+    it 'with_pointsトレイトが機能する' do
+      calming_point = build(:calming_point, :with_points)
+      expect(calming_point.total_points).to eq(150)
+      expect(calming_point.current_level).to eq(2)
     end
 
-    it 'current levelは1以上でない場合無効である' do
-      calming_point.current_level = 0
-      expect(calming_point).not_to be_valid
-    end
-  end
-
-  describe '#calculate_points!' do
-    it '1つ目のログ作成でポイントが正しく計算される' do
-      create(:anger_log, user: user, ai_advice: 'advice')
-      expect(calming_point.reload.total_points).to eq(35)
+    it 'with_streakトレイトが機能する' do
+      calming_point = build(:calming_point, :with_streak)
+      expect(calming_point.streak_days).to eq(7)
+      expect(calming_point.last_action_date).to be_present
     end
 
-    it '2つ目のログ作成でポイントが累積される' do
-      create(:anger_log, user: user, ai_advice: 'advice')
-      create(:anger_log, user: user)
-      expect(calming_point.reload.total_points).to eq(40)
-    end
-
-    it 'pointsによって正しくlevelが更新される' do
-      calming_point.update!(total_points: 250)
-      expected_level = (250 / 100) + 1
-      expect(expected_level).to eq(3)
+    it 'high_levelトレイトが機能する' do
+      calming_point = build(:calming_point, :high_level)
+      expect(calming_point.total_points).to eq(1000)
+      expect(calming_point.current_level).to eq(10)
+      expect(calming_point.streak_days).to eq(30)
     end
   end
 
-  describe '#level_name' do
-    it 'current level 1で正しい名前を返す' do
-      calming_point.update!(current_level: 1)
-      expect(calming_point.level_name).to include('生まれたてのゴリラ')
+  describe 'アソシエーション' do
+    it { is_expected.to belong_to(:user) }
+  end
+
+  describe 'バリデーション' do
+    let(:calming_point) { build(:calming_point) }
+
+    describe 'total_points（累計ポイント）' do
+      it '必須である' do
+        calming_point.total_points = nil
+        expect(calming_point).not_to be_valid
+        expect(calming_point.errors[:total_points]).to include("can't be blank")
+      end
+
+      it '数値である必要がある' do
+        calming_point.total_points = 'abc'
+        expect(calming_point).not_to be_valid
+        expect(calming_point.errors[:total_points]).to include('is not a number')
+      end
+
+      it '0以上である必要がある' do
+        calming_point.total_points = -1
+        expect(calming_point).not_to be_valid
+        expect(calming_point.errors[:total_points]).to include('must be greater than or equal to 0')
+      end
+
+      it '0の場合は有効' do
+        calming_point.total_points = 0
+        expect(calming_point).to be_valid
+      end
+
+      it '正の整数の場合は有効' do
+        calming_point.total_points = 100
+        expect(calming_point).to be_valid
+      end
     end
 
-    it 'current level 5で正しい名前を返す' do
-      calming_point.update!(current_level: 5)
-      expect(calming_point.level_name).to include('修行中ゴリラ')
+    describe 'current_level（現在のレベル）' do
+      it '必須である' do
+        calming_point.current_level = nil
+        expect(calming_point).not_to be_valid
+        expect(calming_point.errors[:current_level]).to include("can't be blank")
+      end
+
+      it '数値である必要がある' do
+        calming_point.current_level = 'abc'
+        expect(calming_point).not_to be_valid
+        expect(calming_point.errors[:current_level]).to include('is not a number')
+      end
+
+      it '1以上である必要がある' do
+        calming_point.current_level = 0
+        expect(calming_point).not_to be_valid
+        expect(calming_point.errors[:current_level]).to include('must be greater than or equal to 1')
+      end
+
+      it '1の場合は有効' do
+        calming_point.current_level = 1
+        expect(calming_point).to be_valid
+      end
+
+      it '正の整数の場合は有効' do
+        calming_point.current_level = 5
+        expect(calming_point).to be_valid
+      end
     end
 
-    it 'current level 10で正しい名前を返す' do
-      calming_point.update!(current_level: 10)
-      expect(calming_point.level_name).to include('落ち着きゴリラ')
+    describe 'streak_days（連続日数）' do
+      it '必須である' do
+        calming_point.streak_days = nil
+        expect(calming_point).not_to be_valid
+        expect(calming_point.errors[:streak_days]).to include("can't be blank")
+      end
+
+      it '数値である必要がある' do
+        calming_point.streak_days = 'abc'
+        expect(calming_point).not_to be_valid
+        expect(calming_point.errors[:streak_days]).to include('is not a number')
+      end
+
+      it '0以上である必要がある' do
+        calming_point.streak_days = -1
+        expect(calming_point).not_to be_valid
+        expect(calming_point.errors[:streak_days]).to include('must be greater than or equal to 0')
+      end
+
+      it '0の場合は有効' do
+        calming_point.streak_days = 0
+        expect(calming_point).to be_valid
+      end
+
+      it '正の整数の場合は有効' do
+        calming_point.streak_days = 7
+        expect(calming_point).to be_valid
+      end
+    end
+  end
+
+  describe 'concern modules' do
+    it 'CalmingPointCalculationモジュールをincludeしている' do
+      expect(described_class.included_modules).to include(CalmingPointCalculation)
+    end
+
+    it 'CalmingPointDisplayモジュールをincludeしている' do
+      expect(described_class.included_modules).to include(CalmingPointDisplay)
+    end
+
+    it 'CalmingPointStreakモジュールをincludeしている' do
+      expect(described_class.included_modules).to include(CalmingPointStreak)
+    end
+
+    it 'CalmingPointMilestonesモジュールをincludeしている' do
+      expect(described_class.included_modules).to include(CalmingPointMilestones)
     end
   end
 end
