@@ -957,7 +957,7 @@ describe('LoginForm', () => {
     await user.click(screen.getByRole('button', { name: /login/i }))
     
     expect(mockLogin).toHaveBeenCalledWith({
-      email: 'test@example.com',
+      email: 'example@example.com',
       password: 'password123'
     })
   })

@@ -26,11 +26,11 @@ if User.none?
 
   # テストユーザー作成
   test_users = [
-    {
-      email: 'test@example.com',
-      password: 'Password123!',
-      name: 'テストゴリラ'
-    },
+    # {
+    #   email: 'test@example.com',
+    #   password: 'Password123!',
+    #   name: 'テストゴリラ'
+    # },
     {
       email: 'asd.user@example.com',
       password: 'Password123!',
@@ -417,7 +417,7 @@ if User.none?
   # サンプルユーザー情報表示
   Rails.logger.debug "\n📋 Sample User Credentials:"
   Rails.logger.debug 'Admin: admin@angori.com / password123'
-  Rails.logger.debug 'Test User: test@example.com / password123'
+  # Rails.logger.debug 'Test User: test@example.com / password123'
   Rails.logger.debug 'ASD User: asd.user@example.com / password123'
   Rails.logger.debug 'HSP User: hsp.user@example.com / password123'
 
