@@ -15,7 +15,7 @@ jobs:
   preview:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - uses: actions/setup-node@v4
       with:
@@ -72,7 +72,7 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Validate PR title
       uses: amannn/action-semantic-pull-request@v5
